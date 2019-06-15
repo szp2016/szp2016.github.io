@@ -97,17 +97,18 @@
 
 
 
-  <meta name="description" content="my first blog helloworld">
+  <meta name="description" content="Netty的组件和设计Channel 接口 在基于Java的网络编程中，其基本的构造是class socket。Netty的Channel接口所提供的api，大大的降低了直接使用Socket类的复杂性。   EventLoop 接口  EventLoop 定义了 Netty 的核心抽象，用于处理连接的生命周期中所发生的事件。  一个EventLoopGroup包含一个或者多个EventLoop；">
+<meta name="keywords" content="网络编程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="first">
+<meta property="og:title" content="Netty组件和设计">
 <meta property="og:url" content="http://wwszp.top/2019/06/15/first/index.html">
 <meta property="og:site_name" content="我的博客">
-<meta property="og:description" content="my first blog helloworld">
+<meta property="og:description" content="Netty的组件和设计Channel 接口 在基于Java的网络编程中，其基本的构造是class socket。Netty的Channel接口所提供的api，大大的降低了直接使用Socket类的复杂性。   EventLoop 接口  EventLoop 定义了 Netty 的核心抽象，用于处理连接的生命周期中所发生的事件。  一个EventLoopGroup包含一个或者多个EventLoop；">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-15T06:48:34.444Z">
+<meta property="og:updated_time" content="2019-06-15T15:05:30.179Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="first">
-<meta name="twitter:description" content="my first blog helloworld">
+<meta name="twitter:title" content="Netty组件和设计">
+<meta name="twitter:description" content="Netty的组件和设计Channel 接口 在基于Java的网络编程中，其基本的构造是class socket。Netty的Channel接口所提供的api，大大的降低了直接使用Socket类的复杂性。   EventLoop 接口  EventLoop 定义了 Netty 的核心抽象，用于处理连接的生命周期中所发生的事件。  一个EventLoopGroup包含一个或者多个EventLoop；">
 
 
 
@@ -125,7 +126,7 @@
   };
 </script>
 
-  <title>first | 我的博客</title>
+  <title>Netty组件和设计 | 我的博客</title>
   
 
 
@@ -261,7 +262,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">0</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">1</span></a>
 
   </li>
         
@@ -299,7 +300,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">2</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">1</span></a>
 
   </li>
 
@@ -397,7 +398,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">first
+          <h1 class="post-title" itemprop="name headline">Netty组件和设计
 
               
             
@@ -423,7 +424,7 @@
                 
               
 
-              <time title="创建时间：2019-06-15 10:57:19 / 修改时间：14:48:34" itemprop="dateCreated datePublished" datetime="2019-06-15T10:57:19+08:00">2019-06-15</time>
+              <time title="创建时间：2019-06-15 10:57:19 / 修改时间：23:05:30" itemprop="dateCreated datePublished" datetime="2019-06-15T10:57:19+08:00">2019-06-15</time>
             
 
             
@@ -445,7 +446,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/电影评论/" itemprop="url" rel="index"><span itemprop="name">电影评论</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a></span>
 
                 
                 
@@ -460,7 +461,7 @@
 
           
           
-            <span id="/2019/06/15/first/" class="leancloud_visitors" data-flag-title="first">
+            <span id="/2019/06/15/first/" class="leancloud_visitors" data-flag-title="Netty组件和设计">
               <span class="post-meta-divider">|</span>
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
@@ -491,8 +492,42 @@
       
 
       
-        <p>my first blog</p>
-<p>helloworld</p>
+        <h2 id="Netty的组件和设计"><a href="#Netty的组件和设计" class="headerlink" title="Netty的组件和设计"></a><strong>Netty的组件和设计</strong></h2><p><strong>Channel 接口</strong></p>
+<p>在基于Java的网络编程中，其基本的构造是class socket。Netty的Channel接口所提供的api，大大的降低了直接使用Socket类的复杂性。</p>
+<hr>
+<p> <strong>EventLoop 接口</strong> </p>
+<p>EventLoop 定义了 Netty 的核心抽象，用于处理连接的生命周期中所发生的事件。</p>
+<ul>
+<li>一个EventLoopGroup包含一个或者多个EventLoop；</li>
+<li>一个EventLoop在它的生命周期内只和一个Thread绑定； </li>
+</ul>
+<ul>
+<li>所有由EventLoop处理的 I/O 事件都将在它专有的Thread上被处理； </li>
+<li>一个Channel在它的生命周期内只注册于一个EventLoop； </li>
+<li>一个EventLoop可能会被分配给一个或多个Channel。</li>
+</ul>
+<hr>
+<p><strong>ChannelFuture 接口</strong></p>
+<p>Netty 中所有的 I/O 操作都是异步的。因为一个操作可能不会 立即返回，所以我们需要一种用于在之后的某个时间点确定其结果的方法。<br>为此，Netty 提供了 ChannelFuture接口，其addListener()方法注册了一个ChannelFutureListener，<br>以 便在某个操作完成时（无论是否成功）得到通知。  </p>
+<hr>
+<p><strong>ChannelHandler 接口</strong></p>
+<p>充当了所有 处理入站和出站数据的应用程序逻辑的容器。</p>
+<hr>
+<p><strong>ChannelPipeline 接口</strong></p>
+<p>ChannelPipeline 提供了 ChannelHandler 链的容器，并定义了用于在该链上传播入站 和出站事件流的 API。<br>当 Channel被创建时，它会被自动地分配到它专属的ChannelPipeline。 </p>
+<p>ChannelPipeline中存放的是ChannelHandler链，一条数据可以经过多个ChannelHandler进行处理，类似拦截器。</p>
+<hr>
+<p><strong>引导</strong></p>
+<ul>
+<li><p>Bootstrap</p>
+<p>  客户端配置</p>
+</li>
+<li><p>ServerBootstrap</p>
+<p>  服务端配置</p>
+</li>
+</ul>
+<p>引导一个客户端只需要一个 EventLoopGroup，但是一个 ServerBootstrap则需要两个（也可以是同一个实例）。</p>
+<p>因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。<br>而第二组将包含所有已创建的用来处理传 入客户端连接（对于每个服务器已经接受的连接都有一个）的 Channel。</p>
 
       
     </div>
@@ -514,27 +549,20 @@
 
     <footer class="post-footer">
       
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/06/15/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-          </div>
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/网络编程/" rel="tag"># 网络编程</a>
+          
         </div>
+      
+
+      
+      
+      
+
       
 
       
@@ -580,8 +608,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -598,7 +635,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">1</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -624,6 +661,23 @@
               
 
               
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
             </nav>
           
 
@@ -646,6 +700,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Netty的组件和设计"><span class="nav-number">1.</span> <span class="nav-text">Netty的组件和设计</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
