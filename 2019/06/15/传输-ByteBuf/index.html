@@ -97,16 +97,20 @@
 
 
 
-  <meta name="description" content="szp&apos; blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="szp&#39; blog">
-<meta property="og:url" content="http://wwszp.top/archives/2019/06/index.html">
+  <meta name="description" content="传输Netty内置传输 NIO      选择并处理状态的变化  Epoll   用于Linux的本地非阻塞传输    ByteBufnetty的数据容器 ByteBufHolder我们经常发现，除了实际的数据负载之外，我们还需要存储各种属性值。HTTP 响应便是一 个很好的例子，除了表示为字节的内容，还包括状态码、cookie 等。为了处理这种常见的用例，Netty 提供了ByteBufHold">
+<meta name="keywords" content="网络编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="传输-ByteBuf">
+<meta property="og:url" content="http://wwszp.top/2019/06/15/传输-ByteBuf/index.html">
 <meta property="og:site_name" content="szp&#39; blog">
-<meta property="og:description" content="szp&apos; blog">
+<meta property="og:description" content="传输Netty内置传输 NIO      选择并处理状态的变化  Epoll   用于Linux的本地非阻塞传输    ByteBufnetty的数据容器 ByteBufHolder我们经常发现，除了实际的数据负载之外，我们还需要存储各种属性值。HTTP 响应便是一 个很好的例子，除了表示为字节的内容，还包括状态码、cookie 等。为了处理这种常见的用例，Netty 提供了ByteBufHold">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wwszp.top/2019/06/15/image/Nio_selector_and_status.png">
+<meta property="og:updated_time" content="2019-06-15T15:15:42.602Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="szp&#39; blog">
-<meta name="twitter:description" content="szp&apos; blog">
+<meta name="twitter:title" content="传输-ByteBuf">
+<meta name="twitter:description" content="传输Netty内置传输 NIO      选择并处理状态的变化  Epoll   用于Linux的本地非阻塞传输    ByteBufnetty的数据容器 ByteBufHolder我们经常发现，除了实际的数据负载之外，我们还需要存储各种属性值。HTTP 响应便是一 个很好的例子，除了表示为字节的内容，还包括状态码、cookie 等。为了处理这种常见的用例，Netty 提供了ByteBufHold">
+<meta name="twitter:image" content="http://wwszp.top/2019/06/15/image/Nio_selector_and_status.png">
 
 
 
@@ -114,7 +118,7 @@
 
   
   
-  <link rel="canonical" href="http://wwszp.top/archives/2019/06/">
+  <link rel="canonical" href="http://wwszp.top/2019/06/15/传输-ByteBuf/">
 
 
 
@@ -124,7 +128,7 @@
   };
 </script>
 
-  <title>归档 | szp' blog</title>
+  <title>传输-ByteBuf | szp' blog</title>
   
 
 
@@ -172,7 +176,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -286,7 +290,7 @@
         
         
           
-          <li class="menu-item menu-item-archives menu-item-active">
+          <li class="menu-item menu-item-archives">
 
     
     
@@ -366,139 +370,226 @@
           
             
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
           
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
 
-      
-      <span class="archive-page-counter">
-        
-        
-        
-          
-        
-        嗯..! 目前共计 2 篇日志。 继续努力。
-      </span>
-      
-
-      
-
-        
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2019">2019</h1>
-          </div>
-        
-        
-
-        
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wwszp.top/2019/06/15/传输-ByteBuf/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="szp">
+      <meta itemprop="description" content="szp' blog">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="szp' blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-          <a class="post-title-link" href="/2019/06/15/传输-ByteBuf/" itemprop="url">
-            
-              <span itemprop="name">传输-ByteBuf</span>
-            
-          </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">传输-ByteBuf
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-06-15T23:14:52+08:00" content="2019-06-15">
-          06-15
-        </time>
-      </div>
+              
+            
+          </h1>
+        
 
-    </header>
-  </article>
+        <div class="post-meta">
+          <span class="post-time">
 
+            
+            
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-15 23:14:52 / 修改时间：23:15:42" itemprop="dateCreated datePublished" datetime="2019-06-15T23:14:52+08:00">2019-06-15</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+            <span id="/2019/06/15/传输-ByteBuf/" class="leancloud_visitors" data-flag-title="传输-ByteBuf">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2019/06/15/first/" itemprop="url">
-            
-              <span itemprop="name">Netty组件和设计</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-06-15T10:57:19+08:00" content="2019-06-15">
-          06-15
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
+      
+        <h2 id="传输"><a href="#传输" class="headerlink" title="传输"></a>传输</h2><h3 id="Netty内置传输"><a href="#Netty内置传输" class="headerlink" title="Netty内置传输"></a>Netty内置传输</h3><ul>
+<li><p>NIO</p>
+<p>  <img src="../image/Nio_selector_and_status.png" alt="avatar"></p>
+<p>  选择并处理状态的变化</p>
+</li>
+<li><p>Epoll</p>
+<p>  用于Linux的本地非阻塞传输</p>
+</li>
+</ul>
+<hr>
+<h2 id="ByteBuf"><a href="#ByteBuf" class="headerlink" title="ByteBuf"></a>ByteBuf</h2><p><strong>netty的数据容器</strong></p>
+<h2 id="ByteBufHolder"><a href="#ByteBufHolder" class="headerlink" title="ByteBufHolder"></a>ByteBufHolder</h2><p>我们经常发现，除了实际的数据负载之外，我们还需要存储各种属性值。<br>HTTP 响应便是一 个很好的例子，除了表示为字节的内容，还包括状态码、cookie 等。<br>为了处理这种常见的用例，Netty 提供了ByteBufHolder。</p>
+
+      
     </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/网络编程/" rel="tag"># 网络编程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/15/first/" rel="next" title="Netty组件和设计">
+                <i class="fa fa-chevron-left"></i> Netty组件和设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NDc0OC8yMTI2OQ=="></div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -518,8 +609,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -601,6 +701,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#传输"><span class="nav-number">1.</span> <span class="nav-text">传输</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Netty内置传输"><span class="nav-number">1.1.</span> <span class="nav-text">Netty内置传输</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ByteBuf"><span class="nav-number">2.</span> <span class="nav-text">ByteBuf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ByteBufHolder"><span class="nav-number">3.</span> <span class="nav-text">ByteBufHolder</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -725,6 +842,10 @@
 
 
   
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
 
   
 
@@ -740,6 +861,23 @@
 
   
 
+
+  
+    <script>
+  window.livereOptions = {
+    refer: '2019/06/15/传输-ByteBuf/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
 
 
   
@@ -1071,38 +1209,35 @@
   
   <script>
     
-    function showTime(Counter) {
-      var entries = [];
+    function addCount(Counter) {
       var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
 
-      $visitors.each(function() {
-        entries.push( $(this).attr('id').trim() );
-      });
-
-      Counter('get', '/classes/Counter', { where: JSON.stringify({ url: { '$in': entries } }) })
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
         .done(function({ results }) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.url;
-            var time = item.time;
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for (var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if (countSpan.text() == '') {
-              countSpan.text(0);
-            }
+          if (results.length > 0) {
+            var counter = results[0];
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1 }))
+                .done(function() {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function() {
+                  console.log('Failed to create');
+                });
+            
           }
         })
         .fail(function ({ responseJSON }) {
@@ -1127,9 +1262,11 @@
             });
           };
           
-            if ($('.post-title-link').length >= 1) {
-              showTime(Counter);
+            const localhost = /http:\/\/(localhost|127.0.0.1|0.0.0.0)/;
+            if (localhost.test(document.URL)) {
+              return;
             }
+            addCount(Counter);
           
         });
     });
