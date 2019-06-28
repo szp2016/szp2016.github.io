@@ -4,12 +4,12 @@
  document.addEventListener('visibilitychange', function () {
      if (document.hidden) {
          $('[rel="icon"]').attr('href', "/images/favicon.png");
-         document.title = '网页崩溃了';
+         document.title = '今天也要加油偶';
          clearTimeout(titleTime);
      }
      else {
          $('[rel="icon"]').attr('href', "/images/favicon.png");
-         document.title = '每天更新，欢迎互链！' + OriginTitle;
+         document.title = '感谢你回来' + OriginTitle;
          titleTime = setTimeout(function () {
              document.title = OriginTitle;
          }, 2000);
