@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://szp2016.github.io/assets/index.html</loc>
+    
+    <lastmod>2020-07-13T02:58:14.464Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://szp2016.github.io/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/IO%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F/</loc>
     
     <lastmod>2020-07-13T02:34:21.787Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>https://szp2016.github.io/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/2019062616/</loc>
     
     <lastmod>2020-04-25T01:39:43.895Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://szp2016.github.io/assets/index.html</loc>
-    
-    <lastmod>2020-04-25T01:39:43.814Z</lastmod>
     
   </url>
   
