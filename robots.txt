@@ -13,5 +13,5 @@ Disallow: /fonts/
 Disallow: /vendors/
 Disallow: /fancybox/
 
-Sitemap: http://wwszp.top/sitemap.xml
-Sitemap: http://wwszp.top/baidusitemap.xml
+Sitemap: https://szp2016.github.io/sitemap.xml
+Sitemap: https://szp2016.github.io/baidusitemap.xml
