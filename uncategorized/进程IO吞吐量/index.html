@@ -110,18 +110,20 @@
 
 
 
-  <meta name="description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 I/O性能评价指标IOPS每秒的输入输出量(或读写次数)，也就">
+  <meta name="description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
 <meta name="keywords" content="Spring，Java，编解码，物联网">
 <meta property="og:type" content="article">
 <meta property="og:title" content="进程IO吞吐量">
 <meta property="og:url" content="https://szp2016.github.io/uncategorized/进程IO吞吐量/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 I/O性能评价指标IOPS每秒的输入输出量(或读写次数)，也就">
+<meta property="og:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-08-01T10:51:24.069Z">
+<meta property="og:image" content="https://szp2016.github.io/uncategorized/进程IO吞吐量/2020-08-03-15-58-27.png">
+<meta property="og:updated_time" content="2020-08-03T08:01:29.220Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="进程IO吞吐量">
-<meta name="twitter:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 I/O性能评价指标IOPS每秒的输入输出量(或读写次数)，也就">
+<meta name="twitter:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
+<meta name="twitter:image" content="https://szp2016.github.io/uncategorized/进程IO吞吐量/2020-08-03-15-58-27.png">
 
 
 
@@ -327,7 +329,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">17</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">18</span></a>
 
   </li>
         
@@ -498,12 +500,24 @@
                 
               
 
-              <time title="创建时间：2020-08-01 13:42:34 / 修改时间：18:51:24" itemprop="dateCreated datePublished" datetime="2020-08-01T13:42:34+08:00">2020-08-01</time>
+              <time title="创建时间：2020-08-01 13:42:34" itemprop="dateCreated datePublished" datetime="2020-08-01T13:42:34+08:00">2020-08-01</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-08-03 16:01:29" itemprop="dateModified" datetime="2020-08-03T16:01:29+08:00">2020-08-03</time>
               
             
           </span>
@@ -550,7 +564,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">5.3k</span>
+                <span title="本文字数">7.4k</span>
               
 
               
@@ -564,7 +578,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">5 分钟</span>
+                <span title="阅读时长">7 分钟</span>
               
             </div>
           
@@ -585,6 +599,70 @@
 
       
         <h1 id="I-O"><a href="#I-O" class="headerlink" title="I/O"></a>I/O</h1><p>I/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。</p>
+<h1 id="Linux三大设备类型"><a href="#Linux三大设备类型" class="headerlink" title="Linux三大设备类型"></a>Linux三大设备类型</h1><h2 id="字符设备"><a href="#字符设备" class="headerlink" title="字符设备"></a>字符设备</h2><p>字符设备指能够像字节流串行顺序依次进行访问的设备，对它的读写是以字节为单位。字符设备的上层没有磁盘文件系统，所以字符设备的file_operations成员函数就直接由字符设备驱动提供（一般字符设备都会实现相应的fops集），因此file_operations 也就成为了字符设备驱动的核心。</p>
+<p>特点：</p>
+<ul>
+<li><p>一个字节一个字节读写的设备</p>
+</li>
+<li><p>读取数据需要按照先后数据（顺序读取） </p>
+</li>
+<li><p>每个字符设备在/dev目录下对应一个设备文件，linux用户程序通过设备文件（或称设备节点）来使用驱动程序操作字符设备。</p>
+</li>
+<li><p>常见的字符设备有鼠标、键盘、串口、控制台等</p>
+</li>
+</ul>
+<h2 id="块设备"><a href="#块设备" class="headerlink" title="块设备"></a>块设备</h2><p>块设备以数据块的形式存放数据，如NAND Flash以页为单位存储数据，并采用mount方式挂载块设备。</p>
+<p>块设备必须能够随机存取(random access)，字符设备则没有这个要求。</p>
+<p>块设备除了给内核提供和字符设备一样的接口外，还提供了专门面向块设备的接口，块设备的接口必须支持挂装文件系统，通过此接口，块设备能够容纳文件系统，因此应用程序一般通过文件系统来访问块设备上的内容，而不是直接和设备打交道。</p>
+<p>对于块设备而言，上层ext2,jiffs2,fat等文件系统会 实现针对VFS的file_opertations成员函数，所以设备驱动层将看不到file_opeations的存在。磁盘文件系统和设备驱动会将对磁盘上文件的访问转换成对磁盘上柱面和扇区的访问。</p>
+<p>特点：</p>
+<ul>
+<li><p>数据以固定长度进行传输，比如512K</p>
+</li>
+<li><p>从设备的任意位置（可跳）读取，但实际上，块设备会读一定长度的内容，而只返回用户要求访问的内容，所以随机访问实际上还是读了全部内容。</p>
+</li>
+<li><p>块设备包括硬盘、磁盘、U盘和SD卡等</p>
+</li>
+<li><p>每个块设备在/dev目录下对应一个设备文件，linux用户程序可以通过设备文件（或称设备节点）来使用驱动程序操作块设备。</p>
+</li>
+<li><p>块设备可以容纳文件系统，所以一般都通过文件系统来访问，而不是/dev设备节点。</p>
+</li>
+<li><h2 id="网络设备"><a href="#网络设备" class="headerlink" title="网络设备"></a>网络设备</h2></li>
+</ul>
+<p>虽然在Linux系统存在一句话叫一切皆文件，无论是各种文本文件还是具体的硬件设备（硬件由设备文件来实现相应）。但是网络设备在Linux内核中却是唯一不体现一切皆设备思想的驱动架构，因为网络设备使用套接字来实现网数据的接受和发送。</p>
+<p>网络设备驱动不同于字符设备和块设备，不在/dev下以文件节点代表，而是通过单独的网络接口来代表。</p>
+<p>特点：</p>
+<ul>
+<li><p>网络接口没有像字符设备和块设备一样的设备号和/dev设备节点，只有接口名，如eth0,eth1 </p>
+</li>
+<li><p>通过socket操作，而不是open read write</p>
+</li>
+</ul>
+<h1 id="I-O子系统架构"><a href="#I-O子系统架构" class="headerlink" title="I/O子系统架构"></a>I/O子系统架构</h1><p><img src="//szp2016.github.io/uncategorized/进程IO吞吐量/2020-08-03-15-58-27.png" alt></p>
+<p>上图概括了一次磁盘 write 操作的过程，假设文件已经被从磁盘中读入了 page cache 中</p>
+<ol>
+<li><p>一个用户进程通过 write() 系统调用发起写请求</p>
+</li>
+<li><p>内核更新对应的 page cache</p>
+</li>
+<li><p>pdflush 内核线程将 page cache 写入至磁盘中</p>
+</li>
+<li><p>文件系统层将每一个 block buffer 存放为一个 bio 结构体，并向块设备层提交一个写请求</p>
+</li>
+<li><p>块设备层从上层接受到请求，执行 IO 调度操作，并将请求放入IO 请求队列中</p>
+</li>
+<li><p>设备驱动（如 SCSI 或其他设备驱动）完成写操作</p>
+</li>
+<li><p>磁盘设备固件执行对应的硬件操作，如磁盘的旋转，寻道等，数据被写入到磁盘扇区中</p>
+</li>
+</ol>
+<h2 id="Block-Layer"><a href="#Block-Layer" class="headerlink" title="Block Layer"></a>Block Layer</h2><p>Block layer 处理所有和块设备相关的操作。block layer 最关键是数据结构是 bio 结构体。bio 结构体是 file system layer 到 block layer 的接口。 当执行一个写操作时，文件系统层将数据写入 page cache（由 block buffer 组成），将连续的块放到一起，组成 bio 结构体，然后将 bio 送至 block layer。</p>
+<p>block layer 处理 bio 请求，并将这些请求链接成一个队列，称作 IO 请求队列，这个连接的操作就称作 IO 调度（也叫 IO elevator 即电梯算法）.</p>
+<h2 id="IO-scheduler"><a href="#IO-scheduler" class="headerlink" title="IO scheduler"></a>IO scheduler</h2><p>IO 调度器的总体目标是减少磁盘的寻道时间（因此调度器都是针对机械硬盘进行优化的），IO 调度器通过两种方式来减少磁盘寻道：合并和排序。</p>
+<p>合并即当两个或多个 IO 请求的是相邻的磁盘扇区，那么就将这些请求合并为一个请求。通过合并请求，多个 IO 请求只需要向磁盘发送一个请求指令，减少了磁盘的开销。</p>
+<p>排序就是将不能合并的 IO 请求，根据请求磁盘扇区的顺序，在请求队列中进行排序，使得磁头可以按照磁盘的旋转顺序的完成 IO 操作，可以减小磁盘的寻道次数。</p>
+<p>调度器的算法和电梯运行的策略相似，因此 IO 调度器也被称作 IO 电梯( IO Elevator )。由于对请求进行了重排，一部分的请求可能会被延迟，以提升整体的性能。</p>
+<p>Linux 2.4 只使用了一种通用的 IO 算法。到 Linux 2.6 实现了 4 种 IO 调度模型，其中 anticipatory 在 2.6.33 中被移除。</p>
 <h1 id="I-O性能评价指标"><a href="#I-O性能评价指标" class="headerlink" title="I/O性能评价指标"></a>I/O性能评价指标</h1><h2 id="IOPS"><a href="#IOPS" class="headerlink" title="IOPS"></a>IOPS</h2><p>每秒的输入输出量(或读写次数)，也就是在一秒内，磁盘进行多少次 I/O 读写。是衡量磁盘性能的主要指标之一。</p>
 <h2 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h2><p>指单位时间内可以成功传输的数据数量。即磁盘写入加上读出的数据的大小。吞吐量等于IOPS乘以每次IO大小。</p>
 <h2 id="使用率"><a href="#使用率" class="headerlink" title="使用率"></a>使用率</h2><p>使用率，是指磁盘处理I/O的时间百分比。过高的使用率(比如超过80% ) , 通常意味着磁盘I/O存在性能瓶颈。</p>
@@ -691,7 +769,7 @@ Linux 5.4.0-42-generic (szp-pc)     2020年08月01日     _x86_64_    (4 CPU)
 
 Device            r/s     w/s     rkB/s     wkB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
 <font color="#00AA00">loop0        </font><font color="#0000AA">    0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.80</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     2.35</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.40</b></font><font color="#0000AA">   0.00</font>
-<font color="#00AA00">loop1        </font><font color="#5555FF"><b>    0.01</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.05</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.49</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     4.46</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   0.41</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop1        </font><font color="#5555FF"><b>    0.01</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.05</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.49</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     4.46</b></font><font color="#0000AA">     0.00</font><font color="a" #5555ff""><b>   0.41</b></font><font color="#0000AA">   0.00</font>
 <font color="#00AA00">loop2        </font><font color="#0000AA">    0.00    0.00</font><font color="#5555FF"><b>      0.04</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.65</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>    10.64</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.14</b></font><font color="#0000AA">   0.00</font>
 <font color="#00AA00">loop3        </font><font color="#5555FF"><b>    0.05</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.08</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    2.17</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     1.65</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   0.23</b></font><font color="#0000AA">   0.00</font>
 <font color="#00AA00">loop4        </font><font color="#0000AA">    0.00    0.00</font><font color="#5555FF"><b>      0.01</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.49</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     8.00</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.66</b></font><font color="#0000AA">   0.00</font>
@@ -895,7 +973,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
     2020年08月01日 - 13:42:34
   </li>
     <strong>最后更新：</strong>
-    2020年08月01日 - 18:51:24
+    2020年08月03日 - 16:01:29
   
 
   <li class="post-copyright-link">
@@ -952,6 +1030,10 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/uncategorized/块IO层/" rel="prev" title="块IO层">
+                块IO层 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -1027,7 +1109,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1159,7 +1241,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O"><span class="nav-number">1.</span> <span class="nav-text">I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O性能评价指标"><span class="nav-number">2.</span> <span class="nav-text">I/O性能评价指标</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IOPS"><span class="nav-number">2.1.</span> <span class="nav-text">IOPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#吞吐量"><span class="nav-number">2.2.</span> <span class="nav-text">吞吐量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用率"><span class="nav-number">2.3.</span> <span class="nav-text">使用率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#饱和度"><span class="nav-number">2.4.</span> <span class="nav-text">饱和度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应时间"><span class="nav-number">2.5.</span> <span class="nav-text">响应时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能监测工具提供的指标"><span class="nav-number">2.6.</span> <span class="nav-text">性能监测工具提供的指标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#磁盘I-O"><span class="nav-number">3.</span> <span class="nav-text">磁盘I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程I-O"><span class="nav-number">4.</span> <span class="nav-text">进程I/O</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O"><span class="nav-number">1.</span> <span class="nav-text">I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux三大设备类型"><span class="nav-number">2.</span> <span class="nav-text">Linux三大设备类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符设备"><span class="nav-number">2.1.</span> <span class="nav-text">字符设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#块设备"><span class="nav-number">2.2.</span> <span class="nav-text">块设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络设备"><span class="nav-number">2.3.</span> <span class="nav-text">网络设备</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O子系统架构"><span class="nav-number">3.</span> <span class="nav-text">I/O子系统架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Block-Layer"><span class="nav-number">3.1.</span> <span class="nav-text">Block Layer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO-scheduler"><span class="nav-number">3.2.</span> <span class="nav-text">IO scheduler</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O性能评价指标"><span class="nav-number">4.</span> <span class="nav-text">I/O性能评价指标</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IOPS"><span class="nav-number">4.1.</span> <span class="nav-text">IOPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#吞吐量"><span class="nav-number">4.2.</span> <span class="nav-text">吞吐量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用率"><span class="nav-number">4.3.</span> <span class="nav-text">使用率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#饱和度"><span class="nav-number">4.4.</span> <span class="nav-text">饱和度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应时间"><span class="nav-number">4.5.</span> <span class="nav-text">响应时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能监测工具提供的指标"><span class="nav-number">4.6.</span> <span class="nav-text">性能监测工具提供的指标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#磁盘I-O"><span class="nav-number">5.</span> <span class="nav-text">磁盘I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程I-O"><span class="nav-number">6.</span> <span class="nav-text">进程I/O</span></a></li></ol></div>
             
 
           </div>
@@ -1192,7 +1274,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">41k</span>
+    <span title="站点总字数">46k</span>
   
 
   
@@ -1201,7 +1283,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">37 分钟</span>
+    <span title="站点阅读时长">42 分钟</span>
   
 </div>
 
