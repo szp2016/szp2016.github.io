@@ -111,20 +111,20 @@
 
 
   <meta name="description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
-<meta name="keywords" content="Spring，Java，编解码，物联网">
+<meta name="keywords" content="IO">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IO吞吐量与IO延迟">
-<meta property="og:url" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/index.html">
+<meta property="og:url" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-02.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-41.png">
-<meta property="og:updated_time" content="2020-08-07T14:33:11.457Z">
+<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/2020-08-07-22-25-02.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/2020-08-07-22-25-41.png">
+<meta property="og:updated_time" content="2020-08-07T14:51:10.239Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IO吞吐量与IO延迟">
 <meta name="twitter:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
-<meta name="twitter:image" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-02.png">
+<meta name="twitter:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/2020-08-07-22-25-02.png">
 
 
 
@@ -132,7 +132,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/">
+  <link rel="canonical" href="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/">
 
 
 
@@ -292,7 +292,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">12</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">18</span></a>
 
   </li>
         
@@ -311,7 +311,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">7</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">9</span></a>
 
   </li>
         
@@ -458,7 +458,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -501,7 +501,7 @@
                 
               
 
-              <time title="创建时间：2020-08-07 22:23:39 / 修改时间：22:33:11" itemprop="dateCreated datePublished" datetime="2020-08-07T22:23:39+08:00">2020-08-07</time>
+              <time title="创建时间：2020-08-07 22:23:39 / 修改时间：22:51:10" itemprop="dateCreated datePublished" datetime="2020-08-07T22:23:39+08:00">2020-08-07</time>
             
 
             
@@ -512,6 +512,24 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -520,7 +538,7 @@
 
           
           
-            <span id="/uncategorized/IO吞吐量与IO延迟/" class="leancloud_visitors" data-flag-title="IO吞吐量与IO延迟">
+            <span id="/Linux/IO吞吐量与IO延迟/" class="leancloud_visitors" data-flag-title="IO吞吐量与IO延迟">
               <span class="post-meta-divider">|</span>
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
@@ -627,7 +645,7 @@
 <li><p>通过socket操作，而不是open read write</p>
 </li>
 </ul>
-<h1 id="I-O子系统架构"><a href="#I-O子系统架构" class="headerlink" title="I/O子系统架构"></a>I/O子系统架构</h1><p><img src="//szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-02.png" alt></p>
+<h1 id="I-O子系统架构"><a href="#I-O子系统架构" class="headerlink" title="I/O子系统架构"></a>I/O子系统架构</h1><p><img src="//szp2016.github.io/Linux/IO吞吐量与IO延迟/2020-08-07-22-25-02.png" alt></p>
 <p>上图概括了一次磁盘 write 操作的过程，假设文件已经被从磁盘中读入了 page cache 中</p>
 <ol>
 <li><p>一个用户进程通过 write() 系统调用发起写请求</p>
@@ -880,7 +898,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
 <p>剩下的部分,则是从各个角度来分别表示进程的1/O情况,包括线程ID、I/O优先级、每秒读磁盘的大小、每秒写磁盘的大小、换入和等待I/O的时钟百分比等。</p>
 <h1 id="IO延迟"><a href="#IO延迟" class="headerlink" title="IO延迟"></a>IO延迟</h1><p>任何一个系统都有两个指标和性能紧密联系：响应时间和吞吐量。两个很关键的指标则是系统的IO延迟(响应时间)与IO吞吐量。</p>
 <h2 id="什么是IO延迟？"><a href="#什么是IO延迟？" class="headerlink" title="什么是IO延迟？"></a>什么是IO延迟？</h2><p>1个完整的I/O传输，可能会经过以下路径：<br>CPU -&gt;内存-&gt;硬盘<br>细分一下如下：<br>进程-&gt;虚拟文件系统-&gt;具体文件系统（页缓存）-&gt;通用块层（加入请求队列）-&gt;IO调度层-&gt;块设备驱动层-&gt;块设备层(操作磁盘)-&gt;磁盘 </p>
-<p><img src="//szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-41.png" alt></p>
+<p><img src="//szp2016.github.io/Linux/IO吞吐量与IO延迟/2020-08-07-22-25-41.png" alt></p>
 <p>在上述I/O传输途径中消耗的时间就是IO延迟。我们习惯性的把IO的延迟分为以下几部分：</p>
 <ol>
 <li>系统OS等软件配置产生的延迟：异步IO的情况下整个系统的延迟就会比同步IO下好很多。</li>
@@ -1018,13 +1036,13 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
     2020年08月07日 - 22:23:39
   </li>
     <strong>最后更新：</strong>
-    2020年08月07日 - 22:33:11
+    2020年08月07日 - 22:51:10
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/" title="IO吞吐量与IO延迟">https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/</a>
+    <a href="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/" title="IO吞吐量与IO延迟">https://szp2016.github.io/Linux/IO吞吐量与IO延迟/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -1035,6 +1053,15 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
     
     
     <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/IO/" rel="tag"><i class="fa fa-tag"></i> IO</a>
+          
+        </div>
       
 
       
@@ -1066,7 +1093,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/uncategorized/块IO层/" rel="next" title="块IO层">
+              <a href="/Linux/块IO层/" rel="next" title="块IO层">
                 <i class="fa fa-chevron-left"></i> 块IO层
               </a>
             
@@ -1181,7 +1208,11 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1222,7 +1253,19 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1511,7 +1554,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
   
     <script>
   window.livereOptions = {
-    refer: 'uncategorized/IO吞吐量与IO延迟/'
+    refer: 'Linux/IO吞吐量与IO延迟/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

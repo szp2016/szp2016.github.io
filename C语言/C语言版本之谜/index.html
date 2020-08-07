@@ -110,20 +110,18 @@
 
 
 
-  <meta name="description" content="Linux中设备分为字符设备，块设备，网络设备三大类。对于字符设备与块设备区别在于能否随机访问数据，对于字符设备键盘来说，键盘驱动程序会按照和用户输入完全相同的顺序读取字符，并且得到一个字符流。但是对于块设备硬盘来说，硬盘驱动程序可能需要读取磁盘上任意块的内容，这些块不一定是连续的，所以说可以被随机访问。 所以事实上内核不必提供一个专门的子系统来管理字符设备，但是对块设备的管理却必须要有一个专门的">
-<meta name="keywords" content="Spring，Java，编解码，物联网">
+  <meta name="description" content="赋闲在家，可能反而给了我们更多的时间来进行思考。偶然看到一段蛮有吸引力的视频，视频在文章的末尾，只有十分钟，即使是鸡汤，感觉也是一碗可以榨取出营养的鸡汤。 为什么大多数人不能成功作者提出，为什么大多数人都不会真正的成功？我们周围的环境都在试图将我们拉向平庸，并且引力非常大，而且我们中的大多数人都无法摆脱这些诱惑。 这些诱惑可以使你的大脑感到愉悦，甚至有的诱惑还能欺骗我们自己的大脑，让我们自己感觉到">
+<meta name="keywords" content="C语言,编译器">
 <meta property="og:type" content="article">
-<meta property="og:title" content="块IO层">
-<meta property="og:url" content="https://szp2016.github.io/uncategorized/块IO层/index.html">
+<meta property="og:title" content="C语言版本之谜">
+<meta property="og:url" content="https://szp2016.github.io/C语言/C语言版本之谜/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="Linux中设备分为字符设备，块设备，网络设备三大类。对于字符设备与块设备区别在于能否随机访问数据，对于字符设备键盘来说，键盘驱动程序会按照和用户输入完全相同的顺序读取字符，并且得到一个字符流。但是对于块设备硬盘来说，硬盘驱动程序可能需要读取磁盘上任意块的内容，这些块不一定是连续的，所以说可以被随机访问。 所以事实上内核不必提供一个专门的子系统来管理字符设备，但是对块设备的管理却必须要有一个专门的">
+<meta property="og:description" content="赋闲在家，可能反而给了我们更多的时间来进行思考。偶然看到一段蛮有吸引力的视频，视频在文章的末尾，只有十分钟，即使是鸡汤，感觉也是一碗可以榨取出营养的鸡汤。 为什么大多数人不能成功作者提出，为什么大多数人都不会真正的成功？我们周围的环境都在试图将我们拉向平庸，并且引力非常大，而且我们中的大多数人都无法摆脱这些诱惑。 这些诱惑可以使你的大脑感到愉悦，甚至有的诱惑还能欺骗我们自己的大脑，让我们自己感觉到">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/块IO层/2020-08-06-16-32-44.png">
-<meta property="og:updated_time" content="2020-08-07T14:28:31.789Z">
+<meta property="og:updated_time" content="2020-08-07T14:53:15.544Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="块IO层">
-<meta name="twitter:description" content="Linux中设备分为字符设备，块设备，网络设备三大类。对于字符设备与块设备区别在于能否随机访问数据，对于字符设备键盘来说，键盘驱动程序会按照和用户输入完全相同的顺序读取字符，并且得到一个字符流。但是对于块设备硬盘来说，硬盘驱动程序可能需要读取磁盘上任意块的内容，这些块不一定是连续的，所以说可以被随机访问。 所以事实上内核不必提供一个专门的子系统来管理字符设备，但是对块设备的管理却必须要有一个专门的">
-<meta name="twitter:image" content="https://szp2016.github.io/uncategorized/块IO层/2020-08-06-16-32-44.png">
+<meta name="twitter:title" content="C语言版本之谜">
+<meta name="twitter:description" content="赋闲在家，可能反而给了我们更多的时间来进行思考。偶然看到一段蛮有吸引力的视频，视频在文章的末尾，只有十分钟，即使是鸡汤，感觉也是一碗可以榨取出营养的鸡汤。 为什么大多数人不能成功作者提出，为什么大多数人都不会真正的成功？我们周围的环境都在试图将我们拉向平庸，并且引力非常大，而且我们中的大多数人都无法摆脱这些诱惑。 这些诱惑可以使你的大脑感到愉悦，甚至有的诱惑还能欺骗我们自己的大脑，让我们自己感觉到">
 
 
 
@@ -131,7 +129,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/uncategorized/块IO层/">
+  <link rel="canonical" href="https://szp2016.github.io/C语言/C语言版本之谜/">
 
 
 
@@ -141,7 +139,7 @@
   };
 </script>
 
-  <title>块IO层 | 桃花猿记</title>
+  <title>C语言版本之谜 | 桃花猿记</title>
   
 
 
@@ -291,7 +289,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">12</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">18</span></a>
 
   </li>
         
@@ -310,7 +308,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">7</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">9</span></a>
 
   </li>
         
@@ -457,7 +455,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/块IO层/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/C语言/C语言版本之谜/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -474,7 +472,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">块IO层
+          <h2 class="post-title" itemprop="name headline">C语言版本之谜
 
               
             
@@ -500,7 +498,7 @@
                 
               
 
-              <time title="创建时间：2020-08-06 14:47:42" itemprop="dateCreated datePublished" datetime="2020-08-06T14:47:42+08:00">2020-08-06</time>
+              <time title="创建时间：2020-02-21 08:08:24" itemprop="dateCreated datePublished" datetime="2020-02-21T08:08:24+08:00">2020-02-21</time>
             
 
             
@@ -517,12 +515,30 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-08-07 22:28:31" itemprop="dateModified" datetime="2020-08-07T22:28:31+08:00">2020-08-07</time>
+                <time title="修改时间：2020-08-07 22:53:15" itemprop="dateModified" datetime="2020-08-07T22:53:15+08:00">2020-08-07</time>
               
             
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C语言/" itemprop="url" rel="index"><span itemprop="name">C语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -531,7 +547,7 @@
 
           
           
-            <span id="/uncategorized/块IO层/" class="leancloud_visitors" data-flag-title="块IO层">
+            <span id="/C语言/C语言版本之谜/" class="leancloud_visitors" data-flag-title="C语言版本之谜">
               <span class="post-meta-divider">|</span>
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
@@ -564,7 +580,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2.9k</span>
+                <span title="本文字数">1k</span>
               
 
               
@@ -578,7 +594,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">3 分钟</span>
+                <span title="阅读时长">1 分钟</span>
               
             </div>
           
@@ -598,38 +614,13 @@
       
 
       
-        <p>Linux中设备分为字符设备，块设备，网络设备三大类。对于字符设备与块设备区别在于能否随机访问数据，对于字符设备键盘来说，键盘驱动程序会按照和用户输入完全相同的顺序读取字符，并且得到一个字符流。但是对于块设备硬盘来说，硬盘驱动程序可能需要读取磁盘上任意块的内容，这些块不一定是连续的，所以说可以被随机访问。</p>
-<p>所以事实上内核不必提供一个专门的子系统来管理字符设备，但是对块设备的管理却必须要有一个专门的提供服务的子系统。不仅仅是因为块设备的复杂性远远高于字符设备，更重要的原因是块设备对执行性能的要求很高﹔对硬盘每多一份利用都<br>会对整个系统的性能带来提升。另外，我们将会看到，块设备的复杂性会为这种优化留下很大的施展空间。对块设备和块设备的请求进行管理，在内核中称作块IO层。</p>
-<h1 id="块设备"><a href="#块设备" class="headerlink" title="块设备"></a>块设备</h1><p>块设备中最小的可寻址单元为扇区，扇区最常见的大小为512字节。块是文件系统的一种抽象–只能基于块来访问文件系统。虽然物理磁盘寻址是按照扇区级进行的，但是内核执行的所有磁盘操作都是按照块进行的。<br>内核（对有扇区的硬件设备）要求块大小是2的整数倍，而且不能超过一个页的长度。所以，对块大小的最终要求是，必须是扇区大小的2的整数倍，并且要小于页面大小。所以通常块大小是512KB、1KB或4KB。</p>
-<h1 id="块设备基本操作单元"><a href="#块设备基本操作单元" class="headerlink" title="块设备基本操作单元"></a>块设备基本操作单元</h1><h2 id="缓冲区和缓冲区头"><a href="#缓冲区和缓冲区头" class="headerlink" title="缓冲区和缓冲区头"></a>缓冲区和缓冲区头</h2><p>当一个块被调入内存时（也就是说，在读人后或等待写出时)，它要存储在一个缓冲区中。每个缓冲区与一个块对应，它相当于是磁盘块在内存中的表示。前面提到过，块包含一个或多个扇区，但大小不能超过一个页面，所以一个页可以容纳一个或多个内存中的块。由于内核处理数据时需要一些相关的控制信息（比如块属于哪一个块设备，块对应于哪个缓冲区等)，所以每一个缓冲区都有一个对应的描述符。该描述符用buffer_head结构体表示，称作缓冲区头，在文件&lt;linux/buffer_head.h&gt;（基于内核4.1.14）中定义，它包含了内核操作缓冲区所需要的全部信息。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> &#123;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> b_state;		<span class="comment">/* 缓冲区状态标志 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> *<span class="title">b_this_page</span>;</span><span class="comment">/* 页面中的缓冲区，递归列表 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">b_page</span>;</span>		<span class="comment">/* 存储该缓冲区的页面 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">sector_t</span> b_blocknr;		<span class="comment">/* 起始块号 */</span></span><br><span class="line">	<span class="keyword">size_t</span> b_size;			<span class="comment">/* 块大小 */</span></span><br><span class="line">	<span class="keyword">char</span> *b_data;			<span class="comment">/* 块起始位置，位于b_page中所指明的页面的某个位置上 */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">block_device</span> *<span class="title">b_bdev</span>;</span> <span class="comment">/* 相关联的块设备*/</span></span><br><span class="line">	<span class="keyword">bh_end_io_t</span> *b_end_io;		<span class="comment">/* I/O 完成方法 */</span></span><br><span class="line"> 	<span class="keyword">void</span> *b_private;		<span class="comment">/* reserved for b_end_io */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">b_assoc_buffers</span>;</span> <span class="comment">/* associated with another mapping */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">b_assoc_map</span>;</span>	<span class="comment">/* mapping this buffer is</span></span><br><span class="line"><span class="comment">						   associated with */</span></span><br><span class="line">	<span class="keyword">atomic_t</span> b_count;		<span class="comment">/* 该缓冲区使用计数 */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>b_count域表示缓冲区的使用记数，可通过两个定义在文件&lt;linux/buffer_head.h&gt;中的内联<br>函数对此域进行增减。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">get_bh</span><span class="params">(struct buffer_head *bh)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        atomic_inc(&amp;bh-&gt;b_count);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">put_bh</span><span class="params">(struct buffer_head *bh)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        smp_mb__before_atomic();</span><br><span class="line">        atomic_dec(&amp;bh-&gt;b_count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在操作缓冲区头之前，应该先使用get_bh()函数增加缓冲区头的引用计数，确保该缓冲区头<br>不会再被分配出去;当完成对缓冲区头的操作之后，还必须使用put_bh()函数减少引用计数。</p>
-<p>与缓冲区对应的磁盘物理块由b__blocknr-th域索引，该值是b__bdev域指明的块设备中的逻<br>辑块号。<br>与缓冲区对应的内存物理页由b_ page 域表示，另外，b_data域直接指向相应的块(它位于<br>b_ page域所指明的页面中的某个位置上)，块的大小由b_size 域表示，所以块在内存中的起始位<br>置在b_data处，结束位置在(b_data + b_size)处。</p>
-<p>在2.6内核以前，将缓冲区作为I/O操作单元带来了两个弊端。</p>
-<ol>
-<li>缓冲区头是一个很大且不易控制的数据结构体(现在是缩减过的了)，而且缓冲区头对数据的操作既不方便也不清晰。对内核来说，它更倾向于操作页面结构，因为页面操作起来更为简便，同时效率也高。</li>
-<li>缓冲区头仅能描述单个缓冲区，当作为所有I/O的容器使用时，缓冲区头会促使内核把对大块数据的I/O操作(比如写操作)分解为对多个buffer_head结构体进行操作。这样做必然会造成不必要的负担和空间浪费。所以2.5开发版内核的主要目标就是为块I/O操作引入一种新型、灵活并且轻量级的容器，<strong>bio结构体</strong>。</li>
-</ol>
-<h2 id="bio结构体"><a href="#bio结构体" class="headerlink" title="bio结构体"></a>bio结构体</h2><p>目前内核中块I/O操作的基本容器由bio结构体表示，它定义在文件&lt;linux/blk_types.h&gt;中。该结构体代表了正在现场的(活动的)以片断(segment)链表形式组织的块I/O操作，对缓冲区进行了封装，使用一个结构体数组存储多个缓冲区片段。结构体数组的一个元素是一小块连续的内存缓冲区，整个结构体数组表示了一个完整的缓冲区。这样的话，就不需要保证单个缓冲区一定要连续。 所以通过用片段来描述缓冲区，即使一个缓冲区分散在内存的多个位置上，bio结构体也能对内核保证I/O操作的执行。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bio</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bio</span>		*<span class="title">bi_next</span>;</span>	<span class="comment">/* request queue link */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">gendisk</span>		*<span class="title">bi_disk</span>;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		bi_opf;		<span class="comment">/* bottom bits req flags,</span></span><br><span class="line"><span class="comment">						 * top bits REQ_OP. Use</span></span><br><span class="line"><span class="comment">						 * accessors.</span></span><br><span class="line"><span class="comment">						 */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>		bi_flags;	<span class="comment">/* status, etc and bvec pool number */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>		bi_ioprio;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>		bi_write_hint;</span><br><span class="line">	<span class="keyword">blk_status_t</span>		bi_status;</span><br><span class="line">	u8			bi_partno;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Number of segments in this BIO after</span></span><br><span class="line"><span class="comment">	 * physical address coalescing is performed.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		bi_phys_segments;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * To keep track of the max segment size, we account for the</span></span><br><span class="line"><span class="comment">	 * sizes of the first and last mergeable segments in this bio.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		bi_seg_front_size;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>		bi_seg_back_size;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bvec_iter</span>	<span class="title">bi_iter</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">atomic_t</span>		__bi_remaining;</span><br><span class="line">	<span class="keyword">bio_end_io_t</span>		*bi_end_io;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">void</span>			*bi_private;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_BLK_CGROUP</span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Optional ioc and css associated with this bio.  Put on bio</span></span><br><span class="line"><span class="comment">	 * release.  Read comment on top of bio_associate_current().</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">io_context</span>	*<span class="title">bi_ioc</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">cgroup_subsys_state</span> *<span class="title">bi_css</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_BLK_DEV_THROTTLING_LOW</span></span><br><span class="line">	<span class="keyword">void</span>			*bi_cg_private;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">blk_issue_stat</span>	<span class="title">bi_issue_stat</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_BLK_DEV_INTEGRITY)</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">bio_integrity_payload</span> *<span class="title">bi_integrity</span>;</span> <span class="comment">/* data integrity */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>		bi_vcnt;	<span class="comment">/* how many bio_vec's */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Everything starting with bi_max_vecs will be preserved by bio_reset()</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span>		bi_max_vecs;	<span class="comment">/* max bvl_vecs we can hold */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">atomic_t</span>		__bi_cnt;	<span class="comment">/* pin count */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bio_vec</span>		*<span class="title">bi_io_vec</span>;</span>	<span class="comment">/* IO向量结构体数组 */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bio_set</span>		*<span class="title">bi_pool</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * We can inline a number of vecs at the end of the bio, to avoid</span></span><br><span class="line"><span class="comment">	 * double allocations for a small number of bio_vecs. This member</span></span><br><span class="line"><span class="comment">	 * MUST obviously be kept at the very end of the bio.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bio_vec</span>		<span class="title">bi_inline_vecs</span>[0];</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>使用bio结构体的目的主要是代表正在现场执行的I/O操作，所以该结构体中的主要城都是用来管理相关信息的，其中最重要的几个域是bi_io_vecs、bi_vcnt。 下图显示了bio结构体及其他结构体之间的关系。</p>
-<p><img src="//szp2016.github.io/uncategorized/块IO层/2020-08-06-16-32-44.png" alt></p>
-<h3 id="I-O向量"><a href="#I-O向量" class="headerlink" title="I/O向量"></a>I/O向量</h3><p>bi_io_vec指针指向一个 bio_vec 结构体数组，该结构体链表包含了一个特定IO操作所需要使用到的所有片段。每个bio_vec结构都是一个形式为&lt;page,offset,len&gt;的向量，它描述的是一个特定的片段:片段所在的物理页、块在物理页中的偏移位置、从给定偏移量开始的块长度。整个bio_io_vec结构体数组表示了一个完整的缓冲区。bio_vec结构定义在&lt;linux/bvec.h&gt; 文件中: </p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bio_vec</span> &#123;</span></span><br><span class="line">    <span class="comment">/*指向该缓冲区片段所在的页面*/</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span>	*<span class="title">bv_page</span>;</span></span><br><span class="line">    <span class="comment">/* 缓冲区片段以字节为单位的长度*/</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>	bv_len;</span><br><span class="line">    <span class="comment">/*该缓冲区片段在物理页面的偏移位置*/</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span>	bv_offset;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>总而言之，每一个块I0请求都通过一个bio结构体表示。每个请求包含一个或多个块，这些块存储在bio_vec 结构体数组中。这些结构体描述了每个片段在物理页中的实际位置，并且像向量一样被组织在一起。I/O 操作的第一个片段由b_io_vec结构体所指，其他的片段在其后依次放置，共有bi_vcnt个片段。当块I/O层开始执行请求、需要使用各个片段时，bi jidx 域会不断更新，从而总指向当前片段。</p>
-<p>bi_cnt 域记录bio结构体的使用计数，如果该域值减为0，就应该撤销该bio结构体，并释放它占用的内存。通过下面两个函数管理使用计数。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">bio_get</span><span class="params">(struct bio *bio)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	bio-&gt;bi_flags |= (<span class="number">1</span> &lt;&lt; BIO_REFFED);</span><br><span class="line">	smp_mb__before_atomic();</span><br><span class="line">	atomic_inc(&amp;bio-&gt;__bi_cnt);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">bio_cnt_set</span><span class="params">(struct bio *bio, <span class="keyword">unsigned</span> <span class="keyword">int</span> count)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (count != <span class="number">1</span>) &#123;</span><br><span class="line">		bio-&gt;bi_flags |= (<span class="number">1</span> &lt;&lt; BIO_REFFED);</span><br><span class="line">		smp_mb();</span><br><span class="line">	&#125;</span><br><span class="line">	atomic_set(&amp;bio-&gt;__bi_cnt, count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>前者增加使用计数，后者减少使用计数(如果计数减到0,则撤销bio结构体)。在操作正在活动的bio结构体时，-定要首先增加它的使用计数，以免在操作过程中该bio结构体被释放;相反在操作完毕后，要减少使用计数。</p>
-<h1 id="请求队列"><a href="#请求队列" class="headerlink" title="请求队列"></a>请求队列</h1><p>块设备将它们挂起的块I/O请求保存在请求队列中，该队列由reques_queue结构体表示，定义在文件&lt;linux/blkdev.h&gt;中，包含一个双向请求链表以及相关控制信息。通过内核中像文件系统这样高层的代码将请求加入到队列中。请求队列只要不为空，队列对应的块设备驱动程序就会从队列头获取请求，然后将其送入对应的块设备上去。请求队列表中的每一项都是一个单独的请求，由reques结构体表示。</p>
-<p>队列中的请求由结构体requcst 表示，它定义在文件&lt;linux/blkdev.h&gt;中。因为一个请求可能要操作多个连续的磁盘块，所以每个请求可以由多个bio结构体组成。注意，虽然在磁盘上的块必须连续，但是在内存中这些块并不一定要连续，每一个bio结构体都可以描述多个片段(回忆一下，片段是内存中连续的小区域)，而每个请求也可以包含多个bio结构体。</p>
-<h1 id="I-O调度程序"><a href="#I-O调度程序" class="headerlink" title="I/O调度程序"></a>I/O调度程序</h1><p>I/O调度程序虚拟块设备给多个磁盘请求，以便降低磁盘寻址时间，确保磁盘性能的最优化。</p>
+        <p>赋闲在家，可能反而给了我们更多的时间来进行思考。偶然看到一段蛮有吸引力的视频，视频在文章的末尾，只有十分钟，即使是鸡汤，感觉也是一碗可以榨取出营养的鸡汤。</p>
+<h2 id="为什么大多数人不能成功"><a href="#为什么大多数人不能成功" class="headerlink" title="为什么大多数人不能成功"></a>为什么大多数人不能成功</h2><p>作者提出，为什么大多数人都不会真正的成功？我们周围的环境都在试图将我们拉向平庸，并且引力非常大，而且我们中的大多数人都无法摆脱这些诱惑。</p>
+<p>这些诱惑可以使你的大脑感到愉悦，甚至有的诱惑还能欺骗我们自己的大脑，让我们自己感觉到自己在学习东西，从而减少一些无所事事的负罪感。我们以电子媒介中的新闻为例，这个电子媒介勾画的世界不存在秩序和意义，我们不必把它当回事。再残忍的谋杀，再具破坏力的地震，再严重的政治错误，只要新闻播音员说一声“好，现在我们看下一篇报道”，一切就可以马上从我们的脑海中消失。新闻播音员意思是我们为上一条新闻花费的时间已经够多了，不必一直念念不忘，应该将注意力转移到下一篇新闻了。在这里我们看到的不仅是零散不全的新闻，而且没有背景，没有结果，更加没有价值，新闻成了纯粹的娱乐。</p>
+<h2 id="信息过剩"><a href="#信息过剩" class="headerlink" title="信息过剩"></a>信息过剩</h2><p>我们每天刷着手机，接受海量的信息，几天下来，可能比古人一辈子获得的信息都要多了。但是能够对我们有价值，能够促成我们行动的信息却少之又少。我们可能一辈子都无法参与到中东的军事行动，英国脱欧的政治博弈，顶多在与朋友闲聊的时候多说两句话。新闻尚如此，可见我们每天对着手机和电脑会遇到多少诱惑。当我们获得了有价值的信息，打算有所行动的时候，会开始惧怕失败。</p>
+<h2 id="惧怕失败"><a href="#惧怕失败" class="headerlink" title="惧怕失败"></a>惧怕失败</h2><p>作者讲的第一个原因就是人们会本能的惧怕失败，在他们眼里如果他们把一件事情搞砸了，那就意味着他们本身就很糟糕，任何失败都会证明他们不够好。但是你可以从失败中获得气馁，也可以从中获得经验。避免了失败也就失去了许多获得经验的机会。这里很多人会说，人们惧怕失败是因为有的人根本承担不起失败的后果。没错，但是生活中不一定都是一些大事情，还有一些小事情，比如作者说的写博客的例子。</p>
+<h2 id="花时间去比较"><a href="#花时间去比较" class="headerlink" title="花时间去比较"></a>花时间去比较</h2><p>作者还提到不要过多的关注别人，嫉妒别人。如果你关注别人过多，就会容易失去自我，你的价值和行动会很难保持一致，这会让你感到空虚和不快乐。作者还说了一句很有道理的话，“嫉妒和怨恨就像自己喝下毒药，却期待别人死去一样”。<br>我们中的大多数人都会选择娱乐和消遣，而不是学习和成长，因为后者很难。<br>遇到困难应该感到高兴，因为这意味着大多数人都不会选择做这件事，竞争并不激烈。</p>
+<p>希望作者的视频能够促成你的某些行动。不然就是一碗没有意义的鸡汤了。</p>
 
       
     </div>
@@ -703,7 +694,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    块IO层
+    C语言版本之谜
   </li>
 
   <li class="post-copyright-author">
@@ -711,16 +702,16 @@
 
   <li class="post-copyright-license">
     <strong>发布时间：</strong>
-    2020年08月06日 - 14:47:42
+    2020年02月21日 - 08:08:24
   </li>
     <strong>最后更新：</strong>
-    2020年08月07日 - 22:28:31
+    2020年08月07日 - 22:53:15
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/uncategorized/块IO层/" title="块IO层">https://szp2016.github.io/uncategorized/块IO层/</a>
+    <a href="https://szp2016.github.io/C语言/C语言版本之谜/" title="C语言版本之谜">https://szp2016.github.io/C语言/C语言版本之谜/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -731,6 +722,17 @@
     
     
     <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/C语言/" rel="tag"><i class="fa fa-tag"></i> C语言</a>
+          
+            <a href="/tags/编译器/" rel="tag"><i class="fa fa-tag"></i> 编译器</a>
+          
+        </div>
       
 
       
@@ -762,8 +764,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/uncategorized/系统调用机制/" rel="next" title="系统调用机制">
-                <i class="fa fa-chevron-left"></i> 系统调用机制
+              <a href="/Iot/crc-java/" rel="next" title="常用CRC校验算法JAVA版">
+                <i class="fa fa-chevron-left"></i> 常用CRC校验算法JAVA版
               </a>
             
           </div>
@@ -772,8 +774,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/uncategorized/IO吞吐量与IO延迟/" rel="prev" title="IO吞吐量与IO延迟">
-                IO吞吐量与IO延迟 <i class="fa fa-chevron-right"></i>
+              <a href="/网络/ARP网关欺骗/" rel="prev" title="ARP网关欺骗">
+                ARP网关欺骗 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -881,7 +883,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -922,7 +928,19 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -982,7 +1000,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#块设备"><span class="nav-number">1.</span> <span class="nav-text">块设备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#块设备基本操作单元"><span class="nav-number">2.</span> <span class="nav-text">块设备基本操作单元</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓冲区和缓冲区头"><span class="nav-number">2.1.</span> <span class="nav-text">缓冲区和缓冲区头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bio结构体"><span class="nav-number">2.2.</span> <span class="nav-text">bio结构体</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O向量"><span class="nav-number">2.2.1.</span> <span class="nav-text">I/O向量</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#请求队列"><span class="nav-number">3.</span> <span class="nav-text">请求队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O调度程序"><span class="nav-number">4.</span> <span class="nav-text">I/O调度程序</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么大多数人不能成功"><span class="nav-number">1.</span> <span class="nav-text">为什么大多数人不能成功</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#信息过剩"><span class="nav-number">2.</span> <span class="nav-text">信息过剩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#惧怕失败"><span class="nav-number">3.</span> <span class="nav-text">惧怕失败</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#花时间去比较"><span class="nav-number">4.</span> <span class="nav-text">花时间去比较</span></a></li></ol></div>
             
 
           </div>
@@ -1211,7 +1229,7 @@
   
     <script>
   window.livereOptions = {
-    refer: 'uncategorized/块IO层/'
+    refer: 'C语言/C语言版本之谜/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

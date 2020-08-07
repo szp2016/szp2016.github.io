@@ -110,31 +110,18 @@
 
 
 
-  <meta name="description" content="系统调用机制现在所有的通用OS都提供了许多系统调用，但它们所提供的系统调用会有一定的差异。对于一般通用的OS而言，可将系统调用分为如下三大类。 进程控制类系统调用主要用于对进程控制的系统调用有：  创建和终止进程的系统调用。 获得和设置进程属性的系统调用。 等待某事件出现的系统调用。  文件操纵类系统调用对文件进行操纵的主要系统调用如下：  创建和删除文件。 打开和关闭文件的系统调用。 读和写文件">
-<meta name="keywords" content="Spring，Java，编解码，物联网">
+  <meta name="description" content="指针除了可以和一维数组、二维数组进行结合，也可以作为函数的返回值或者指向一个函数。下面就从这两个方面入手，看看指针与函数的有趣结合。 指针作为函数返回值函数作为C语言的基本组成模块，包括函数首部和函数体两部分。函数首部由函数返回值类型、名字、参数类型、参数等组成；函数体又可以分为说明语句与执行语句。 12345返回值类型 函数名(形参类型 形参)//函数首部&amp;#123;">
+<meta name="keywords" content="指针">
 <meta property="og:type" content="article">
-<meta property="og:title" content="系统调用机制">
-<meta property="og:url" content="https://szp2016.github.io/uncategorized/系统调用机制/index.html">
+<meta property="og:title" content="指针2">
+<meta property="og:url" content="https://szp2016.github.io/C语言/指针2/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="系统调用机制现在所有的通用OS都提供了许多系统调用，但它们所提供的系统调用会有一定的差异。对于一般通用的OS而言，可将系统调用分为如下三大类。 进程控制类系统调用主要用于对进程控制的系统调用有：  创建和终止进程的系统调用。 获得和设置进程属性的系统调用。 等待某事件出现的系统调用。  文件操纵类系统调用对文件进行操纵的主要系统调用如下：  创建和删除文件。 打开和关闭文件的系统调用。 读和写文件">
+<meta property="og:description" content="指针除了可以和一维数组、二维数组进行结合，也可以作为函数的返回值或者指向一个函数。下面就从这两个方面入手，看看指针与函数的有趣结合。 指针作为函数返回值函数作为C语言的基本组成模块，包括函数首部和函数体两部分。函数首部由函数返回值类型、名字、参数类型、参数等组成；函数体又可以分为说明语句与执行语句。 12345返回值类型 函数名(形参类型 形参)//函数首部&amp;#123;">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-25-18.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-21-07-38-23.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-46-18.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-47-15.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-53-49.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-21-06-53-16.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-57-26.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-04-01.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-08-16.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-13-40.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-16-16.png">
-<meta property="og:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-20-12-43.png">
-<meta property="og:updated_time" content="2020-07-23T07:47:18.864Z">
+<meta property="og:updated_time" content="2020-08-07T14:53:09.153Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="系统调用机制">
-<meta name="twitter:description" content="系统调用机制现在所有的通用OS都提供了许多系统调用，但它们所提供的系统调用会有一定的差异。对于一般通用的OS而言，可将系统调用分为如下三大类。 进程控制类系统调用主要用于对进程控制的系统调用有：  创建和终止进程的系统调用。 获得和设置进程属性的系统调用。 等待某事件出现的系统调用。  文件操纵类系统调用对文件进行操纵的主要系统调用如下：  创建和删除文件。 打开和关闭文件的系统调用。 读和写文件">
-<meta name="twitter:image" content="https://szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-25-18.png">
+<meta name="twitter:title" content="指针2">
+<meta name="twitter:description" content="指针除了可以和一维数组、二维数组进行结合，也可以作为函数的返回值或者指向一个函数。下面就从这两个方面入手，看看指针与函数的有趣结合。 指针作为函数返回值函数作为C语言的基本组成模块，包括函数首部和函数体两部分。函数首部由函数返回值类型、名字、参数类型、参数等组成；函数体又可以分为说明语句与执行语句。 12345返回值类型 函数名(形参类型 形参)//函数首部&amp;#123;">
 
 
 
@@ -142,7 +129,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/uncategorized/系统调用机制/">
+  <link rel="canonical" href="https://szp2016.github.io/C语言/指针2/">
 
 
 
@@ -152,7 +139,7 @@
   };
 </script>
 
-  <title>系统调用机制 | 桃花猿记</title>
+  <title>指针2 | 桃花猿记</title>
   
 
 
@@ -302,7 +289,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">12</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">18</span></a>
 
   </li>
         
@@ -321,7 +308,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">7</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">9</span></a>
 
   </li>
         
@@ -468,7 +455,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/系统调用机制/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/C语言/指针2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -485,7 +472,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">系统调用机制
+          <h2 class="post-title" itemprop="name headline">指针2
 
               
             
@@ -511,7 +498,7 @@
                 
               
 
-              <time title="创建时间：2020-07-20 14:12:38" itemprop="dateCreated datePublished" datetime="2020-07-20T14:12:38+08:00">2020-07-20</time>
+              <time title="创建时间：2020-03-19 09:11:34" itemprop="dateCreated datePublished" datetime="2020-03-19T09:11:34+08:00">2020-03-19</time>
             
 
             
@@ -528,12 +515,30 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-07-23 15:47:18" itemprop="dateModified" datetime="2020-07-23T15:47:18+08:00">2020-07-23</time>
+                <time title="修改时间：2020-08-07 22:53:09" itemprop="dateModified" datetime="2020-08-07T22:53:09+08:00">2020-08-07</time>
               
             
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C语言/" itemprop="url" rel="index"><span itemprop="name">C语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -542,7 +547,7 @@
 
           
           
-            <span id="/uncategorized/系统调用机制/" class="leancloud_visitors" data-flag-title="系统调用机制">
+            <span id="/C语言/指针2/" class="leancloud_visitors" data-flag-title="指针2">
               <span class="post-meta-divider">|</span>
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
@@ -575,7 +580,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">4.9k</span>
+                <span title="本文字数">845</span>
               
 
               
@@ -589,7 +594,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">4 分钟</span>
+                <span title="阅读时长">1 分钟</span>
               
             </div>
           
@@ -609,81 +614,34 @@
       
 
       
-        <h1 id="系统调用机制"><a href="#系统调用机制" class="headerlink" title="系统调用机制"></a>系统调用机制</h1><p>现在所有的通用OS都提供了许多系统调用，但它们所提供的系统调用会有一定的差异。对于一般通用的OS而言，可将系统调用分为如下三大类。</p>
-<h3 id="进程控制类系统调用"><a href="#进程控制类系统调用" class="headerlink" title="进程控制类系统调用"></a>进程控制类系统调用</h3><p>主要用于对进程控制的系统调用有：</p>
-<ol>
-<li><strong>创建和终止进程的系统调用</strong>。</li>
-<li><strong>获得和设置进程属性的系统调用</strong>。</li>
-<li><strong>等待某事件出现的系统调用</strong>。</li>
-</ol>
-<h3 id="文件操纵类系统调用"><a href="#文件操纵类系统调用" class="headerlink" title="文件操纵类系统调用"></a>文件操纵类系统调用</h3><p>对文件进行操纵的主要系统调用如下：</p>
-<ol>
-<li><strong>创建和删除文件</strong>。</li>
-<li><strong>打开和关闭文件的系统调用</strong>。</li>
-<li><strong>读和写文件的系统调用</strong>。</li>
-</ol>
-<h3 id="进程通信类系统调用"><a href="#进程通信类系统调用" class="headerlink" title="进程通信类系统调用"></a>进程通信类系统调用</h3><p>除上诉三类系统调用外，常用的系统调用还包括<strong>设备管理类系统调用</strong>和<strong>信息维护类系统调用</strong>，前者主要用于实现申请设备、释放设备、设备I/O和重定向、获得和设置设备属性等功能，后者主要用来获得包括有关系统和文件的时间、日期信息、操作系统版本、当前用户以及有关空闲内存和磁盘空间大小等多方面的信息。</p>
-<h2 id="Linux三种接口"><a href="#Linux三种接口" class="headerlink" title="Linux三种接口"></a>Linux三种接口</h2><p>Linux提供了<strong>用户接口（shell），库函数接口（C语言程序调用库），系统调用接口</strong>三种接口。在系统调用接口这一层中，许多操作系统都提供了上面所介绍的各种类型的系统调用，实现的功能也相类似，但在实现的细节和形式方面却相差很大，这种差异给实现应用程序与操作系统平台的无关性带来了很大的困难。为解决这一问题，国际标准化组织ISO给出的有关系统调用的国际标准POSIX1003.1 (Portable OperatingSystem IX)，也称为“基于UNIX的可移植操作系统接口”。</p>
-<p>POSIX定义了标准应用程序接口(API)，用于保证编制的应用程序可以在源代码一级上在多种操作系统上移植运行。只有符合这一标准的应用程序，才有可能完全兼容多种操作系统,<br>即在多种操作系统下都能够运行。</p>
-<p><strong>POSIX标准定义了一组过程，这组过程是构造系统调用所必须的，这组过程也就是下面要介绍的系统调用处理过程</strong>。通过调用这些过程所提供的服务，确定了一系列系统调用的功能。</p>
-<p>需要明确的是，POSIX标准所定义的一组过程虽然指定了系统调用的功能，但并没有明确规定系统调用是以什么形式实现的，是<strong>库函数还是其它形式</strong>。</p>
-<p>如早期操作系统的系统调用使用汇编语言编写，这时的系统调用可看成是扩展的机器指令，因而，能在汇编语言编程中直接使用。而在一些高级语言或C语言中，尤其是最新推出的一些操作系统，如UNIX新版本、Linux、Windows 和OS/2等，其系统调用干脆用C语言编写，并以库函数形式提供，所以在用C语言编写的应用程序中，可直接通过使用对应的<strong>库函数</strong>来使用系统调用，库函数的目的是隐藏访管指令的细节，使系统调用更像过程调用。但一般地说，库函数属于用户程序而非系统调用程序。如下图UNIX/Linux的系统程序、库函数、系统调用的层次关系。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-25-18.png" alt></p>
-<h3 id="系统调用与API有什么区别？"><a href="#系统调用与API有什么区别？" class="headerlink" title="系统调用与API有什么区别？"></a>系统调用与API有什么区别？</h3><p><strong>区别</strong>：<strong>API</strong>是函数的定义，规定了这个函数的功能，跟内核无直接关系，最流行的API标准就是posix标准。</p>
-<p><strong>系统调用</strong>是通过中断向内核发请求，实现内核提供的某些服务。</p>
-<p><strong>C语言库函数</strong>则是基于Posix标准的具体实现。</p>
-<p><strong>联系</strong>：一个API可能会需要一个或多个系统调用来完成特定功能。通俗点说就是如果这个API需要跟内核打交道就需要系统调用，否则不需要。<br>程序员调用的是API（如C库函数），然后通过与系统调用共同完成函数的功能。<br>因此，API是一个提供给应用程序的接口，一组函数，是与程序员进行直接交互的。<br>系统调用则不与程序员进行交互的，它根据API函数，通过一个软中断机制向内核提交请求，以获取内核服务的接口。<br>并不是所有的API函数都一一对应一个系统调用，有时一个API函数会需要几个系统调用来共同完成函数的功能，甚至还有一些API函数不需要调用相应的系统调用（因此它所完成的不是内核提供的服务）。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-21-07-38-23.png" alt></p>
-<h3 id="strace命令跟踪进程中的系统调用"><a href="#strace命令跟踪进程中的系统调用" class="headerlink" title="strace命令跟踪进程中的系统调用"></a>strace命令跟踪进程中的系统调用</h3><p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-46-18.png" alt><br>strace常用来跟踪进程执行时的系统调用和所接收的信号。 在Linux世界，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace可以跟踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-47-15.png" alt><br>使用-c参数可以打印出每一个系统调用执行的时间，被调用的次数，出错的次数，系统调用的名称。其他参数如下所示。</p>
-<details>
+        <p>指针除了可以和一维数组、二维数组进行结合，也可以作为函数的返回值或者指向一个函数。下面就从这两个方面入手，看看指针与函数的有趣结合。</p>
+<h2 id="指针作为函数返回值"><a href="#指针作为函数返回值" class="headerlink" title="指针作为函数返回值"></a>指针作为函数返回值</h2><p>函数作为C语言的基本组成模块，包括函数首部和函数体两部分。函数首部由函数返回值类型、名字、参数类型、参数等组成；函数体又可以分为说明语句与执行语句。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">返回值类型 函数名(形参类型 形参)//函数首部</span><br><span class="line">&#123;                            //函数体</span><br><span class="line">    说明语句</span><br><span class="line">    执行语句</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<summary> 命令详细参数</summary>
+<p>其中返回值类型除了几种基本数据类型以外，还可以返回一个指针值，则该函数就称为指针类型的函数。<br>例如：</p>
+<blockquote>
+<p>int *fun(int x)</p>
+</blockquote>
+<p>该函数名为fun，fun两侧的运算符分别为“<em>”和“()”，<br>由于“()”的优先级高于“</em>”，故fun()首先代表一个函数<br>，然后与前面的“*”结合，表示返回值是一个指针，而int则表示该指针指向的数据类型为整型，即返回值为指向整型变量的指针类型。常见的返回指针值的函数有字符串复制函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">char *strcpy(char *s1,char *s2)</span><br><span class="line">&#123;</span><br><span class="line">	char *p=s1;</span><br><span class="line">	while(*s1++=*s2++);</span><br><span class="line">	return p;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">void main()</span><br><span class="line">&#123;</span><br><span class="line">	char s[20]=&quot;welcome&quot;;</span><br><span class="line">	printf(&quot;%s\n&quot;,strcpy(s,&quot;you&quot;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">-c 统计每一系统调用的所执行的时间,次数和出错的次数等.</span><br><span class="line">-d 输出strace关于标准错误的调试信息.</span><br><span class="line">-f 跟踪由fork调用所产生的子进程.</span><br><span class="line">-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号.</span><br><span class="line">-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪.</span><br><span class="line">-h 输出简要的帮助信息.</span><br><span class="line">-i 输出系统调用的入口指针.</span><br><span class="line">-q 禁止输出关于脱离的消息.</span><br><span class="line">-r 打印出相对时间关于,,每一个系统调用.</span><br><span class="line">-t 在输出中的每一行前加上时间信息.</span><br><span class="line">-tt 在输出中的每一行前加上时间信息,微秒级.</span><br><span class="line">-ttt 微秒级输出,以秒了表示时间.</span><br><span class="line">-T 显示每一调用所耗的时间.</span><br><span class="line">-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出.</span><br><span class="line">-V 输出strace的版本信息.</span><br><span class="line">-x 以十六进制形式输出非标准字符串</span><br><span class="line">-xx 所有字符串以十六进制形式输出.</span><br><span class="line">-a column</span><br><span class="line">设置返回值的输出位置.默认 为40.</span><br><span class="line">-e expr</span><br><span class="line">指定一个表达式,用来控制如何跟踪.格式如下:</span><br><span class="line">[qualifier=][!]value1[,value2]...</span><br><span class="line">qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如:</span><br><span class="line">-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none.</span><br><span class="line">注意有些shell使用!来执行历史记录里的命令,所以要使用\\.</span><br><span class="line">-e trace=set</span><br><span class="line">只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all.</span><br><span class="line">-e trace=file</span><br><span class="line">只跟踪有关文件操作的系统调用.</span><br><span class="line">-e trace=process</span><br><span class="line">只跟踪有关进程控制的系统调用.</span><br><span class="line">-e trace=network</span><br><span class="line">跟踪与网络有关的所有系统调用.</span><br><span class="line">-e strace=signal</span><br><span class="line">跟踪所有与系统信号有关的 系统调用</span><br><span class="line">-e trace=ipc</span><br><span class="line">跟踪所有与进程通讯有关的系统调用</span><br><span class="line">-e abbrev=set</span><br><span class="line">设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all.</span><br><span class="line">-e raw=set</span><br><span class="line">将指 定的系统调用的参数以十六进制显示.</span><br><span class="line">-e signal=set</span><br><span class="line">指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号.</span><br><span class="line">-e read=set</span><br><span class="line">输出从指定文件中读出 的数据.例如:</span><br><span class="line">-e read=3,5</span><br><span class="line">-e write=set</span><br><span class="line">输出写入到指定文件中的数据.</span><br><span class="line">-o filename</span><br><span class="line">将strace的输出写入文件filename</span><br><span class="line">-p pid</span><br><span class="line">跟踪指定的进程pid.</span><br><span class="line">-s strsize</span><br><span class="line">指定输出的字符串的最大长度.默认为32.文件名一直全部输出.</span><br><span class="line">-u username</span><br><span class="line">以username 的UID和GID执行被跟踪的命令</span><br></pre></td></tr></table></figure>
+<p>运行结果为：</p>
+<blockquote>
+<p>you</p>
+</blockquote>
+<h2 id="指针指向一个函数"><a href="#指针指向一个函数" class="headerlink" title="指针指向一个函数"></a>指针指向一个函数</h2><p>在说明这个问题之前，先对函数在内存中的存储做个简单的介绍。指针之所以可以指向函数，是因为函数被分配在代码区一段连续的内存里面，函数名称存储的为该内存块的入口地址，故可以使用指针来调用函数。<br>当函数被调用时，函数的形参从右至左依次压入栈中，且连续。因此对于不确定参数个数的函数，只要取得了第一个形参的地址，就可以依次取得后面参数的值。这也是printf函数能够格式化打印任意个数变量值的原因，其参数从右至左依次压栈，输出时从左至右依次弹出。下面以<br>求n个数的最大值为例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">int max(int n,int ...)</span><br><span class="line">&#123;</span><br><span class="line">	int maxnum = *(&amp;n+1);</span><br><span class="line">	for(int i=2;i&lt;=n;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		if(maxnum&lt;(*(&amp;n+i)))</span><br><span class="line">			maxnum = *(&amp;n+i);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	return maxnum;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-</details>
-
-
-<h3 id="从用户态函数到系统调用"><a href="#从用户态函数到系统调用" class="headerlink" title="从用户态函数到系统调用"></a>从用户态函数到系统调用</h3><p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-53-49.png" alt></p>
-<p>比如在程序中调用fwrite函数，而fwrite函数在 glibc库中调用系统调用write()，然后<br>从用户态陷入内核态，查找系统调用表，对应的系统调用服务例程为sys_ write。</p>
-<h2 id="系统调用中涉及的基本概念"><a href="#系统调用中涉及的基本概念" class="headerlink" title="系统调用中涉及的基本概念"></a>系统调用中涉及的基本概念</h2><h3 id="系统态和用户态"><a href="#系统态和用户态" class="headerlink" title="系统态和用户态"></a>系统态和用户态</h3><p>在计算机系统中，通常运行着两类程序：系统程序和应用程序。为了防止应用程序对OS的破坏，应用程序和OS的内核是运行在不同的状态，即OS的内核是运行在系统态，而应用程序是运行在用户态。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-21-06-53-16.png" alt></p>
-<p>在计算机系统中设置了两种状态：<strong>系统态(或称为核心态)</strong>和<strong>用户态</strong>。在实际运行过程中，处理机会在系统态和用户态间切换。相应地，现代多数OS将CPU的指令集分为特权指令和非特权指令两类。</p>
-<ol>
-<li><strong>特权指令</strong>。特权指令是指在系统态运行的指令，<strong>它对内存空间的访问范围基本不受限制</strong>，不仅能访问用户空间，也能访问系统空间。如启动外部设备、设置系统时钟时间、关中断、转换执行状态等。<strong>特权指令只允许OS使用，不允许应用程序使用</strong>，以避免引起系统混乱。</li>
-<li><strong>非特权指令</strong>。非特权指令是在用户态运行的指令。应用程序所使用的都是非特权指令，它只能完成一般性的操作和任务，不能对系统中的硬件和软件直接进行访问，<strong>对内存的访问范围也局限于用户空间</strong>。这样，可以防止应用程序的运行异常对系统造成破坏。</li>
-</ol>
-<p><strong>这种限制是由硬件实现的</strong>，如果在应用程序中使用了特权指令，就会发出权限出错信号，操作系统捕获到这个信号后，将<strong>转入相应的错误处理程序</strong>，将停止该应用程序的与逆行，重新调度。</p>
-<h3 id="中断和陷入"><a href="#中断和陷入" class="headerlink" title="中断和陷入"></a>中断和陷入</h3><p>中断是指CPU对系统发生某事件时的这样一种响应: CPU暂停正在执行的程序，在保留现场后自动地转去执行该事件的中断处理程序;执行完后，再返回到原程序的断点处继续执行。下图表示中断时CPU的活动轨迹。还可进一步把中断分为外中断和内中断。所谓外中断，是指由于外部设备事件所引起的中断，如通常的磁盘中断、打印机中断等;而内中<br>断则是指由于CPU内部事件所引起的中断，如程序出错(非法指令、地址越界)、电源故障等。内中断(trap)也被译为“捕获”或“陷入”。</p>
-<p>通常，陷入是由于执行了现行指令所引起的;而中断则是由于系统中某事件引起的，该事件与现行指令无关。由于系统调用引起的中断属于内中断，因此把由于系统调用引起中断的指令称为陷入指令。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-18-57-26.png" alt></p>
-<h3 id="系统调用号和参数"><a href="#系统调用号和参数" class="headerlink" title="系统调用号和参数"></a>系统调用号和参数</h3><p>在Linux中，每个系统调用被赋予一个系统调用号。这样，通过这个独一无二的号就可以关联系统调用。当用户空间的进程执行一个系统调用的时候，这个系统调用号就被用来指明到底是要执行哪个系统调用。进程不会提及系统调用的名称。</p>
-<p>系统调用号相当关键，一旦分配就不能再有任何变更，否则编译好的应用程序就会崩溃。</p>
-<p>因为所有的系统调用陷入内核的方式都一样，所以仅仅是陷入内核空间是不够的。因此必须把系统调用号一并传给内核。在系统调用命令(陷入指令)<br>中把相应的系统调用号传递给中断和陷入机制的方法有很多种，在有的系统中，直接把系统调用号放在系统调用命令(陷入指令)中;如IBM 370和早期的UNIX系统，是把系统调用命令的低8位用于存放系统调用号;在另一些系统中,则将系统调用号装入某指定寄存器或内存单元中，如MS-DOS是将系统调用号放在AH寄存器中，Linux则是利用EAX寄存器来存放应用程序传递的系统调用号。</p>
-<p>在陷人内核之前，用户空间就把相应系统调用所对应的号放入eax中了。这样系统调用处理程序一旦运行，就可以从eax中得到数据。其他体系结构上的实现也都类似。</p>
-<p>内核记录了系统调用表中的所有已注册过的系统调用的列表，存储在sys_call_table中。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-04-01.png" alt></p>
-<p>sys_call_table是一张由指向实现各种系统调用的内核函数的函数指针组成的表,一般在entry.s中定义。这个表中为每一个有效的系统调用指定了惟一的系统调用号。</p>
-<p>除了系统调用号以外，大部分系统调用都还需要一些外部的<strong>参数输入</strong>。在执行系统调用时，如何设置系统调用所需的参数，即如何将这些参数传递给陷入处理机构和系统内部的子程序(过程)，常用的实现方式有以下几种：</p>
-<ol>
-<li><strong>陷入指令自带方式</strong>。陷入指令除了携带一个系统调用号外，还要自带几个参数进入系统内部，由于一条陷入指令的长度是有限的，因此自带的只能是少量的、有限的参数。</li>
-<li><strong>直接将参数送入相应的寄存器中</strong>。MS-DOS便是采用的这种方式，即用MOV指令将各个参数送入相应的寄存器中。系统程序和应用程序都可以对这些寄存器进行访问。这种方式的主要问题是这种寄存器数量有限，限制了所设置参数的数目。</li>
-<li><strong>参数表方式</strong>。将系统调用所需的参数放入一张参数表中，再将指向该参数表的指针放在某个指定的寄存器中。当前大多数的OS中，如UNIX系统和Linux系统，便是采用了这种方式。在x86系统上，ebx, ecx, edx, esi和edi按照顺序存放前五个参数。</li>
-</ol>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-08-16.png" alt></p>
-<h2 id="如何处理系统调用"><a href="#如何处理系统调用" class="headerlink" title="如何处理系统调用"></a>如何处理系统调用</h2><p>在设置了系统调用号和参数后，便可执行一条系统调用命令。不同的系统可采用不同的执行方式。在UNIX系统中，是执行CHMK命令；而在MS-DOS中则是执行INT21软中断。系统调用的处理过程可分成以下三步：<br>首先，<strong>将处理机状态由用户态转为系统态</strong>；之后，<strong>由硬件和内核程序进行系统调用的一般性处理</strong>，即首先保护被中断进程的CPU环境，将处理机状态字PSW、程序计数器PC、系统调用号、用户栈指针以及通用寄存器内容等压入堆栈；然后，<strong>将用户定义的参数传送到指定的地址并保存起来</strong>。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-13-40.png" alt></p>
-<p>其次，<strong>分析系统调用类型，转入相应的系统调用处理子程序</strong>。为使不同的系统调用能方便地转向相应的系统调用子程序，在系统中<strong>配置了一张系统调用入门表</strong>。<strong>表中的每个每个表目都对应一个系统调用</strong>，其中包含该系统调用自带参数的数目、系统调用处理子程序的入口地址等。因此，核心可利用系统调用号去查找该表，即可找到相应处理子程序的入口地址而转去执行它。</p>
-<p>最后，<strong>在系统调用处理子程序执行完后，应恢复被中断的或设置新进程的CPU现场</strong>，然后<strong>返回被中断进程或新进程，继续向下执行</strong>。</p>
-<p>下面我们从用户态跟踪一个系统调用到内核态。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-19-16-16.png" alt></p>
-<p>操作系统使用系统调用表将系统调用编号翻译为特定的系统调用。系统调用表包含有实现每个系统调用的函数的地址。例如，fork() 系统调用函数名为sys_fork。fork()系统调用编号是2，所以sys_fork() 位于系统调用表的第四个条目中（因为系统调用起始编号为0）。从地址 sys_call_table + (2 * word_size) 读取数据，得到sys_fork()的地址。</p>
-<p>找到正确的系统调用地址后，它将控制权转交给那个系统调用。</p>
-<p>读取函数结束后，从sys_fork()返回，它将控制权切换给 ret_from_sys。它会去检查那些在切换回用户空间之前需要完成的任务。如果没有需要做的事情，那么就恢复用户进程的状态，并将控制权交还给用户程序。</p>
-<h2 id="系统调用实例简介"><a href="#系统调用实例简介" class="headerlink" title="系统调用实例简介"></a>系统调用实例简介</h2><p>系统调用安全，直接关系操作系统内核的安全，试想一个程序可以肆意的调用内核程序，将会非常危险，因此设计一个日志收集系统记录下每次系统调用的时间，调用的程序，将有助于系统管理员排查故障。</p>
-<p><img src="//szp2016.github.io/uncategorized/系统调用机制/2020-07-20-20-12-43.png" alt></p>
-<p>举例来说，与文件I/O相关的系统调用必须检查文件描述符是否有效。与进程相关的函数必须检查提供的PID是否有效。必须检查每个参数，保证它们不但合法有效，而且正确。<br>最重要的一种检查就是检查用户提供的指针是否有效。试想，如果一个进程可以给内核传递指针而又无须被检查，那么它就可以给出一个它根本就没有访问权限的指针，哄骗内核去为它拷贝本不允许它访问的数据，如原本属于其他进程的数据。<br>具体的实现过程将在下一节详细介绍。</p>
+<p>其中n为要输入参数的个数，<em>(&amp;n+1)就得到了第一个待<br>比较数字的值，</em>(&amp;n+i)就得到了第i个待比较数字的值，i一直取到n。</p>
+<p>下面继续，指向函数的指针变量的定义如下：</p>
+<blockquote>
+<p>int (*p)();</p>
+</blockquote>
+<p>首先(*p)说明p是一个指针变量，后面的()则代表了该指针指向为某一个函数，而int代表了该函数的返回值后为整型。<br>使用函数对该指针变量进行赋值操作：</p>
+<blockquote>
+<p>p = funname;</p>
+</blockquote>
+<p>则可以使用(*p)代替函数名funname进行函数调用。</p>
 
       
     </div>
@@ -757,7 +715,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    系统调用机制
+    指针2
   </li>
 
   <li class="post-copyright-author">
@@ -765,16 +723,16 @@
 
   <li class="post-copyright-license">
     <strong>发布时间：</strong>
-    2020年07月20日 - 14:12:38
+    2020年03月19日 - 09:11:34
   </li>
     <strong>最后更新：</strong>
-    2020年07月23日 - 15:47:18
+    2020年08月07日 - 22:53:09
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/uncategorized/系统调用机制/" title="系统调用机制">https://szp2016.github.io/uncategorized/系统调用机制/</a>
+    <a href="https://szp2016.github.io/C语言/指针2/" title="指针2">https://szp2016.github.io/C语言/指针2/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -785,6 +743,15 @@
     
     
     <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/指针/" rel="tag"><i class="fa fa-tag"></i> 指针</a>
+          
+        </div>
       
 
       
@@ -816,8 +783,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/uncategorized/文件共享与保护/" rel="next" title="文件共享与保护">
-                <i class="fa fa-chevron-left"></i> 文件共享与保护
+              <a href="/C语言/指针/" rel="next" title="指针">
+                <i class="fa fa-chevron-left"></i> 指针
               </a>
             
           </div>
@@ -826,8 +793,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/uncategorized/块IO层/" rel="prev" title="块IO层">
-                块IO层 <i class="fa fa-chevron-right"></i>
+              <a href="/操作系统/IO设备驱动程序/" rel="prev" title="I/O设备驱动程序">
+                I/O设备驱动程序 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -935,7 +902,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -976,7 +947,19 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1036,7 +1019,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#系统调用机制"><span class="nav-number">1.</span> <span class="nav-text">系统调用机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程控制类系统调用"><span class="nav-number">1.0.1.</span> <span class="nav-text">进程控制类系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件操纵类系统调用"><span class="nav-number">1.0.2.</span> <span class="nav-text">文件操纵类系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程通信类系统调用"><span class="nav-number">1.0.3.</span> <span class="nav-text">进程通信类系统调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux三种接口"><span class="nav-number">1.1.</span> <span class="nav-text">Linux三种接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统调用与API有什么区别？"><span class="nav-number">1.1.1.</span> <span class="nav-text">系统调用与API有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#strace命令跟踪进程中的系统调用"><span class="nav-number">1.1.2.</span> <span class="nav-text">strace命令跟踪进程中的系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从用户态函数到系统调用"><span class="nav-number">1.1.3.</span> <span class="nav-text">从用户态函数到系统调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统调用中涉及的基本概念"><span class="nav-number">1.2.</span> <span class="nav-text">系统调用中涉及的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统态和用户态"><span class="nav-number">1.2.1.</span> <span class="nav-text">系统态和用户态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#中断和陷入"><span class="nav-number">1.2.2.</span> <span class="nav-text">中断和陷入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统调用号和参数"><span class="nav-number">1.2.3.</span> <span class="nav-text">系统调用号和参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何处理系统调用"><span class="nav-number">1.3.</span> <span class="nav-text">如何处理系统调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统调用实例简介"><span class="nav-number">1.4.</span> <span class="nav-text">系统调用实例简介</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#指针作为函数返回值"><span class="nav-number">1.</span> <span class="nav-text">指针作为函数返回值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指针指向一个函数"><span class="nav-number">2.</span> <span class="nav-text">指针指向一个函数</span></a></li></ol></div>
             
 
           </div>
@@ -1265,7 +1248,7 @@
   
     <script>
   window.livereOptions = {
-    refer: 'uncategorized/系统调用机制/'
+    refer: 'C语言/指针2/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];
