@@ -110,18 +110,21 @@
 
 
 
-  <meta name="description" content="有鉴于往事，以资于治道。">
+  <meta name="description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
 <meta name="keywords" content="Spring，Java，编解码，物联网">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IO吞吐量与IO延迟">
 <meta property="og:url" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="有鉴于往事，以资于治道。">
+<meta property="og:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-08-07T14:23:39.060Z">
+<meta property="og:image" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-02.png">
+<meta property="og:image" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-41.png">
+<meta property="og:updated_time" content="2020-08-07T14:33:11.457Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IO吞吐量与IO延迟">
-<meta name="twitter:description" content="有鉴于往事，以资于治道。">
+<meta name="twitter:description" content="I/OI/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。 Linux三大设备类型字符设备字符设备指能够像字节流串行顺序依">
+<meta name="twitter:image" content="https://szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-02.png">
 
 
 
@@ -327,7 +330,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">19</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">18</span></a>
 
   </li>
         
@@ -498,9 +501,13 @@
                 
               
 
-              <time title="创建时间：2020-08-07 22:23:39" itemprop="dateCreated datePublished" datetime="2020-08-07T22:23:39+08:00">2020-08-07</time>
+              <time title="创建时间：2020-08-07 22:23:39 / 修改时间：22:33:11" itemprop="dateCreated datePublished" datetime="2020-08-07T22:23:39+08:00">2020-08-07</time>
             
 
+            
+              
+
+              
             
           </span>
 
@@ -546,7 +553,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">0</span>
+                <span title="本文字数">9.5k</span>
               
 
               
@@ -560,7 +567,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">1 分钟</span>
+                <span title="阅读时长">9 分钟</span>
               
             </div>
           
@@ -580,7 +587,354 @@
       
 
       
-        
+        <h1 id="I-O"><a href="#I-O" class="headerlink" title="I/O"></a>I/O</h1><p>I/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。</p>
+<h1 id="Linux三大设备类型"><a href="#Linux三大设备类型" class="headerlink" title="Linux三大设备类型"></a>Linux三大设备类型</h1><h2 id="字符设备"><a href="#字符设备" class="headerlink" title="字符设备"></a>字符设备</h2><p>字符设备指能够像字节流串行顺序依次进行访问的设备，对它的读写是以字节为单位。字符设备的上层没有磁盘文件系统，所以字符设备的file_operations成员函数就直接由字符设备驱动提供（一般字符设备都会实现相应的fops集），因此file_operations 也就成为了字符设备驱动的核心。</p>
+<p>特点：</p>
+<ul>
+<li><p>一个字节一个字节读写的设备</p>
+</li>
+<li><p>读取数据需要按照先后数据（顺序读取） </p>
+</li>
+<li><p>每个字符设备在/dev目录下对应一个设备文件，linux用户程序通过设备文件（或称设备节点）来使用驱动程序操作字符设备。</p>
+</li>
+<li><p>常见的字符设备有鼠标、键盘、串口、控制台等</p>
+</li>
+</ul>
+<h2 id="块设备"><a href="#块设备" class="headerlink" title="块设备"></a>块设备</h2><p>块设备以数据块的形式存放数据，如NAND Flash以页为单位存储数据，并采用mount方式挂载块设备。</p>
+<p>块设备必须能够随机存取(random access)，字符设备则没有这个要求。</p>
+<p>块设备除了给内核提供和字符设备一样的接口外，还提供了专门面向块设备的接口，块设备的接口必须支持挂装文件系统，通过此接口，块设备能够容纳文件系统，因此应用程序一般通过文件系统来访问块设备上的内容，而不是直接和设备打交道。</p>
+<p>对于块设备而言，上层ext2,jiffs2,fat等文件系统会 实现针对VFS的file_opertations成员函数，所以设备驱动层将看不到file_opeations的存在。磁盘文件系统和设备驱动会将对磁盘上文件的访问转换成对磁盘上柱面和扇区的访问。</p>
+<p>特点：</p>
+<ul>
+<li><p>数据以固定长度进行传输，比如512K</p>
+</li>
+<li><p>从设备的任意位置（可跳）读取，但实际上，块设备会读一定长度的内容，而只返回用户要求访问的内容，所以随机访问实际上还是读了全部内容。</p>
+</li>
+<li><p>块设备包括硬盘、磁盘、U盘和SD卡等</p>
+</li>
+<li><p>每个块设备在/dev目录下对应一个设备文件，linux用户程序可以通过设备文件（或称设备节点）来使用驱动程序操作块设备。</p>
+</li>
+<li><p>块设备可以容纳文件系统，所以一般都通过文件系统来访问，而不是/dev设备节点。</p>
+</li>
+<li><h2 id="网络设备"><a href="#网络设备" class="headerlink" title="网络设备"></a>网络设备</h2></li>
+</ul>
+<p>虽然在Linux系统存在一句话叫一切皆文件，无论是各种文本文件还是具体的硬件设备（硬件由设备文件来实现相应）。但是网络设备在Linux内核中却是唯一不体现一切皆设备思想的驱动架构，因为网络设备使用套接字来实现网数据的接受和发送。</p>
+<p>网络设备驱动不同于字符设备和块设备，不在/dev下以文件节点代表，而是通过单独的网络接口来代表。</p>
+<p>特点：</p>
+<ul>
+<li><p>网络接口没有像字符设备和块设备一样的设备号和/dev设备节点，只有接口名，如eth0,eth1 </p>
+</li>
+<li><p>通过socket操作，而不是open read write</p>
+</li>
+</ul>
+<h1 id="I-O子系统架构"><a href="#I-O子系统架构" class="headerlink" title="I/O子系统架构"></a>I/O子系统架构</h1><p><img src="//szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-02.png" alt></p>
+<p>上图概括了一次磁盘 write 操作的过程，假设文件已经被从磁盘中读入了 page cache 中</p>
+<ol>
+<li><p>一个用户进程通过 write() 系统调用发起写请求</p>
+</li>
+<li><p>内核更新对应的 page cache</p>
+</li>
+<li><p>pdflush 内核线程将 page cache 写入至磁盘中</p>
+</li>
+<li><p>文件系统层将每一个 block buffer 存放为一个 bio 结构体，并向块设备层提交一个写请求</p>
+</li>
+<li><p>块设备层从上层接受到请求，执行 IO 调度操作，并将请求放入IO 请求队列中</p>
+</li>
+<li><p>设备驱动（如 SCSI 或其他设备驱动）完成写操作</p>
+</li>
+<li><p>磁盘设备固件执行对应的硬件操作，如磁盘的旋转，寻道等，数据被写入到磁盘扇区中</p>
+</li>
+</ol>
+<h2 id="Block-Layer"><a href="#Block-Layer" class="headerlink" title="Block Layer"></a>Block Layer</h2><p>Block layer 处理所有和块设备相关的操作。block layer 最关键是数据结构是 bio 结构体。bio 结构体是 file system layer 到 block layer 的接口。 当执行一个写操作时，文件系统层将数据写入 page cache（由 block buffer 组成），将连续的块放到一起，组成 bio 结构体，然后将 bio 送至 block layer。</p>
+<p>block layer 处理 bio 请求，并将这些请求链接成一个队列，称作 IO 请求队列，这个连接的操作就称作 IO 调度（也叫 IO elevator 即电梯算法）.</p>
+<h2 id="IO-scheduler"><a href="#IO-scheduler" class="headerlink" title="IO scheduler"></a>IO scheduler</h2><p>IO 调度器的总体目标是减少磁盘的寻道时间（因此调度器都是针对机械硬盘进行优化的），IO 调度器通过两种方式来减少磁盘寻道：合并和排序。</p>
+<p>合并即当两个或多个 IO 请求的是相邻的磁盘扇区，那么就将这些请求合并为一个请求。通过合并请求，多个 IO 请求只需要向磁盘发送一个请求指令，减少了磁盘的开销。</p>
+<p>排序就是将不能合并的 IO 请求，根据请求磁盘扇区的顺序，在请求队列中进行排序，使得磁头可以按照磁盘的旋转顺序的完成 IO 操作，可以减小磁盘的寻道次数。</p>
+<p>调度器的算法和电梯运行的策略相似，因此 IO 调度器也被称作 IO 电梯( IO Elevator )。由于对请求进行了重排，一部分的请求可能会被延迟，以提升整体的性能。</p>
+<p>Linux 2.4 只使用了一种通用的 IO 算法。到 Linux 2.6 实现了 4 种 IO 调度模型，其中 anticipatory 在 2.6.33 中被移除。</p>
+<h1 id="I-O性能评价指标"><a href="#I-O性能评价指标" class="headerlink" title="I/O性能评价指标"></a>I/O性能评价指标</h1><h2 id="IOPS"><a href="#IOPS" class="headerlink" title="IOPS"></a>IOPS</h2><p>每秒的输入输出量(或读写次数)，也就是在一秒内，磁盘进行多少次 I/O 读写。是衡量磁盘性能的主要指标之一。</p>
+<h2 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h2><p>指单位时间内可以成功传输的数据数量。即磁盘写入加上读出的数据的大小。吞吐量等于IOPS乘以每次IO大小。</p>
+<h2 id="使用率"><a href="#使用率" class="headerlink" title="使用率"></a>使用率</h2><p>使用率，是指磁盘处理I/O的时间百分比。过高的使用率(比如超过80% ) , 通常意味着磁盘I/O存在性能瓶颈。</p>
+<h2 id="饱和度"><a href="#饱和度" class="headerlink" title="饱和度"></a>饱和度</h2><p>饱和度，是指磁盘处理I/O的繁忙程度。过高的饱和度,意味着磁盘存在严重的性能瓶颈。当饱和度为100%时,磁盘无法接受新的I/O请求。</p>
+<h2 id="响应时间"><a href="#响应时间" class="headerlink" title="响应时间"></a>响应时间</h2><p>响应时间,是指I/O请求从发出到收到响应的间隔时间。</p>
+<h2 id="性能监测工具提供的指标"><a href="#性能监测工具提供的指标" class="headerlink" title="性能监测工具提供的指标"></a>性能监测工具提供的指标</h2><table>
+  <thead>
+    <tr>
+      <th>性能工具</th>
+      <th>性能指标</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>iostat</td>
+      <td>磁盘I/O使用率、IOPS、 吞吐量、响应时间、I/O平均大小以及等待队列长度</td>
+    </tr>
+    <tr>
+      <td>pidstat</td>
+      <td>进程I/O大小以及I/O延迟</td>
+    </tr>
+    <tr>
+      <td>sar</td>
+      <td>磁盘I/O使用率、IOPS 、吞吐量以及响应时间</td>
+    </tr>
+    <tr>
+      <td>dstat</td>
+      <td>磁盘I/O使用率、IOPS以及吞吐量</td>
+    </tr>
+    <tr>
+      <td>iotop</td>
+      <td>按I/O大小对进程排序</td>
+    </tr>
+    <tr>
+      <td>slabtop</td>
+      <td>目录项、索引节点以及文件系统的缓存</td>
+    </tr>
+    <tr>
+      <td>/proc/slabinfo</td>
+      <td>目录项、索引节点以及文件系统的缓存</td>
+    </tr>
+    <tr>
+      <td>/proc/meminfo</td>
+      <td>页缓存和可回收Slab缓存</td>
+    </tr>
+    <tr>
+      <td>/proc/diskstats</td>
+      <td>磁盘的IOPS、吞吐量以及延迟!</td>
+    </tr>
+    <tr>
+      <td>/proc/pid/io</td>
+      <td>进程IOPS、IO大小以及IO延迟</td>
+    </tr>
+    <tr>
+      <td>vmstat</td>
+      <td>缓存和缓冲区用量汇总</td>
+    </tr>
+    <tr>
+      <td>blktrace</td>
+      <td>跟踪块设备I/O事件</td>
+    </tr>
+    <tr>
+      <td>biosnoop</td>
+      <td>跟踪进程的块设备I/O大小</td>
+    </tr>
+    <tr>
+      <td>biotop</td>
+      <td>跟踪进程块I/O并按I/O大小排序</td>
+    </tr>
+    <tr>
+      <td>strace</td>
+      <td>跟踪进程的I/O系统调用</td>
+    </tr>
+    <tr>
+      <td>perf</td>
+      <td>跟踪内核中的I/O事件</td>
+    </tr>
+    <tr>
+      <td>df</td>
+      <td>磁盘空间和索引节点使用量和剩余量</td>
+    </tr>
+    <tr>
+      <td>mount</td>
+      <td>文件系统的挂载路径以及挂载参数</td>
+    </tr>
+    <tr>
+      <td>du</td>
+      <td>目录占用的磁盘空间大小</td>
+    </tr>
+    <tr>
+      <td>tune2fs</td>
+      <td>显示和设置文件系统参数</td>
+    </tr>
+    <tr>
+      <td>hdparam</td>
+      <td>显示和设置磁盘参数</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="磁盘I-O"><a href="#磁盘I-O" class="headerlink" title="磁盘I/O"></a>磁盘I/O</h1><p>iostat是I/O statistics（输入/输出统计）的缩写，iostat工具将对系统的磁盘操作活动进行监视。它的特点是汇报磁盘活动统计情况，同时也会汇报出CPU使用情况.</p>
+<pre><font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~</b></font>$ iostat -d -x
+Linux 5.4.0-42-generic (szp-pc)     2020年08月01日     _x86_64_    (4 CPU)
+
+Device            r/s     w/s     rkB/s     wkB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
+<font color="#00AA00">loop0        </font><font color="#0000AA">    0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.80</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     2.35</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.40</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop1        </font><font color="#5555FF"><b>    0.01</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.05</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.49</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     4.46</b></font><font color="#0000AA">     0.00</font><font color="a" #5555ff""><b>   0.41</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop2        </font><font color="#0000AA">    0.00    0.00</font><font color="#5555FF"><b>      0.04</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.65</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>    10.64</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.14</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop3        </font><font color="#5555FF"><b>    0.05</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.08</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    2.17</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     1.65</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   0.23</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop4        </font><font color="#0000AA">    0.00    0.00</font><font color="#5555FF"><b>      0.01</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.49</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     8.00</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.66</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop5        </font><font color="#0000AA">    0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.40</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     2.47</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   1.02</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop6        </font><font color="#5555FF"><b>    0.01</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.02</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.22</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     2.44</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   0.49</b></font><font color="#0000AA">   0.00</font>
+<font color="#00AA00">loop7        </font><font color="#5555FF"><b>    0.01</b></font><font color="#0000AA">    0.00</font><font color="#5555FF"><b>      0.02</b></font><font color="#0000AA">      0.00     0.00     0.00   0.00   0.00</font><font color="#5555FF"><b>    0.28</b></font><font color="#0000AA">    0.00   0.00</font><font color="#5555FF"><b>     2.34</b></font><font color="#0000AA">     0.00</font><font color="#5555FF"><b>   0.59</b></font><font color="#0000AA"> </font></pre>
+<p>以上指标的含义如下：</p>
+<table>
+  <thead>
+    <tr>
+      <th>性能指标</th>
+      <th>含义</th>
+      <th>提示</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>r/s</td>
+      <td>每秒发送给磁盘的读请求数</td>
+      <td>合并后的请求数</td>
+    </tr>
+    <tr>
+      <td>w/s</td>
+      <td>每秒发送给磁盘的写请求数</td>
+      <td>合并后的请求数</td>
+    </tr>
+    <tr>
+      <td>rkB/s</td>
+      <td>每秒从磁盘读取的数据量</td>
+      <td>单位为kB</td>
+    </tr>
+    <tr>
+      <td>wkB/s</td>
+      <td>每秒向磁盘写入的数据量</td>
+      <td>单位为kB</td>
+    </tr>
+    <tr>
+      <td>rrqm/s</td>
+      <td>每秒合并的读请求数</td>
+      <td>%rrqm表示合并读请求的百分比</td>
+    </tr>
+    <tr>
+      <td>wrqm/s</td>
+      <td>每秒合并的写请求数</td>
+      <td>%wrqm表示合并写请求的百分比</td>
+    </tr>
+    <tr>
+      <td>r_await</td>
+      <td>读请求处理完成等待时间</td>
+      <td>包括队列中的等待时间和设备实际处理的时间，单位为毫秒</td>
+    </tr>
+    <tr>
+      <td>w_await</td>
+      <td>写请求处理完成等待时间</td>
+      <td>包括队列中的等待时间和设备实际处理的时间，单位为毫秒</td>
+    </tr>
+    <tr>
+      <td>aqu-sz</td>
+      <td>平均请求队列长度</td>
+      <td>旧版中为avgqu-sz</td>
+    </tr>
+    <tr>
+      <td>rareq-sz</td>
+      <td>平均读请求大小</td>
+      <td>单位为kB</td>
+    </tr>
+    <tr>
+      <td>wareq-sz</td>
+      <td>平均写请求大小</td>
+      <td>单位为kB</td>
+    </tr>
+    <tr>
+      <td>svctm</td>
+      <td>处理I/O请求所需的平均时间(不包括等待时间)</td>
+      <td>单位为毫秒。注意这是推断的数据，并不保证完全准确</td>
+    </tr>
+    <tr>
+      <td>%util</td>
+      <td>磁盘处理I/O的时间百分比</td>
+      <td>即使用率，由于可能存在并行I/O，100%并不一定表明磁盘I/O饱和</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+<li>%util，就是我们前面提到的磁盘 I/O 使用率；</li>
+<li>r/s+ w/s ，就是磁盘IOPS；</li>
+<li>rkB/s+wkB/s ，就是磁盘吞吐量；</li>
+<li>r_await+w_await ，就是磁盘响应时间。</li>
+</ul>
+<h1 id="进程I-O"><a href="#进程I-O" class="headerlink" title="进程I/O"></a>进程I/O</h1><p>iostat只提供磁盘整体的I/O性能数据，缺点在于 ,并不能知道具体是哪些进程在进行磁盘读写。要观察进程的I/O情况,你还可以使用<strong>pidstat和iotop</strong>这两个工具。</p>
+<pre><font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~</b></font>$ pidstat -d
+Linux 5.4.0-42-generic (szp-pc)     2020年08月01日     _x86_64_    (4 CPU)
+
+16时26分59秒   UID       PID   kB_rd/s   kB_wr/s kB_ccwr/s iodelay  Command
+16时26分59秒<font color="#00AA00">     0         1</font><font color="#0000AA">     -1.00     -1.00     -1.00</font><font color="#5555FF"><b>      25  systemd</b></font>
+16时26分59秒<font color="#00AA00">     0       395</font><font color="#0000AA">     -1.00     -1.00     -1.00</font><font color="#5555FF"><b>    3244  jbd2/sda1-8</b></font>
+16时26分59秒<font color="#00AA00">     0       446</font><font color="#0000AA">     -1.00     -1.00     -1.00</font><font color="#5555FF"><b>      46  systemd-journal</b></font>
+</pre>
+
+<p>从pidstat的输出你能看到,它可以实时查看每个进程的I/O情况,包括下面这些内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">用户ID (UID)和进程ID( PID)。</span><br><span class="line"></span><br><span class="line">每秒读取的数据大小( kB_rd/s),单位是 KB。</span><br><span class="line"></span><br><span class="line">每秒发出的写请求数据大小( kB_wr/s )，单位是KB。</span><br><span class="line"></span><br><span class="line">每秒取消的写请求数据大小( kB_ ccwr/s ),单位是 KB。</span><br><span class="line"></span><br><span class="line">块I/O延迟(iodelay) ,包括等待同步块I/O和换入块I/O结束的时间,单位是时钟周期。</span><br></pre></td></tr></table></figure>
+
+<p>kB_rd/s+kB_wr/s = 进程吞吐量</p>
+<p>除了可以用pidstat实时查看,iotop可以按照I/O<br>大小对进程排序,然后找到I/O较大的那些进程。</p>
+<pre>Total DISK READ :       0.00 B/s | Total DISK WRITE :       3.36 M/s
+Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
+<span style="background-color:#00FF00"><font color="#000000">  TID  PRIO  USER     DISK READ</font></span><span style="background-color:#00FF00"><font color="#000000"><b> DISK WRITE&gt;</b></font></span><span style="background-color:#00FF00"><font color="#000000">  SWAPIN      IO    COMMAND               </font></span>
+ 4116 be/4 root        0.00 B/s 1146.13 K/s  0.00 %  2.50 % snapd
+ 4109 be/4 root        0.00 B/s  764.09 K/s  0.00 %  0.80 % snapd
+ 4117 be/4 root        0.00 B/s  764.09 K/s  0.00 %  1.31 % snapd
+ 4206 be/4 root        0.00 B/s  764.09 K/s  0.00 %  1.31 % snapd
+    1 be/4 root        0.00 B/s    0.00 B/s  0.00 %  0.00 % init splash
+    2 be/4 root        0.00 B/s    0.00 B/s  0.00 %  0.00 % [kthreadd]
+</pre>
+
+<p>上图为按照磁盘写速度进行排序的情况。</p>
+<p>从这个输出,你可以看到,前两行分别表示,进程的磁盘读写大小总数和磁盘真实的读写大小总数。因为缓存、缓冲区、I/O 合并等因素的影响，它们可能并不相等。</p>
+<p>剩下的部分,则是从各个角度来分别表示进程的1/O情况,包括线程ID、I/O优先级、每秒读磁盘的大小、每秒写磁盘的大小、换入和等待I/O的时钟百分比等。</p>
+<h1 id="IO延迟"><a href="#IO延迟" class="headerlink" title="IO延迟"></a>IO延迟</h1><p>任何一个系统都有两个指标和性能紧密联系：响应时间和吞吐量。两个很关键的指标则是系统的IO延迟(响应时间)与IO吞吐量。</p>
+<h2 id="什么是IO延迟？"><a href="#什么是IO延迟？" class="headerlink" title="什么是IO延迟？"></a>什么是IO延迟？</h2><p>1个完整的I/O传输，可能会经过以下路径：<br>CPU -&gt;内存-&gt;硬盘<br>细分一下如下：<br>进程-&gt;虚拟文件系统-&gt;具体文件系统（页缓存）-&gt;通用块层（加入请求队列）-&gt;IO调度层-&gt;块设备驱动层-&gt;块设备层(操作磁盘)-&gt;磁盘 </p>
+<p><img src="//szp2016.github.io/uncategorized/IO吞吐量与IO延迟/2020-08-07-22-25-41.png" alt></p>
+<p>在上述I/O传输途径中消耗的时间就是IO延迟。我们习惯性的把IO的延迟分为以下几部分：</p>
+<ol>
+<li>系统OS等软件配置产生的延迟：异步IO的情况下整个系统的延迟就会比同步IO下好很多。</li>
+</ol>
+<ol start="2">
+<li>硬件延迟：存储的延迟则是自身主控器+硬盘的延迟。存储主控上的缓存都比较大，加上存储厂家对命中率算法持续改进，以往单个硬盘因寻址、旋转产生的IO延迟时间都可以在一定比例上规避。</li>
+</ol>
+<p>可以对io延迟做这样的划分：IO延迟时间=常量延迟+变量延迟</p>
+<p>常量就是操作系统和数据库参数配置完毕后，那些硬件上的固定延迟加上一定存储命中率下软硬件共同作用产生的延迟时间，变量延迟就是io压力变大时，特别是海量随机小IO请求，导致的延迟变大。</p>
+<h2 id="主要监控指标和常用监控工具"><a href="#主要监控指标和常用监控工具" class="headerlink" title="主要监控指标和常用监控工具"></a>主要监控指标和常用监控工具</h2><p>对于存储IO：unix、linux平台，Nmon、iostat是比较好的工具。</p>
+<p>nmon用于事后分析，iostat可用于实时查看，也可以采用脚本记录下来事后分析。</p>
+<ol>
+<li><p>IOPS</p>
+<p>总IOPS：Nmon DISK_SUMM Sheet：IO/Sec</p>
+<p>每个盘对应的读IOPS ：Nmon DISKRIO Sheet</p>
+<p>每个盘对应的写IOPS ：Nmon DISKWIO Sheet</p>
+<p>总IOPS：命令行iostat -Dl：tps</p>
+<p>每个盘对应的读IOPS ：命令行iostat -Dl：rps</p>
+<p>每个盘对应的写IOPS ：命令行iostat -Dl：wps</p>
+</li>
+<li><p>带宽</p>
+<p>总带宽：Nmon DISK_SUMM Sheet：Disk Read KB/s，Disk Write KB/s</p>
+<p>每个盘对应的读带宽：Nmon DISKREAD Sheet</p>
+<p>每个盘对应的写带宽：Nmon DISKWRITE Sheet</p>
+<p>总带宽：命令行iostat -Dl：bps</p>
+<p>每个盘对应的读带宽：命令行iostat -Dl：bread</p>
+<p>每个盘对应的写带宽：命令行iostat -Dl：bwrtn</p>
+</li>
+<li><p>响应时间</p>
+<p>每个盘对应的读响应时间：命令行iostat -Dl：read - avg serv，max serv</p>
+<p>每个盘对应的写响应时间：命令行iostat -Dl：write - avg serv，max serv</p>
+</li>
+<li><p>其他</p>
+<p>磁盘繁忙程度、队列深度、每秒队列满的次数等等。</p>
+</li>
+</ol>
+<h1 id="BCC中提供的IO延迟监测工具"><a href="#BCC中提供的IO延迟监测工具" class="headerlink" title="BCC中提供的IO延迟监测工具"></a>BCC中提供的IO延迟监测工具</h1><h2 id="biotop"><a href="#biotop" class="headerlink" title="biotop"></a>biotop</h2><p>biotop是跟踪块设备I/O事件，并按照总的传输字节大小进行排序的工具，biotop总结了哪些事件执行了磁盘I / O，并打印出在一定时间间隔内，事件发送的进程id,平均等待时间，磁盘设备号等信息。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># ./biotop</span></span><br><span class="line">Tracing... Output every 1 secs. Hit Ctrl-C to end</span><br><span class="line"></span><br><span class="line">08:04:11 loadavg: 1.48 0.87 0.45 1/287 14547</span><br><span class="line"></span><br><span class="line">PID    COMM             D MAJ MIN DISK       I/O  Kbytes  AVGms</span><br><span class="line">14501  cksum            R 202 1   xvda1      361   28832   3.39</span><br><span class="line">6961   dd               R 202 1   xvda1     1628   13024   0.59</span><br><span class="line">13855  dd               R 202 1   xvda1     1627   13016   0.59</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，屏幕每1秒刷新一次，并显示前20个磁盘<br>消费者，按总KB排序。 打印的第一行是标题，其中包含时间，然后包含/proc/loadavg的内容。<br>其他bcc工具可用于获取更多详细的内容，例如biolatency 和 biosnoop。</p>
+<h2 id="biolatency"><a href="#biolatency" class="headerlink" title="biolatency"></a>biolatency</h2><p>该工具跟踪块设备IO(磁盘IO)的延迟分布情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ./biolatency</span></span><br><span class="line">Tracing block device I/O... Hit Ctrl-C to end.</span><br><span class="line">^C</span><br><span class="line">     usecs           : count     distribution</span><br><span class="line">       0 -&gt; 1        : 0        |                                      |</span><br><span class="line">       2 -&gt; 3        : 0        |                                      |</span><br><span class="line">       4 -&gt; 7        : 0        |                                      |</span><br><span class="line">       8 -&gt; 15       : 0        |                                      |</span><br><span class="line">      16 -&gt; 31       : 0        |                                      |</span><br><span class="line">      32 -&gt; 63       : 0        |                                      |</span><br><span class="line">      64 -&gt; 127      : 1        |                                      |</span><br><span class="line">     128 -&gt; 255      : 12       |********                              |</span><br><span class="line">     256 -&gt; 511      : 15       |**********                            |</span><br><span class="line">     512 -&gt; 1023     : 43       |*******************************       |</span><br><span class="line">    1024 -&gt; 2047     : 52       |**************************************|</span><br><span class="line">    2048 -&gt; 4095     : 47       |**********************************    |</span><br><span class="line">    4096 -&gt; 8191     : 52       |**************************************|</span><br><span class="line">    8192 -&gt; 16383    : 36       |**************************            |</span><br><span class="line">   16384 -&gt; 32767    : 15       |**********                            |</span><br><span class="line">   32768 -&gt; 65535    : 2        |*                                     |</span><br><span class="line">   65536 -&gt; 131071   : 2        |*                                     |</span><br></pre></td></tr></table></figure>
+
+<p>第一列表示延迟的时间范围，单位是微秒；第二列表示有多少事件属于该延迟时间段；第三列表示直方图。</p>
+<h2 id="ext4dist"><a href="#ext4dist" class="headerlink" title="ext4dist"></a>ext4dist</h2><p>我们通常在块设备层（ block device layer）研究存储I/O延迟问题，如上面的biolatency和biotop工具，但是对文件系统进行检测可以提供更多相关的指标来了解应用程序如何受到影响。ext4dist工具针对ext4文件系统，跟踪读取（reads），写入（writes），打开（opens）和同步（fsync），并将其延迟汇总为直方图。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># ext4dist</span></span><br><span class="line">Tracing ext4 operation latency... Hit Ctrl-C to end.</span><br><span class="line">^C</span><br><span class="line"></span><br><span class="line">operation = <span class="string">'read'</span></span><br><span class="line">     usecs               : count     distribution</span><br><span class="line">         0 -&gt; 1          : 1210     |****************************************|</span><br><span class="line">         2 -&gt; 3          : 126      |****                                    |</span><br><span class="line">         4 -&gt; 7          : 376      |************                            |</span><br><span class="line">         8 -&gt; 15         : 86       |**                                      |</span><br><span class="line">        16 -&gt; 31         : 9        |                                        |</span><br><span class="line">        32 -&gt; 63         : 47       |*                                       |</span><br><span class="line">        64 -&gt; 127        : 6        |                                        |</span><br><span class="line">       128 -&gt; 255        : 24       |                                        |</span><br><span class="line">       256 -&gt; 511        : 137      |****                                    |</span><br><span class="line">       512 -&gt; 1023       : 66       |**                                      |</span><br><span class="line">      1024 -&gt; 2047       : 13       |                                        |</span><br><span class="line">      2048 -&gt; 4095       : 7        |                                        |</span><br><span class="line">      4096 -&gt; 8191       : 13       |                                        |</span><br><span class="line">      8192 -&gt; 16383      : 3        |                                        |</span><br><span class="line"></span><br><span class="line">operation = <span class="string">'write'</span></span><br><span class="line">     usecs               : count     distribution</span><br><span class="line">         0 -&gt; 1          : 0        |                                        |</span><br><span class="line">         2 -&gt; 3          : 0        |                                        |</span><br><span class="line">         4 -&gt; 7          : 0        |                                        |</span><br><span class="line">         8 -&gt; 15         : 75       |****************************************|</span><br><span class="line">        16 -&gt; 31         : 5        |**                                      |</span><br><span class="line"></span><br><span class="line">operation = <span class="string">'open'</span></span><br><span class="line">     usecs               : count     distribution</span><br><span class="line">         0 -&gt; 1          : 1278     |****************************************|</span><br><span class="line">         2 -&gt; 3          : 40       |*                                       |</span><br><span class="line">         4 -&gt; 7          : 4        |                                        |</span><br><span class="line">         8 -&gt; 15         : 1        |                                        |</span><br><span class="line">        16 -&gt; 31         : 1        |</span><br></pre></td></tr></table></figure>
+
+<p>此输出显示读取延迟的双峰分布，其中分别为延迟小于7微秒的较快事件和256至1023微秒之间的较慢事件。 计数列显示有多少事件属于该延迟范围。 较快的事件可能是内存中文件系统高速缓存命中的原因，较慢的事件是从存储设备（磁盘）中读取的。</p>
+<h2 id="ext4slower"><a href="#ext4slower" class="headerlink" title="ext4slower"></a>ext4slower</h2><p>ext4slower显示ext4的读取，写入，打开和同步操作，其速度低于阈值的所有事件。<br>该工具与上一个工具不同之处在于，该工具提供了一个延迟时间阈值参数，可以监测到所有延迟低于某个阈值的事件，并打印输出。当然这仅能跟踪常见文件系统操作，<br>其他文件系统操作（例如，inode操作，getattr()）<br>不会跟踪。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># ./ext4slower</span></span><br><span class="line">Tracing ext4 operations slower than 10 ms</span><br><span class="line">TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME</span><br><span class="line">06:35:01 cron           16464  R 1249    0          16.05 common-auth</span><br><span class="line">06:35:01 cron           16463  R 1249    0          16.04 common-auth</span><br><span class="line">06:35:01 cron           16465  R 1249    0          16.03 common-auth</span><br><span class="line">06:35:01 cron           16465  R 4096    0          10.62 login.defs</span><br><span class="line">06:35:01 cron           16464  R 4096    0          10.61 login.defs</span><br><span class="line">06:35:01 cron           16463  R 4096    0          10.63 login.defs</span><br><span class="line">06:35:01 cron           16465  R 2972    0          18.52 pam_env.conf</span><br><span class="line">06:35:01 cron           16464  R 2972    0          18.51 pam_env.conf</span><br><span class="line">06:35:01 cron           16463  R 2972    0          18.49 pam_env.conf</span><br><span class="line">06:35:01 dumpsystemstat 16473  R 128     0          12.58 date</span><br><span class="line">06:35:01 debian-sa1     16474  R 283     0          12.66 sysstat</span><br><span class="line">06:35:01 debian-sa1     16474  R 128     0          10.39 sa1</span><br><span class="line">06:35:01 dumpsystemstat 16491  R 128     0          13.22 ifconfig</span><br><span class="line">06:35:01 DumpThreads    16534  R 128     0          12.78 cut</span><br><span class="line">06:35:01 cron           16545  R 128     0          14.76 sendmail</span><br><span class="line">06:35:01 sendmail       16545  R 274     0          10.88 dynamicmaps.cf</span><br><span class="line">06:35:02 postdrop       16546  R 118     0          32.94 Universal</span><br><span class="line">06:35:02 pickup         9574   R 118     0          21.02 localtime</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+
+<p>以上是所有延迟时间大于10毫秒的事件。</p>
+<p>此“延迟时间”是从虚拟文件系统（VFS）向文件系统的接口发起操作时算起的，直到完成。 这涵盖了所有内容：<br>块设备I/O（磁盘I/O），文件系统CPU周期，文件系统锁，请求队列等待时间等。这是对延迟时间的更好衡量。因为应用程序从文件系统读取，而不是通过块设备层接口读取。</p>
+
       
     </div>
 
@@ -664,7 +1018,7 @@
     2020年08月07日 - 22:23:39
   </li>
     <strong>最后更新：</strong>
-    2020年08月07日 - 22:23:39
+    2020年08月07日 - 22:33:11
   
 
   <li class="post-copyright-link">
@@ -769,8 +1123,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -787,7 +1150,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -908,6 +1271,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O"><span class="nav-number">1.</span> <span class="nav-text">I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux三大设备类型"><span class="nav-number">2.</span> <span class="nav-text">Linux三大设备类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符设备"><span class="nav-number">2.1.</span> <span class="nav-text">字符设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#块设备"><span class="nav-number">2.2.</span> <span class="nav-text">块设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络设备"><span class="nav-number">2.3.</span> <span class="nav-text">网络设备</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O子系统架构"><span class="nav-number">3.</span> <span class="nav-text">I/O子系统架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Block-Layer"><span class="nav-number">3.1.</span> <span class="nav-text">Block Layer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO-scheduler"><span class="nav-number">3.2.</span> <span class="nav-text">IO scheduler</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#I-O性能评价指标"><span class="nav-number">4.</span> <span class="nav-text">I/O性能评价指标</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IOPS"><span class="nav-number">4.1.</span> <span class="nav-text">IOPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#吞吐量"><span class="nav-number">4.2.</span> <span class="nav-text">吞吐量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用率"><span class="nav-number">4.3.</span> <span class="nav-text">使用率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#饱和度"><span class="nav-number">4.4.</span> <span class="nav-text">饱和度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应时间"><span class="nav-number">4.5.</span> <span class="nav-text">响应时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能监测工具提供的指标"><span class="nav-number">4.6.</span> <span class="nav-text">性能监测工具提供的指标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#磁盘I-O"><span class="nav-number">5.</span> <span class="nav-text">磁盘I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程I-O"><span class="nav-number">6.</span> <span class="nav-text">进程I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IO延迟"><span class="nav-number">7.</span> <span class="nav-text">IO延迟</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是IO延迟？"><span class="nav-number">7.1.</span> <span class="nav-text">什么是IO延迟？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要监控指标和常用监控工具"><span class="nav-number">7.2.</span> <span class="nav-text">主要监控指标和常用监控工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BCC中提供的IO延迟监测工具"><span class="nav-number">8.</span> <span class="nav-text">BCC中提供的IO延迟监测工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#biotop"><span class="nav-number">8.1.</span> <span class="nav-text">biotop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#biolatency"><span class="nav-number">8.2.</span> <span class="nav-text">biolatency</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ext4dist"><span class="nav-number">8.3.</span> <span class="nav-text">ext4dist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ext4slower"><span class="nav-number">8.4.</span> <span class="nav-text">ext4slower</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
