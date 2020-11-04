@@ -111,10 +111,10 @@
 
 
   <meta name="description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
-<meta name="keywords" content="Spring，Java，编解码，物联网">
+<meta name="keywords" content="进程,操作系统,fork,execve">
 <meta property="og:type" content="article">
 <meta property="og:title" content="进程管理笔记">
-<meta property="og:url" content="https://szp2016.github.io/uncategorized/进程管理笔记/index.html">
+<meta property="og:url" content="https://szp2016.github.io/Linux/进程管理笔记/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
 <meta property="og:locale" content="zh-CN">
@@ -131,7 +131,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201103101207985.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201103101328962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201103131311936.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2020-11-04T06:04:19.017Z">
+<meta property="og:updated_time" content="2020-11-04T06:23:15.800Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="进程管理笔记">
 <meta name="twitter:description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
@@ -143,7 +143,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/uncategorized/进程管理笔记/">
+  <link rel="canonical" href="https://szp2016.github.io/Linux/进程管理笔记/">
 
 
 
@@ -303,7 +303,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">19</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">23</span></a>
 
   </li>
         
@@ -469,7 +469,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/进程管理笔记/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/进程管理笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -529,12 +529,30 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-11-04 14:04:19" itemprop="dateModified" datetime="2020-11-04T14:04:19+08:00">2020-11-04</time>
+                <time title="修改时间：2020-11-04 14:23:15" itemprop="dateModified" datetime="2020-11-04T14:23:15+08:00">2020-11-04</time>
               
             
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -543,7 +561,7 @@
 
           
           
-            <span id="/uncategorized/进程管理笔记/" class="leancloud_visitors" data-flag-title="进程管理笔记">
+            <span id="/Linux/进程管理笔记/" class="leancloud_visitors" data-flag-title="进程管理笔记">
               <span class="post-meta-divider">|</span>
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
@@ -824,13 +842,13 @@
     2020年11月01日 - 15:46:43
   </li>
     <strong>最后更新：</strong>
-    2020年11月04日 - 14:04:19
+    2020年11月04日 - 14:23:15
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/uncategorized/进程管理笔记/" title="进程管理笔记">https://szp2016.github.io/uncategorized/进程管理笔记/</a>
+    <a href="https://szp2016.github.io/Linux/进程管理笔记/" title="进程管理笔记">https://szp2016.github.io/Linux/进程管理笔记/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -841,6 +859,15 @@
     
     
     <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/进程/" rel="tag"><i class="fa fa-tag"></i> 进程</a>
+          
+        </div>
       
 
       
@@ -872,7 +899,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/uncategorized/gdb-debug/" rel="next" title="gdb常用调试命令">
+              <a href="/C语言/gdb-debug/" rel="next" title="gdb常用调试命令">
                 <i class="fa fa-chevron-left"></i> gdb常用调试命令
               </a>
             
@@ -1046,7 +1073,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">19</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1335,7 +1370,7 @@
   
     <script>
   window.livereOptions = {
-    refer: 'uncategorized/进程管理笔记/'
+    refer: 'Linux/进程管理笔记/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];
