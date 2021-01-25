@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://szp2016.github.io/Linux/%E7%BC%96%E5%86%99%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>  <url>
+    <loc>https://szp2016.github.io/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%B9%B6%E5%8F%91/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>  <url>
+    <loc>https://szp2016.github.io/Linux/%E7%AE%80%E5%8D%95%E9%94%AE%E7%9B%98%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E4%B8%8E%E4%B8%AD%E6%96%AD/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>  <url>
+    <loc>https://szp2016.github.io/Linux/reduce-kernel-version/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>  <url>
+    <loc>https://szp2016.github.io/Linux/open%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%BA%8C%EF%BC%89/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>  <url>
+    <loc>https://szp2016.github.io/Linux/open%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>  <url>
+    <loc>https://szp2016.github.io/uncategorized/%E7%BC%96%E5%86%99%E5%9D%97%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F/</loc>
+    <lastmod>2020-11-28</lastmod>
+  </url>  <url>
     <loc>https://szp2016.github.io/Linux/%E5%9D%97IO%E5%B1%82/</loc>
     <lastmod>2020-11-04</lastmod>
   </url>  <url>
@@ -24,9 +45,6 @@
   </url>  <url>
     <loc>https://szp2016.github.io/Linux/linux%E5%93%88%E5%B8%8C%E8%A1%A8/</loc>
     <lastmod>2020-09-26</lastmod>
-  </url>  <url>
-    <loc>https://szp2016.github.io/uncategorized/%E7%BC%96%E5%86%99%E5%9D%97%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F/</loc>
-    <lastmod>2020-09-20</lastmod>
   </url>  <url>
     <loc>https://szp2016.github.io/uncategorized/dd%E5%91%BD%E4%BB%A4%E6%B5%8B%E8%AF%95%E7%A3%81%E7%9B%98/</loc>
     <lastmod>2020-09-08</lastmod>
