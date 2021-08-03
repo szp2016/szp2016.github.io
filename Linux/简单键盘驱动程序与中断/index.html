@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1.前言本文将实现一个简单的字符驱动程序，同时在驱动程序的内核模块中注册一个中断处理函数，用来获取键盘的扫描码并存入缓冲区中，最后使用用户态程序访问字符驱动程序，取出键盘扫描码。中断常用于键盘、鼠标等IO设备，当用户按下键盘时，会产生一个键盘扫描码。例如下面ps/2接口的键盘扫描码，它使用一个数字或数字序列来表示分配到键盘上的每个按键。  2.内核模块初始化内核模块在初始化的时候不仅仅需要注册一个">
+<meta name="keywords" content="中断,字符驱动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单字符驱动程序与中断">
+<meta property="og:url" content="https://szp2016.github.io/Linux/简单键盘驱动程序与中断/index.html">
+<meta property="og:site_name" content="桃花猿记">
+<meta property="og:description" content="1.前言本文将实现一个简单的字符驱动程序，同时在驱动程序的内核模块中注册一个中断处理函数，用来获取键盘的扫描码并存入缓冲区中，最后使用用户态程序访问字符驱动程序，取出键盘扫描码。中断常用于键盘、鼠标等IO设备，当用户按下键盘时，会产生一个键盘扫描码。例如下面ps/2接口的键盘扫描码，它使用一个数字或数字序列来表示分配到键盘上的每个按键。  2.内核模块初始化内核模块在初始化的时候不仅仅需要注册一个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201205221554135.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201205224808751.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201205230627950.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201205234448992.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201205234743901.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2021-08-03T06:50:50.274Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="简单字符驱动程序与中断">
+<meta name="twitter:description" content="1.前言本文将实现一个简单的字符驱动程序，同时在驱动程序的内核模块中注册一个中断处理函数，用来获取键盘的扫描码并存入缓冲区中，最后使用用户态程序访问字符驱动程序，取出键盘扫描码。中断常用于键盘、鼠标等IO设备，当用户按下键盘时，会产生一个键盘扫描码。例如下面ps/2接口的键盘扫描码，它使用一个数字或数字序列来表示分配到键盘上的每个按键。  2.内核模块初始化内核模块在初始化的时候不仅仅需要注册一个">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20201205221554135.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/Linux/简单键盘驱动程序与中断/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>简单字符驱动程序与中断 | 桃花猿记</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?056d740950f5ffea54fc37b0de3ec527";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">桃花猿记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">11</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">47</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/简单键盘驱动程序与中断/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="桃花猿记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">简单字符驱动程序与中断
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-12-05 22:01:27" itemprop="dateCreated datePublished" datetime="2020-12-05T22:01:27+08:00">2020-12-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2021-08-03 14:50:50" itemprop="dateModified" datetime="2021-08-03T14:50:50+08:00">2021-08-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">2 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>本文将实现一个简单的字符驱动程序，同时在驱动程序的内核模块中注册一个中断处理函数，用来获取键盘的扫描码并存入缓冲区中，最后使用用户态程序访问字符驱动程序，取出键盘扫描码。<br>中断常用于键盘、鼠标等IO设备，当用户按下键盘时，会产生一个键盘扫描码。例如下面ps/2接口的键盘扫描码，它使用一个数字或数字序列来表示分配到键盘上的每个按键。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201205221554135.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="2-内核模块初始化"><a href="#2-内核模块初始化" class="headerlink" title="2.内核模块初始化"></a>2.内核模块初始化</h1><p>内核模块在初始化的时候不仅仅需要注册一个字符设备，现在还需要在模块初始化的时候就向系统中的中断请求队列挂入我们自己的中断服务程序，也就是对其进行注册，使用的函数是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">request_irq(<span class="keyword">unsigned</span> <span class="keyword">int</span> irq, </span><br><span class="line"><span class="keyword">irq_handler_t</span> handler, </span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> flags,</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *name, </span><br><span class="line"><span class="keyword">void</span> *dev)。</span><br><span class="line"></span><br><span class="line">irq是要申请的硬件中断号。</span><br><span class="line"></span><br><span class="line">handler是向系统注册的中断处理函数，是一个回调函数，中断发生时，系统调用这个函数，dev参数将被传递给它。</span><br><span class="line"></span><br><span class="line">flags是中断处理的属性，若设置了IRQF_DISABLED ，则表示中断处理程序是快速处理程序，快速处理程序被调用时屏蔽所有中断，慢速处理程序不屏蔽；若设置了IRQF_SHARED （老版本中的SA_SHIRQ），则表示多个设备共享中断，若设置了IRQF_SAMPLE_RANDOM（老版本中的SA_SAMPLE_RANDOM），表示对系统熵有贡献，对系统获取随机数有好处。</span><br><span class="line"></span><br><span class="line">name设置中断名称，通常是设备驱动程序的名称  在cat /proc/interrupts中可以看到此名称。</span><br><span class="line">dev在中断共享时会用到，一般设置为这个设备的设备结构体或者<span class="literal">NULL</span>。</span><br><span class="line">request_irq()返回<span class="number">0</span>表示成功，返回-INVAL表示中断号无效或处理函数指针为<span class="literal">NULL</span>，返回-EBUSY表示中断已经被占用且不能共享。</span><br></pre></td></tr></table></figure>
+
+<p>由于我们要监控键盘的输入中断，当 I/O 设备把中断信号发送给中断控制器时,与之关联的是一个中断号。因此应当使用键盘控制器的中断号。查看proc文件系统下的中断号分配情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/interrupts</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20201205224808751.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>可以看到键盘控制器intel 8042的中断号为1。因此注册中断的时候中断号应当设置为1。</p>
+<p>8042负责读取键盘扫描码并将其存在缓冲器中供程序读取；另外还有一个芯片ECE1077，它负责连接键盘和EC，将键盘动作转换成扫描码。CPU通过两个IO端口与8042通信，这两个IO端口就是0x60，0x64端口。</p>
+<p>8042有四个8位的寄存器，它们是输入寄存器（RO）、输出寄存器(WO)、状态寄存器(RO)和命令寄存器(R/W)。</p>
+<p>读输出寄存器：inb(0x60);</p>
+<p>写输入寄存器：outb(0x60,data);</p>
+<p>读状态寄存器：inb(0x64);</p>
+<p>b：代表一个字节。<br>outb()   I/O 上写入 8 位数据 ( 1 字节 )。<br>outw() I/O 上写入 16 位数据 ( 2 字节 )；<br>outl () I/O 上写入 32 位数据 ( 4 字节)。</p>
+<p>状态寄存器：</p>
+<p>Bit7: PARITY-EVEN(P_E): 从键盘获得的数据奇偶校验错误</p>
+<p>Bit6: RCV-TMOUT(R_T): 接收超时，置1</p>
+<p>Bit5: TRANS_TMOUT(T_T): 发送超时，置1</p>
+<p>Bit4: KYBD_INH(K_I): 为1，键盘没有被禁止。为0，键盘被禁止。</p>
+<p>Bit3: CMD_DATA(C_D): 为1，输入缓冲器中的内容为命令，为0，输入缓冲器中的内容为数据。</p>
+<p>Bit2: SYS_FLAG(S_F): 系统标志，加电启动置0，自检通过后置1</p>
+<p>Bit1: INPUT_BUF_FULL(I_B_F): 输入缓冲器满置1，i8042 取走后置0</p>
+<p>Bit0: OUT_BUF_FULL(O_B_F): 输出缓冲器满置1，CPU读取后置0</p>
+<p>命令寄存器：</p>
+<p>Bit7: 保留，应该为0</p>
+<p>Bit6: 将第二套扫描码翻译为第一套</p>
+<p>Bit5: 置1，禁止鼠标</p>
+<p>Bit4: 置1，禁止键盘</p>
+<p>Bit3: 置1，忽略状态寄存器中的 Bit4</p>
+<p>Bit2: 设置状态寄存器中的 Bit2</p>
+<p>Bit1: 置1，enable 鼠标中断</p>
+<p>Bit0: 置1，enable 键盘中断</p>
+<p>有了以上知识，再对照键盘的扫描码表，我们就可以编写程序读取并判断键盘输入的数据，并根据不同的按键执行不同的动作。</p>
+<p>内核模块处理函数中，还申请了一个kfifo环形缓冲区，用于存储我们获取到的键盘扫描码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ret = kfifo_alloc(&amp;key_buf, <span class="number">32</span>, GFP_ATOMIC);</span><br></pre></td></tr></table></figure>
+
+<p>剩余的工作就全都是注册一个字符设备驱动。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> __<span class="function">init <span class="title">my_init</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123; <span class="comment">// 模块入口函数</span></span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">    printk(<span class="string">"========== [+] Init module. ==========\n"</span>);</span><br><span class="line">    ret = kfifo_alloc(&amp;key_buf, <span class="number">32</span>, GFP_ATOMIC); <span class="comment">// 申请kfifo队列</span></span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        printk(<span class="string">"[!] Allocate memory failed.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">"[+] Allocate kfifo successfully.\n"</span>);</span><br><span class="line">    <span class="comment">// Trigger interrupt</span></span><br><span class="line">    ret = request_irq(<span class="number">1</span>, (<span class="keyword">irq_handler_t</span>)key_int_handler, IRQF_SHARED, <span class="string">"Key Hook"</span>, (<span class="keyword">void</span> *)key_int_handler); <span class="comment">// 申请IRQ</span></span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        printk(<span class="string">"[!] Request irq failed.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">"[+] Request irq successfully.\n"</span>);</span><br><span class="line">    <span class="comment">// Register devices</span></span><br><span class="line">    printk(<span class="string">"[*] Invoke alloc_chrdev_region.\n"</span>);</span><br><span class="line">    ret = alloc_chrdev_region(&amp;dev_id, <span class="number">0</span>, <span class="number">1</span>, <span class="string">"mychar"</span>); <span class="comment">// 动态分配设备编号</span></span><br><span class="line">    <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        printk(<span class="string">"[*] Invoke cdev_init.\n"</span>);</span><br><span class="line">        cdev_init(&amp;key_dev, &amp;key_fops); <span class="comment">// 初始化字符设备</span></span><br><span class="line">        key_dev.owner = THIS_MODULE; <span class="comment">// 设置实现驱动的模块为当前模块</span></span><br><span class="line">        printk(<span class="string">"[*] Invoke cdev_add.\n"</span>);</span><br><span class="line">        ret = cdev_add(&amp;key_dev, dev_id, <span class="number">1</span>); <span class="comment">// 添加字符设备到系统中</span></span><br><span class="line">        <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            printk(<span class="string">"[*] Invoke class_create.\n"</span>);</span><br><span class="line">            key_class = class_create(THIS_MODULE, <span class="string">"mychar"</span>); <span class="comment">// 创建一个类并注册到内核中</span></span><br><span class="line">            <span class="keyword">if</span> (key_class) &#123;</span><br><span class="line">                printk(<span class="string">"[*] Invoke device_create.\n"</span>);</span><br><span class="line">                dev = device_create(key_class, <span class="literal">NULL</span>, dev_id, <span class="literal">NULL</span>, <span class="string">"mychar"</span>); <span class="comment">// 创建一个设备并注册到sysfs中</span></span><br><span class="line">                <span class="keyword">if</span> (dev) &#123;</span><br><span class="line">                        <span class="keyword">goto</span> success;</span><br><span class="line">                &#125;<span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    printk(<span class="string">"[!] device_create failed.\n"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 class_destroy(key_class); <span class="comment">// 删除类</span></span><br><span class="line">                printk(<span class="string">"[!] Invoke class_create failed.\n"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            cdev_del(&amp;key_dev); <span class="comment">// 删除字符设备</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            printk(<span class="string">"[!] Invoke cdev_add failed.\n"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        unregister_chrdev_region(dev_id, <span class="number">1</span>); <span class="comment">// 释放设备编号</span></span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">success:</span><br><span class="line">    printk(<span class="string">"[+] Create charactor device successfully.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-中断处理函数"><a href="#3-中断处理函数" class="headerlink" title="3.中断处理函数"></a>3.中断处理函数</h1><p>上面在注册中断的时候，加入了一个回调函数key_int_handler，但中断发生的时候，就会执行该函数，该函数由我们来编写。使用中断下半部的工作队列机制将处理推迟，或者进行调度。<br>首先使用DECLARE_WORK声明一个工作队列，被推迟的任务都叫做工作，放到该工作队列中。<br>描述工作的数据结构是work_struct。</p>
+<p>内核里一直运行类似worker thread，它会对工作队列中的work进行处理，大致的工作流程原理可以参考下图所示：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201205230627950.png" alt="在这里插入图片描述"></p>
+<p>这里的work则是work_struct变量，并且绑定一个执行函数——typedef void (*work_func_t)(struct work_struct *work);。在worker thread中会对非空的工作队列进行工作队列的出队操作，并运行work绑定的函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">work_struct</span> &#123;</span></span><br><span class="line">	<span class="keyword">atomic_long_t</span> data;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">entry</span>;</span><span class="comment">//工作的链表</span></span><br><span class="line">	<span class="keyword">work_func_t</span> func;<span class="comment">//要执行的函数</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_LOCKDEP</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">lockdep_map</span> <span class="title">lockdep_map</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建需要推后完成到工作，名为key_work，待执行函数为key_work_func</span></span><br><span class="line">DECLARE_WORK(key_work, key_work_func); <span class="comment">// 声明工作队列</span></span><br><span class="line"><span class="keyword">irq_handler_t</span> key_int_handler(<span class="keyword">int</span> irq, <span class="keyword">void</span> *dev) &#123;</span><br><span class="line">    spin_lock(&amp;key_lock);</span><br><span class="line">    scancode = inb(<span class="number">0x60</span>); <span class="comment">// 获取扫描码</span></span><br><span class="line">    spin_unlock(&amp;key_lock);</span><br><span class="line">    spin_lock(&amp;key_lock);</span><br><span class="line">    status = inb(<span class="number">0x64</span>); <span class="comment">// 获取按键状态</span></span><br><span class="line">    spin_unlock(&amp;key_lock);</span><br><span class="line">    <span class="comment">// printk("Key interrupt: scancode = 0x%x, status = 0x%x\n", scancode, status);</span></span><br><span class="line">    schedule_work(&amp;key_work); <span class="comment">// 调度工作队列</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">irq_handler_t</span>)IRQ_HANDLED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>工作创建好以后，我们可以调度它，使用schedule_work提交给工作线程。其中inb(0x60)，用于从0x60 IO端口读取扫描码。</p>
+<p>下面看工作队列调度处理函数，主要完成的工作就是将前面获取到的扫描码，存入到fifo队列，同时唤醒等待读取的字符驱动数据的进程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">key_work_func</span><span class="params">(struct work_struct *q)</span> </span>&#123; <span class="comment">// 工作队列调度函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> code;</span><br><span class="line">    spin_lock(&amp;key_lock); <span class="comment">// 加上自旋锁</span></span><br><span class="line">    code = scancode; <span class="comment">// 获取当前扫描码</span></span><br><span class="line">    spin_unlock(&amp;key_lock);</span><br><span class="line">    <span class="keyword">if</span> (code == <span class="number">0xe0</span>) &#123; <span class="comment">// 某些按键的特征符号</span></span><br><span class="line">        ;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (code &amp; <span class="number">0x80</span>) &#123; <span class="comment">// 释放按键</span></span><br><span class="line">        <span class="comment">// printk("In work: released \"%s\"\n", mappings[code - 0x80]);</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123; <span class="comment">// 按下按键</span></span><br><span class="line">        <span class="comment">// printk("In work: pressed \"%s\"\n", mappings[code]);</span></span><br><span class="line">        mutex_lock(&amp;buf_lock);</span><br><span class="line">        kfifo_in(&amp;key_buf, (<span class="keyword">void</span> *)&amp;code, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span>)); <span class="comment">// 将扫描码入队列</span></span><br><span class="line">        key_count++;</span><br><span class="line">        printk(<span class="string">"[DEBUG] code = 0x%x, key_count = %d.\n"</span>, code, key_count);</span><br><span class="line">        wake_up_interruptible(&amp;waitq); <span class="comment">// 唤醒睡眠进程</span></span><br><span class="line">        mutex_unlock(&amp;buf_lock);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-字符处理函数"><a href="#4-字符处理函数" class="headerlink" title="4. 字符处理函数"></a>4. 字符处理函数</h1><p>实现字符驱动程序的读函数，读取fifo队列中的键盘扫描符，拷贝到用户空间。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">myread</span><span class="params">(struct file *filp, <span class="keyword">char</span> __user *buf, <span class="keyword">size_t</span> count, <span class="keyword">loff_t</span> *pos)</span> </span>&#123; <span class="comment">// 读设备函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> *c;</span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line">    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123; <span class="comment">// 传入的count值不能为0</span></span><br><span class="line">        printk(<span class="string">"[!] Count can not be 0.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">"[DEBUG] kfifo_len = %d.\n"</span>, kfifo_len(&amp;key_buf));</span><br><span class="line">    <span class="keyword">if</span> (wait_event_interruptible(waitq, (kfifo_len(&amp;key_buf) &gt;= count))) <span class="comment">// 睡眠并等待唤醒</span></span><br><span class="line">        <span class="keyword">return</span> -ERESTARTSYS;</span><br><span class="line">    c = (<span class="keyword">unsigned</span> <span class="keyword">char</span> *)kmalloc(count, GFP_KERNEL); <span class="comment">// 申请一块内存</span></span><br><span class="line">    mutex_lock(&amp;buf_lock);</span><br><span class="line">    kfifo_out(&amp;key_buf, c, count); <span class="comment">// 将指定长度扫描码数据出队列</span></span><br><span class="line">    mutex_unlock(&amp;buf_lock);</span><br><span class="line">    printk(<span class="string">"[+] Copy buffer to user: %s.\n"</span>, c);</span><br><span class="line">    ret = copy_to_user(buf, c, count); <span class="comment">// 将出队列的扫描码传给用户空间</span></span><br><span class="line">    kfree(c); <span class="comment">// 释放申请的内存空间</span></span><br><span class="line">    c = <span class="number">0</span>; <span class="comment">// 防止UAF</span></span><br><span class="line">    <span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用户空间函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BUF_SIZE 32 <span class="comment">// 设置缓冲区</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd, c, i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> buf[BUF_SIZE]; <span class="comment">// 初始化缓冲区</span></span><br><span class="line">    <span class="comment">// sudo mknod /dev/ex4 c 444 0</span></span><br><span class="line">    fd = open(<span class="string">"/dev/mychar"</span>, O_RDONLY); <span class="comment">// 打开字符设备</span></span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"[!] File open error.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">char</span> chr=<span class="number">-2</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        c = read(fd, buf, BUF_SIZE); <span class="comment">// 读取字符设备中的扫描码</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"[+] Read scancode: %s (%d).\n"</span>, buf, c); <span class="comment">// 把扫描码以字符串的形式输出</span></span><br><span class="line">        <span class="built_in">memset</span>(buf,<span class="string">'\0'</span>,<span class="keyword">sizeof</span>(buf));</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd); <span class="comment">// 关闭字符设备</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-程序运行"><a href="#5-程序运行" class="headerlink" title="5. 程序运行"></a>5. 程序运行</h1><p>Makefile 文件如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#Makefile文件注意：假如前面的.c文件起名为first.c，那么这里的Makefile文件中的.o文件就要起名为first.o    只有root用户才能加载和卸载模块</span><br><span class="line">obj-m:=upper.o                          #产生interrupt模块的目标文件</span><br><span class="line">#目标文件  文件  要与模块名字相同</span><br><span class="line">CURRENT_PATH:=$(shell pwd)             #模块所在的当前路径</span><br><span class="line">LINUX_KERNEL:=$(shell uname -r)        #linux内核代码的当前版本</span><br><span class="line">LINUX_KERNEL_PATH:=/usr/src/linux-headers-$(LINUX_KERNEL)</span><br><span class="line"></span><br><span class="line">all:</span><br><span class="line">	make -C $(LINUX_KERNEL_PATH) M=$(CURRENT_PATH) modules    #编译模块</span><br><span class="line">#[Tab]              内核的路径       当前目录编译完放哪  表明编译的是内核模块</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">	make -C $(LINUX_KERNEL_PATH) M=$(CURRENT_PATH) clean      #清理模块</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20201205234448992.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>可以看到注册成功并输出了键盘的扫描符与统计的次数。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201205234743901.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>用户态程序，按照字符串格式输出了键盘的扫描符。</p>
+<p>完整程序如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line">upper.c</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/kfifo.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/workqueue.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/interrupt.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/slab.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/uaccess.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/cdev.h&gt;</span></span></span><br><span class="line">MODULE_LICENSE(<span class="string">"GPL"</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">"linux"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// Variables for device creation</span></span><br><span class="line"><span class="keyword">dev_t</span> dev_id; <span class="comment">// 设备号</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> <span class="title">key_dev</span>;</span> <span class="comment">// 字符设备结构体</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">class</span> *<span class="title">key_class</span>;</span> <span class="comment">// 字符设备对应的类</span></span><br><span class="line"><span class="comment">// Variables for keyboard interrupt</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> scancode, status; <span class="comment">// 键盘扫描码、状态</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> key_count = <span class="number">0</span>; <span class="comment">// 按键次数记录</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">kfifo</span> <span class="title">key_buf</span>;</span> <span class="comment">// 内核队列</span></span><br><span class="line">DEFINE_MUTEX(buf_lock); <span class="comment">// 互斥锁</span></span><br><span class="line">DEFINE_SPINLOCK(key_lock); <span class="comment">// 自旋锁</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="title">DECLARE_WAIT_QUEUE_HEAD</span><span class="params">(waitq)</span></span>; <span class="comment">// 等待</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">key_work_func</span><span class="params">(struct work_struct *q)</span> </span>&#123; <span class="comment">// 工作队列调度函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> code;</span><br><span class="line">    spin_lock(&amp;key_lock); <span class="comment">// 加上自旋锁</span></span><br><span class="line">    code = scancode; <span class="comment">// 获取当前扫描码</span></span><br><span class="line">    spin_unlock(&amp;key_lock);</span><br><span class="line">    <span class="keyword">if</span> (code == <span class="number">0xe0</span>) &#123; <span class="comment">// 某些按键的特征符号</span></span><br><span class="line">        ;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (code &amp; <span class="number">0x80</span>) &#123; <span class="comment">// 释放按键</span></span><br><span class="line">        <span class="comment">// printk("In work: released \"%s\"\n", mappings[code - 0x80]);</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123; <span class="comment">// 按下按键</span></span><br><span class="line">        <span class="comment">// printk("In work: pressed \"%s\"\n", mappings[code]);</span></span><br><span class="line">        mutex_lock(&amp;buf_lock);</span><br><span class="line">        kfifo_in(&amp;key_buf, (<span class="keyword">void</span> *)&amp;code, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span>)); <span class="comment">// 将扫描码入队列</span></span><br><span class="line">        key_count++;</span><br><span class="line">        printk(<span class="string">"[DEBUG] code = 0x%x, key_count = %d.\n"</span>, code, key_count);</span><br><span class="line">        wake_up_interruptible(&amp;waitq); <span class="comment">// 唤醒睡眠进程</span></span><br><span class="line">        mutex_unlock(&amp;buf_lock);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 创建需要推后完成到工作，名为key_work，待执行函数为key_work_func</span></span><br><span class="line">DECLARE_WORK(key_work, key_work_func); <span class="comment">// 声明工作队列</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">irq_handler_t</span> key_int_handler(<span class="keyword">int</span> irq, <span class="keyword">void</span> *dev) &#123;</span><br><span class="line">    spin_lock(&amp;key_lock);</span><br><span class="line">    scancode = inb(<span class="number">0x60</span>); <span class="comment">// 获取扫描码</span></span><br><span class="line">    spin_unlock(&amp;key_lock);</span><br><span class="line">    spin_lock(&amp;key_lock);</span><br><span class="line">    status = inb(<span class="number">0x64</span>); <span class="comment">// 获取按键状态</span></span><br><span class="line">    spin_unlock(&amp;key_lock);</span><br><span class="line">    <span class="comment">// printk("Key interrupt: scancode = 0x%x, status = 0x%x\n", scancode, status);</span></span><br><span class="line">    schedule_work(&amp;key_work); <span class="comment">// 调度工作队列</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">irq_handler_t</span>)IRQ_HANDLED;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">myopen</span><span class="params">(struct inode *inode, struct file *filp)</span> </span>&#123; <span class="comment">// 打开设备函数</span></span><br><span class="line">    printk(<span class="string">"[+] Device opened.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">myread</span><span class="params">(struct file *filp, <span class="keyword">char</span> __user *buf, <span class="keyword">size_t</span> count, <span class="keyword">loff_t</span> *pos)</span> </span>&#123; <span class="comment">// 读设备函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> *c;</span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line">    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123; <span class="comment">// 传入的count值不能为0</span></span><br><span class="line">        printk(<span class="string">"[!] Count can not be 0.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">"[DEBUG] kfifo_len = %d.\n"</span>, kfifo_len(&amp;key_buf));</span><br><span class="line">    <span class="keyword">if</span> (wait_event_interruptible(waitq, (kfifo_len(&amp;key_buf) &gt;= count))) <span class="comment">// 睡眠并等待唤醒</span></span><br><span class="line">        <span class="keyword">return</span> -ERESTARTSYS;</span><br><span class="line">    c = (<span class="keyword">unsigned</span> <span class="keyword">char</span> *)kmalloc(count, GFP_KERNEL); <span class="comment">// 申请一块内存</span></span><br><span class="line">    mutex_lock(&amp;buf_lock);</span><br><span class="line">    kfifo_out(&amp;key_buf, c, count); <span class="comment">// 将指定长度扫描码数据出队列</span></span><br><span class="line">    mutex_unlock(&amp;buf_lock);</span><br><span class="line">    printk(<span class="string">"[+] Copy buffer to user: %s.\n"</span>, c);</span><br><span class="line">    ret = copy_to_user(buf, c, count); <span class="comment">// 将出队列的扫描码传给用户空间</span></span><br><span class="line">    kfree(c); <span class="comment">// 释放申请的内存空间</span></span><br><span class="line">    c = <span class="number">0</span>; <span class="comment">// 防止UAF</span></span><br><span class="line">    <span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">myrelease</span><span class="params">(struct inode *inode, struct file *filp)</span> </span>&#123; <span class="comment">// 释放设备函数</span></span><br><span class="line">    printk(<span class="string">"[+] Device released.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">key_fops</span> = &#123;</span> <span class="comment">// 初始化文件访问操作函数</span></span><br><span class="line">    .open = myopen,</span><br><span class="line">    .read = myread,</span><br><span class="line">    .release = myrelease,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> __<span class="function">init <span class="title">my_init</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123; <span class="comment">// 模块入口函数</span></span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">    printk(<span class="string">"========== [+] Init module. ==========\n"</span>);</span><br><span class="line">    ret = kfifo_alloc(&amp;key_buf, <span class="number">32</span>, GFP_ATOMIC); <span class="comment">// 申请kfifo队列</span></span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        printk(<span class="string">"[!] Allocate memory failed.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">"[+] Allocate kfifo successfully.\n"</span>);</span><br><span class="line">    <span class="comment">// Trigger interrupt</span></span><br><span class="line">    ret = request_irq(<span class="number">1</span>, (<span class="keyword">irq_handler_t</span>)key_int_handler, IRQF_SHARED, <span class="string">"Key Hook"</span>, (<span class="keyword">void</span> *)key_int_handler); <span class="comment">// 申请IRQ</span></span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        printk(<span class="string">"[!] Request irq failed.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">    printk(<span class="string">"[+] Request irq successfully.\n"</span>);</span><br><span class="line">    <span class="comment">// Register devices</span></span><br><span class="line">    printk(<span class="string">"[*] Invoke alloc_chrdev_region.\n"</span>);</span><br><span class="line">    ret = alloc_chrdev_region(&amp;dev_id, <span class="number">0</span>, <span class="number">1</span>, <span class="string">"mychar"</span>); <span class="comment">// 动态分配设备编号</span></span><br><span class="line">    <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        printk(<span class="string">"[*] Invoke cdev_init.\n"</span>);</span><br><span class="line">        cdev_init(&amp;key_dev, &amp;key_fops); <span class="comment">// 初始化字符设备</span></span><br><span class="line">        key_dev.owner = THIS_MODULE; <span class="comment">// 设置实现驱动的模块为当前模块</span></span><br><span class="line">        printk(<span class="string">"[*] Invoke cdev_add.\n"</span>);</span><br><span class="line">        ret = cdev_add(&amp;key_dev, dev_id, <span class="number">1</span>); <span class="comment">// 添加字符设备到系统中</span></span><br><span class="line">        <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            printk(<span class="string">"[*] Invoke class_create.\n"</span>);</span><br><span class="line">            key_class = class_create(THIS_MODULE, <span class="string">"mychar"</span>); <span class="comment">// 创建一个类并注册到内核中</span></span><br><span class="line">            <span class="keyword">if</span> (key_class) &#123;</span><br><span class="line">                printk(<span class="string">"[*] Invoke device_create.\n"</span>);</span><br><span class="line">                dev = device_create(key_class, <span class="literal">NULL</span>, dev_id, <span class="literal">NULL</span>, <span class="string">"mychar"</span>); <span class="comment">// 创建一个设备并注册到sysfs中</span></span><br><span class="line">                <span class="keyword">if</span> (dev) &#123;</span><br><span class="line">                        <span class="keyword">goto</span> success;</span><br><span class="line">                &#125;<span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    printk(<span class="string">"[!] device_create failed.\n"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 class_destroy(key_class); <span class="comment">// 删除类</span></span><br><span class="line">                printk(<span class="string">"[!] Invoke class_create failed.\n"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            cdev_del(&amp;key_dev); <span class="comment">// 删除字符设备</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            printk(<span class="string">"[!] Invoke cdev_add failed.\n"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        unregister_chrdev_region(dev_id, <span class="number">1</span>); <span class="comment">// 释放设备编号</span></span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">success:</span><br><span class="line">    printk(<span class="string">"[+] Create charactor device successfully.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __<span class="function"><span class="built_in">exit</span> <span class="title">my_exit</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    printk(<span class="string">"========== [+] Remove module. ==========\n"</span>);</span><br><span class="line">    printk(<span class="string">"[*] Free irq.\n"</span>);</span><br><span class="line">    free_irq(<span class="number">1</span>, (<span class="keyword">void</span> *)key_int_handler); <span class="comment">// 释放IRQ</span></span><br><span class="line">    printk(<span class="string">"[*] Free kfifo.\n"</span>);</span><br><span class="line">    kfifo_free(&amp;key_buf); <span class="comment">// 释放队列</span></span><br><span class="line">    printk(<span class="string">"[*] Invoke device_destroy.\n"</span>);</span><br><span class="line">    device_destroy(key_class, dev_id); <span class="comment">// 删除设备</span></span><br><span class="line">    printk(<span class="string">"[*] Invoke class_destroy.\n"</span>);</span><br><span class="line">    class_destroy(key_class); <span class="comment">// 删除类</span></span><br><span class="line">    printk(<span class="string">"[*] Invoke cdev_del.\n"</span>);</span><br><span class="line">    cdev_del(&amp;key_dev); <span class="comment">// 删除字符设备</span></span><br><span class="line">    printk(<span class="string">"[*] Invoke unregister_chrdev_region.\n"</span>);</span><br><span class="line">    unregister_chrdev_region(dev_id, <span class="number">1</span>); <span class="comment">// 释放设备编号</span></span><br><span class="line">&#125;</span><br><span class="line">module_init(my_init);</span><br><span class="line">module_exit(my_exit);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">user.c</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BUF_SIZE 32 <span class="comment">// 设置缓冲区</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd, c, i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> buf[BUF_SIZE]; <span class="comment">// 初始化缓冲区</span></span><br><span class="line">    <span class="comment">// sudo mknod /dev/ex4 c 444 0</span></span><br><span class="line">    fd = open(<span class="string">"/dev/mychar"</span>, O_RDONLY); <span class="comment">// 打开字符设备</span></span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"[!] File open error.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">char</span> chr=<span class="number">-2</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        c = read(fd, buf, BUF_SIZE); <span class="comment">// 读取字符设备中的扫描码</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"[+] Read scancode: %s (%d).\n"</span>, buf, c); <span class="comment">// 把扫描码以字符串的形式输出</span></span><br><span class="line">        <span class="built_in">memset</span>(buf,<span class="string">'\0'</span>,<span class="keyword">sizeof</span>(buf));</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd); <span class="comment">// 关闭字符设备</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    简单字符驱动程序与中断
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2020年12月05日 - 22:01:27
+  </li>
+    <strong>最后更新：</strong>
+    2021年08月03日 - 14:50:50
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/Linux/简单键盘驱动程序与中断/" title="简单字符驱动程序与中断">https://szp2016.github.io/Linux/简单键盘驱动程序与中断/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/中断/" rel="tag"><i class="fa fa-tag"></i> 中断</a>
+          
+            <a href="/tags/字符驱动/" rel="tag"><i class="fa fa-tag"></i> 字符驱动</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Linux/open系统调用/" rel="next" title="open系统调用（一）">
+                <i class="fa fa-chevron-left"></i> open系统调用（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Linux/open系统调用（二）/" rel="prev" title="open系统调用（二）">
+                open系统调用（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">47</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-内核模块初始化"><span class="nav-number">2.</span> <span class="nav-text">2.内核模块初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-中断处理函数"><span class="nav-number">3.</span> <span class="nav-text">3.中断处理函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-字符处理函数"><span class="nav-number">4.</span> <span class="nav-text">4. 字符处理函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-程序运行"><span class="nav-number">5.</span> <span class="nav-text">5. 程序运行</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">168k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">2:33</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'Linux/简单键盘驱动程序与中断/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
