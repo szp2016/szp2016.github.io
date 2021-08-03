@@ -1951,7 +1951,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #6ee574;
+  background: #ffbdff;
 }
 .feed-link,
 .chat {
@@ -3003,7 +3003,7 @@ ul.breadcrumb li+li:last-child {
   text-overflow: ellipsis;
 }
 body {
-  background: url("https://api.ixiaowai.cn/api/api.php");
+  background: url("https://source.unsplash.com/random/1920x1080");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: 50% 50%;
