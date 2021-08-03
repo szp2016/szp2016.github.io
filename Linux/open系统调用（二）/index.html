@@ -114,11 +114,11 @@
 <meta name="keywords" content="文件系统,open系统调用">
 <meta property="og:type" content="article">
 <meta property="og:title" content="open系统调用（二）">
-<meta property="og:url" content="https://szp2016.github.io/Linux/open系统调用（二）/index.html">
+<meta property="og:url" content="https://szp2016.github.io/linux/open系统调用（二）/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1. 前言前面说到通过调用函数path_openat以解析文件路径，path_openat中包装了两个重要的函数path_init和link_path_walk，本文就从这两个函数开始，继续打开文件的旅程。 2. path_opennat再次看一下path_opennat函数，其中的path_init和link_path_walk通常连在一起调用，二者合在一起就可以根据给定的文件路径名称在内存中找">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-08-03T06:57:02.222Z">
+<meta property="og:updated_time" content="2021-08-03T08:30:59.053Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="open系统调用（二）">
 <meta name="twitter:description" content="1. 前言前面说到通过调用函数path_openat以解析文件路径，path_openat中包装了两个重要的函数path_init和link_path_walk，本文就从这两个函数开始，继续打开文件的旅程。 2. path_opennat再次看一下path_opennat函数，其中的path_init和link_path_walk通常连在一起调用，二者合在一起就可以根据给定的文件路径名称在内存中找">
@@ -129,7 +129,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/Linux/open系统调用（二）/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/open系统调用（二）/">
 
 
 
@@ -289,7 +289,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
 
   </li>
         
@@ -308,7 +308,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
 
   </li>
         
@@ -455,7 +455,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/open系统调用（二）/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/open系统调用（二）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -515,7 +515,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 14:57:02" itemprop="dateModified" datetime="2021-08-03T14:57:02+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:30:59" itemprop="dateModified" datetime="2021-08-03T16:30:59+08:00">2021-08-03</time>
               
             
           </span>
@@ -532,7 +532,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -709,13 +709,13 @@
     2020年12月16日 - 15:29:34
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 14:57:02
+    2021年08月03日 - 16:30:59
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/Linux/open系统调用（二）/" title="open系统调用（二）">https://szp2016.github.io/Linux/open系统调用（二）/</a>
+    <a href="https://szp2016.github.io/linux/open系统调用（二）/" title="open系统调用（二）">https://szp2016.github.io/linux/open系统调用（二）/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -768,7 +768,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Linux/简单键盘驱动程序与中断/" rel="next" title="简单字符驱动程序与中断">
+              <a href="/linux/简单键盘驱动程序与中断/" rel="next" title="简单字符驱动程序与中断">
                 <i class="fa fa-chevron-left"></i> 简单字符驱动程序与中断
               </a>
             
@@ -778,7 +778,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/操作系统/并发/" rel="prev" title="并发">
+              <a href="/os/并发/" rel="prev" title="并发">
                 并发 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -893,7 +893,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -974,7 +978,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1279,7 +1291,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'Linux/open系统调用（二）/'
+    refer: 'linux/open系统调用（二）/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

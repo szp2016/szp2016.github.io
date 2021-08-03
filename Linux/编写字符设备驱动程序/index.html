@@ -111,10 +111,10 @@
 
 
   <meta name="description" content="1. 前言本文主要讨论操作系统究竟如何与设备进行通信，以编写一个字符驱动程序为主线，从用户进程–&amp;gt;系统调用–&amp;gt;文件系统–&amp;gt;驱动程序–&amp;gt;设备控制器–&amp;gt;设备这几个方面，结合程序何内核源码，探索操作系统与驱动程序的奥秘。 2. 如何与设备通信？主要有两种方式来实现与设备的交互。 第一种方法是使用明确的IO指令，这些指令规定了将数据发送到特定设备寄存器的方法。例如在x86上，">
-<meta name="keywords" content="字符驱动程序">
+<meta name="keywords" content="IO">
 <meta property="og:type" content="article">
 <meta property="og:title" content="编写字符设备驱动程序">
-<meta property="og:url" content="https://szp2016.github.io/Linux/编写字符设备驱动程序/index.html">
+<meta property="og:url" content="https://szp2016.github.io/linux/编写字符设备驱动程序/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1. 前言本文主要讨论操作系统究竟如何与设备进行通信，以编写一个字符驱动程序为主线，从用户进程–&amp;gt;系统调用–&amp;gt;文件系统–&amp;gt;驱动程序–&amp;gt;设备控制器–&amp;gt;设备这几个方面，结合程序何内核源码，探索操作系统与驱动程序的奥秘。 2. 如何与设备通信？主要有两种方式来实现与设备的交互。 第一种方法是使用明确的IO指令，这些指令规定了将数据发送到特定设备寄存器的方法。例如在x86上，">
 <meta property="og:locale" content="zh-CN">
@@ -126,7 +126,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201121223640664.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201122145430342.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201122145713711.png#pic_center">
-<meta property="og:updated_time" content="2021-08-03T06:50:25.484Z">
+<meta property="og:updated_time" content="2021-08-03T08:24:11.312Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="编写字符设备驱动程序">
 <meta name="twitter:description" content="1. 前言本文主要讨论操作系统究竟如何与设备进行通信，以编写一个字符驱动程序为主线，从用户进程–&amp;gt;系统调用–&amp;gt;文件系统–&amp;gt;驱动程序–&amp;gt;设备控制器–&amp;gt;设备这几个方面，结合程序何内核源码，探索操作系统与驱动程序的奥秘。 2. 如何与设备通信？主要有两种方式来实现与设备的交互。 第一种方法是使用明确的IO指令，这些指令规定了将数据发送到特定设备寄存器的方法。例如在x86上，">
@@ -138,7 +138,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/Linux/编写字符设备驱动程序/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/编写字符设备驱动程序/">
 
 
 
@@ -298,7 +298,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
 
   </li>
         
@@ -317,7 +317,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
 
   </li>
         
@@ -464,7 +464,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/编写字符设备驱动程序/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/编写字符设备驱动程序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -524,7 +524,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 14:50:25" itemprop="dateModified" datetime="2021-08-03T14:50:25+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:24:11" itemprop="dateModified" datetime="2021-08-03T16:24:11+08:00">2021-08-03</time>
               
             
           </span>
@@ -541,7 +541,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -782,13 +782,13 @@
     2020年11月21日 - 15:12:05
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 14:50:25
+    2021年08月03日 - 16:24:11
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/Linux/编写字符设备驱动程序/" title="编写字符设备驱动程序">https://szp2016.github.io/Linux/编写字符设备驱动程序/</a>
+    <a href="https://szp2016.github.io/linux/编写字符设备驱动程序/" title="编写字符设备驱动程序">https://szp2016.github.io/linux/编写字符设备驱动程序/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -805,7 +805,7 @@
         
         <div class="post-tags">
           
-            <a href="/tags/字符驱动程序/" rel="tag"><i class="fa fa-tag"></i> 字符驱动程序</a>
+            <a href="/tags/IO/" rel="tag"><i class="fa fa-tag"></i> IO</a>
           
         </div>
       
@@ -839,7 +839,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Linux/reduce-kernel-version/" rel="next" title="Ubuntu 18降低内核版本">
+              <a href="/linux/reduce-kernel-version/" rel="next" title="Ubuntu 18降低内核版本">
                 <i class="fa fa-chevron-left"></i> Ubuntu 18降低内核版本
               </a>
             
@@ -849,7 +849,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/Linux/open系统调用/" rel="prev" title="open系统调用（一）">
+              <a href="/linux/open系统调用/" rel="prev" title="open系统调用（一）">
                 open系统调用（一） <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -964,7 +964,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1045,7 +1049,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1350,7 +1362,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'Linux/编写字符设备驱动程序/'
+    refer: 'linux/编写字符设备驱动程序/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

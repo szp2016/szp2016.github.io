@@ -114,26 +114,26 @@
 <meta name="keywords" content="驱动">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux字符设备驱动程序">
-<meta property="og:url" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/index.html">
+<meta property="og:url" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="5.4 Linux设备驱动分类Linux系统将设备分为三个类：字符设备、块设备、网络设备，在这三大类中，字符设备相对比较简单，应用程序通过字符设备文件来访问字符设备，本讲主要介绍字符设备，如果对块设备和网络设备感兴趣的话，可以参看相关资料，并对其进行深入了解。   什么是字符设备？字符设备是指只能一个字节一个字节进行读写操作的设备，不能随机读取设备中的某一数据、读取数据要按照先后顺序。字符设备是面">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-10-22-51.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-10-20-43.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-10-49-58.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-11-13-39.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-28-37.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-30-31.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-36-11.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-39-55.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-49-01.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-51-58.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-12-53-50.png">
-<meta property="og:updated_time" content="2021-08-03T06:56:25.702Z">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-10-22-51.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-10-20-43.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-10-49-58.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-11-13-39.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-28-37.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-30-31.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-36-11.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-39-55.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-49-01.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-51-58.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-12-53-50.png">
+<meta property="og:updated_time" content="2021-08-03T08:23:43.751Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux字符设备驱动程序">
 <meta name="twitter:description" content="5.4 Linux设备驱动分类Linux系统将设备分为三个类：字符设备、块设备、网络设备，在这三大类中，字符设备相对比较简单，应用程序通过字符设备文件来访问字符设备，本讲主要介绍字符设备，如果对块设备和网络设备感兴趣的话，可以参看相关资料，并对其进行深入了解。   什么是字符设备？字符设备是指只能一个字节一个字节进行读写操作的设备，不能随机读取设备中的某一数据、读取数据要按照先后顺序。字符设备是面">
-<meta name="twitter:image" content="https://szp2016.github.io/Linux/Linux字符设备驱动程序/images/2020-07-06-10-22-51.png">
+<meta name="twitter:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/images/2020-07-06-10-22-51.png">
 
 
 
@@ -141,7 +141,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/Linux/Linux字符设备驱动程序/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/Linux字符设备驱动程序/">
 
 
 
@@ -301,7 +301,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
 
   </li>
         
@@ -320,7 +320,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
 
   </li>
         
@@ -467,7 +467,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/Linux字符设备驱动程序/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/Linux字符设备驱动程序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -527,7 +527,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 14:56:25" itemprop="dateModified" datetime="2021-08-03T14:56:25+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:23:43" itemprop="dateModified" datetime="2021-08-03T16:23:43+08:00">2021-08-03</time>
               
             
           </span>
@@ -544,7 +544,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -796,13 +796,13 @@
     2020年07月06日 - 10:09:56
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 14:56:25
+    2021年08月03日 - 16:23:43
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/Linux/Linux字符设备驱动程序/" title="Linux字符设备驱动程序">https://szp2016.github.io/Linux/Linux字符设备驱动程序/</a>
+    <a href="https://szp2016.github.io/linux/Linux字符设备驱动程序/" title="Linux字符设备驱动程序">https://szp2016.github.io/linux/Linux字符设备驱动程序/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -853,7 +853,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/操作系统/IO设备驱动程序/" rel="next" title="I/O设备驱动程序">
+              <a href="/os/IO设备驱动程序/" rel="next" title="I/O设备驱动程序">
                 <i class="fa fa-chevron-left"></i> I/O设备驱动程序
               </a>
             
@@ -863,7 +863,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/操作系统/文件共享与保护/" rel="prev" title="文件共享与保护">
+              <a href="/linux/文件共享与保护/" rel="prev" title="文件共享与保护">
                 文件共享与保护 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -978,7 +978,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1059,7 +1063,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1364,7 +1376,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'Linux/Linux字符设备驱动程序/'
+    refer: 'linux/Linux字符设备驱动程序/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

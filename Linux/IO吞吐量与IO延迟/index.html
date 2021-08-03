@@ -114,25 +114,25 @@
 <meta name="keywords" content="IO">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IO吞吐量与IO延迟">
-<meta property="og:url" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/index.html">
+<meta property="og:url" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="什么是I/O？I/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。我们通常所说的IO都是指磁盘等设备IO。 什么是IO设备">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-19-43.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-20-31.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-21-05.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-21-24.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-07-22-25-02.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-25-08.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-27-13.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-28-59.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-29-11.png">
-<meta property="og:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-07-22-25-41.png">
-<meta property="og:updated_time" content="2021-08-03T06:56:04.642Z">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-19-43.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-20-31.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-21-05.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-21-24.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-07-22-25-02.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-25-08.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-27-13.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-28-59.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-29-11.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-07-22-25-41.png">
+<meta property="og:updated_time" content="2021-08-03T08:23:48.527Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IO吞吐量与IO延迟">
 <meta name="twitter:description" content="什么是I/O？I/O 的概念，从字义来理解就是输入输出。操作系统从上层到底层，各个层次之间均存在 I/O。比如，CPU 有 I/O，内存有 I/O, VMM 有 I/O, 底层磁盘上也有 I/O，这是广义上的 I/O。通常来讲，一个上层的 I/O 可能会产生针对磁盘的多个 I/O，也就是说，上层的 I/O 是稀疏的，下层的 I/O 是密集的。我们通常所说的IO都是指磁盘等设备IO。 什么是IO设备">
-<meta name="twitter:image" content="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/images/2020-08-21-20-19-43.png">
+<meta name="twitter:image" content="https://szp2016.github.io/linux/IO吞吐量与IO延迟/images/2020-08-21-20-19-43.png">
 
 
 
@@ -140,7 +140,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/IO吞吐量与IO延迟/">
 
 
 
@@ -300,7 +300,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
 
   </li>
         
@@ -319,7 +319,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
 
   </li>
         
@@ -466,7 +466,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/IO吞吐量与IO延迟/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -526,7 +526,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 14:56:04" itemprop="dateModified" datetime="2021-08-03T14:56:04+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:23:48" itemprop="dateModified" datetime="2021-08-03T16:23:48+08:00">2021-08-03</time>
               
             
           </span>
@@ -543,7 +543,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -1048,13 +1048,13 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
     2020年08月07日 - 22:23:39
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 14:56:04
+    2021年08月03日 - 16:23:48
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/Linux/IO吞吐量与IO延迟/" title="IO吞吐量与IO延迟">https://szp2016.github.io/Linux/IO吞吐量与IO延迟/</a>
+    <a href="https://szp2016.github.io/linux/IO吞吐量与IO延迟/" title="IO吞吐量与IO延迟">https://szp2016.github.io/linux/IO吞吐量与IO延迟/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -1105,7 +1105,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Linux/块IO层/" rel="next" title="块IO层">
+              <a href="/linux/块IO层/" rel="next" title="块IO层">
                 <i class="fa fa-chevron-left"></i> 块IO层
               </a>
             
@@ -1115,7 +1115,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/操作系统/IO模型/" rel="prev" title="IO模型">
+              <a href="/os/IO模型/" rel="prev" title="IO模型">
                 IO模型 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -1230,7 +1230,11 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1311,7 +1315,15 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1616,7 +1628,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'Linux/IO吞吐量与IO延迟/'
+    refer: 'linux/IO吞吐量与IO延迟/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

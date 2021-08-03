@@ -111,10 +111,10 @@
 
 
   <meta name="description" content="1.摘要存储设备的IO性能已从之前的数百IOPS加速到今天的数十万IOPS，并预计在未来几年内达到数千万IOPS。这一急剧演变主要归功于NAND-FLASH（闪存）器件及其数据并行设计的引入。 使用传统的机械存储设备（HDD），IO的延迟和吞吐量就受到这种旋转式存储设备的物理特性影响。通常HDD通过旋转磁盘盘片进行顺序访问速度较快，而通过移动磁头的随机访问却很慢，一代又一代的IO密集型算法和系统就">
-<meta name="keywords" content="Spring，Java，物联网，Linux">
+<meta name="keywords" content="IO">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多核系统上引入多队列SSD">
-<meta property="og:url" content="https://szp2016.github.io/Linux/多核系统上引入多队列SSD/index.html">
+<meta property="og:url" content="https://szp2016.github.io/linux/多核系统上引入多队列SSD/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1.摘要存储设备的IO性能已从之前的数百IOPS加速到今天的数十万IOPS，并预计在未来几年内达到数千万IOPS。这一急剧演变主要归功于NAND-FLASH（闪存）器件及其数据并行设计的引入。 使用传统的机械存储设备（HDD），IO的延迟和吞吐量就受到这种旋转式存储设备的物理特性影响。通常HDD通过旋转磁盘盘片进行顺序访问速度较快，而通过移动磁头的随机访问却很慢，一代又一代的IO密集型算法和系统就">
 <meta property="og:locale" content="zh-CN">
@@ -122,7 +122,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2021051020010735.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210525134742858.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2021060414413422.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2021-08-03T07:00:58.736Z">
+<meta property="og:updated_time" content="2021-08-03T08:25:01.544Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多核系统上引入多队列SSD">
 <meta name="twitter:description" content="1.摘要存储设备的IO性能已从之前的数百IOPS加速到今天的数十万IOPS，并预计在未来几年内达到数千万IOPS。这一急剧演变主要归功于NAND-FLASH（闪存）器件及其数据并行设计的引入。 使用传统的机械存储设备（HDD），IO的延迟和吞吐量就受到这种旋转式存储设备的物理特性影响。通常HDD通过旋转磁盘盘片进行顺序访问速度较快，而通过移动磁头的随机访问却很慢，一代又一代的IO密集型算法和系统就">
@@ -134,7 +134,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/Linux/多核系统上引入多队列SSD/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/多核系统上引入多队列SSD/">
 
 
 
@@ -294,7 +294,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
 
   </li>
         
@@ -313,7 +313,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
 
   </li>
         
@@ -460,7 +460,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/多核系统上引入多队列SSD/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/多核系统上引入多队列SSD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -520,7 +520,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 15:00:58" itemprop="dateModified" datetime="2021-08-03T15:00:58+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:25:01" itemprop="dateModified" datetime="2021-08-03T16:25:01+08:00">2021-08-03</time>
               
             
           </span>
@@ -537,7 +537,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -886,13 +886,13 @@
     2021年05月08日 - 22:26:45
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 15:00:58
+    2021年08月03日 - 16:25:01
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/Linux/多核系统上引入多队列SSD/" title="多核系统上引入多队列SSD">https://szp2016.github.io/Linux/多核系统上引入多队列SSD/</a>
+    <a href="https://szp2016.github.io/linux/多核系统上引入多队列SSD/" title="多核系统上引入多队列SSD">https://szp2016.github.io/linux/多核系统上引入多队列SSD/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -903,6 +903,15 @@
     
     
     <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/IO/" rel="tag"><i class="fa fa-tag"></i> IO</a>
+          
+        </div>
       
 
       
@@ -934,7 +943,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/uncategorized/lmbench/" rel="next" title="lmbench安装与使用">
+              <a href="/linux/lmbench/" rel="next" title="lmbench安装与使用">
                 <i class="fa fa-chevron-left"></i> lmbench安装与使用
               </a>
             
@@ -944,7 +953,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/机器学习/决策树/" rel="prev" title="决策树">
+              <a href="/machinelearning/决策树/" rel="prev" title="决策树">
                 决策树 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -1059,7 +1068,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1140,7 +1153,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1445,7 +1466,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'Linux/多核系统上引入多队列SSD/'
+    refer: 'linux/多核系统上引入多队列SSD/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

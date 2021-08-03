@@ -114,12 +114,12 @@
 <meta name="keywords" content="文件系统,open系统调用">
 <meta property="og:type" content="article">
 <meta property="og:title" content="open系统调用（一）">
-<meta property="og:url" content="https://szp2016.github.io/Linux/open系统调用/index.html">
+<meta property="og:url" content="https://szp2016.github.io/linux/open系统调用/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1.前言用户进程在能够读/写一个文件之前必须要先“打开”这个文件。对文件的读/写从概念上说是一种进程与文件系统之间的一种“有连接”通信，所谓“打开文件”实质上就是在进程与文件之间建立起链接。在文件系统的处理中，每当一个进程重复打开同一个文件时就建立起一个由file数据结构代表的独立的上下文。通常，一个file数据结构，即一个读/写文件的上下文，都由一个打开文件号（fd）加以标识。 2. do_sy">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201126151934968.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2021-08-03T06:56:56.737Z">
+<meta property="og:updated_time" content="2021-08-03T08:23:34.992Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="open系统调用（一）">
 <meta name="twitter:description" content="1.前言用户进程在能够读/写一个文件之前必须要先“打开”这个文件。对文件的读/写从概念上说是一种进程与文件系统之间的一种“有连接”通信，所谓“打开文件”实质上就是在进程与文件之间建立起链接。在文件系统的处理中，每当一个进程重复打开同一个文件时就建立起一个由file数据结构代表的独立的上下文。通常，一个file数据结构，即一个读/写文件的上下文，都由一个打开文件号（fd）加以标识。 2. do_sy">
@@ -131,7 +131,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/Linux/open系统调用/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/open系统调用/">
 
 
 
@@ -291,7 +291,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">32</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
 
   </li>
         
@@ -310,7 +310,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
 
   </li>
         
@@ -457,7 +457,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/open系统调用/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/open系统调用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -517,7 +517,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 14:56:56" itemprop="dateModified" datetime="2021-08-03T14:56:56+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:23:34" itemprop="dateModified" datetime="2021-08-03T16:23:34+08:00">2021-08-03</time>
               
             
           </span>
@@ -534,7 +534,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -716,13 +716,13 @@
     2020年11月26日 - 14:38:12
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 14:56:56
+    2021年08月03日 - 16:23:34
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/Linux/open系统调用/" title="open系统调用（一）">https://szp2016.github.io/Linux/open系统调用/</a>
+    <a href="https://szp2016.github.io/linux/open系统调用/" title="open系统调用（一）">https://szp2016.github.io/linux/open系统调用/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -775,7 +775,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Linux/编写字符设备驱动程序/" rel="next" title="编写字符设备驱动程序">
+              <a href="/linux/编写字符设备驱动程序/" rel="next" title="编写字符设备驱动程序">
                 <i class="fa fa-chevron-left"></i> 编写字符设备驱动程序
               </a>
             
@@ -785,7 +785,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/Linux/简单键盘驱动程序与中断/" rel="prev" title="简单字符驱动程序与中断">
+              <a href="/linux/简单键盘驱动程序与中断/" rel="prev" title="简单字符驱动程序与中断">
                 简单字符驱动程序与中断 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -900,7 +900,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -981,7 +985,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1286,7 +1298,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'Linux/open系统调用/'
+    refer: 'linux/open系统调用/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];
