@@ -1951,7 +1951,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #9524ff;
+  background: #6ee574;
 }
 .feed-link,
 .chat {
@@ -3003,7 +3003,7 @@ ul.breadcrumb li+li:last-child {
   text-overflow: ellipsis;
 }
 body {
-  background: url("https://api.ixiaowai.cn/gqapi/gqapi.php");
+  background: url("https://api.ixiaowai.cn/api/api.php");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: 50% 50%;
