@@ -114,20 +114,20 @@
 
 
 
-  <meta name="description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="keywords" content="编解码,OceanConnect">
+  <meta name="description" content="1.前言用户进程在能够读/写一个文件之前必须要先“打开”这个文件。对文件的读/写从概念上说是一种进程与文件系统之间的一种“有连接”通信，所谓“打开文件”实质上就是在进程与文件之间建立起链接。在文件系统的处理中，每当一个进程重复打开同一个文件时就建立起一个由file数据结构代表的独立的上下文。通常，一个file数据结构，即一个读/写文件的上下文，都由一个打开文件号（fd）加以标识。 2. do_sy">
+<meta name="keywords" content="文件系统,open系统调用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="换个角度看编解码插件开发">
-<meta property="og:url" content="https://szp2016.github.io/iot/oceanconnect-plugin-dev/index.html">
+<meta property="og:title" content="open系统调用（一）">
+<meta property="og:url" content="https://szp2016.github.io/linux/open系统调用/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
+<meta property="og:description" content="1.前言用户进程在能够读/写一个文件之前必须要先“打开”这个文件。对文件的读/写从概念上说是一种进程与文件系统之间的一种“有连接”通信，所谓“打开文件”实质上就是在进程与文件之间建立起链接。在文件系统的处理中，每当一个进程重复打开同一个文件时就建立起一个由file数据结构代表的独立的上下文。通常，一个file数据结构，即一个读/写文件的上下文，都由一个打开文件号（fd）加以标识。 2. do_sy">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
-<meta property="og:updated_time" content="2021-08-03T08:30:30.509Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201126151934968.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:updated_time" content="2021-08-03T08:23:34.992Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="换个角度看编解码插件开发">
-<meta name="twitter:description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="twitter:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
+<meta name="twitter:title" content="open系统调用（一）">
+<meta name="twitter:description" content="1.前言用户进程在能够读/写一个文件之前必须要先“打开”这个文件。对文件的读/写从概念上说是一种进程与文件系统之间的一种“有连接”通信，所谓“打开文件”实质上就是在进程与文件之间建立起链接。在文件系统的处理中，每当一个进程重复打开同一个文件时就建立起一个由file数据结构代表的独立的上下文。通常，一个file数据结构，即一个读/写文件的上下文，都由一个打开文件号（fd）加以标识。 2. do_sy">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20201126151934968.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 
 
 
@@ -135,7 +135,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/open系统调用/">
 
 
 
@@ -145,7 +145,7 @@
   };
 </script>
 
-  <title>换个角度看编解码插件开发 | 桃花猿记</title>
+  <title>open系统调用（一） | 桃花猿记</title>
   
 
 
@@ -461,7 +461,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/open系统调用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -478,7 +478,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">换个角度看编解码插件开发
+          <h2 class="post-title" itemprop="name headline">open系统调用（一）
 
               
             
@@ -504,7 +504,7 @@
                 
               
 
-              <time title="创建时间：2019-06-24 10:57:19" itemprop="dateCreated datePublished" datetime="2019-06-24T10:57:19+08:00">2019-06-24</time>
+              <time title="创建时间：2020-11-26 14:38:12" itemprop="dateCreated datePublished" datetime="2020-11-26T14:38:12+08:00">2020-11-26</time>
             
 
             
@@ -521,7 +521,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 16:30:30" itemprop="dateModified" datetime="2021-08-03T16:30:30+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:23:34" itemprop="dateModified" datetime="2021-08-03T16:23:34+08:00">2021-08-03</time>
               
             
           </span>
@@ -538,7 +538,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iot/" itemprop="url" rel="index"><span itemprop="name">iot</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -574,7 +574,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">4.1k</span>
+                <span title="本文字数">1.4k</span>
               
 
               
@@ -588,14 +588,12 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">4 分钟</span>
+                <span title="阅读时长">1 分钟</span>
               
             </div>
           
 
-          
-            <div class="post-description"><h4 style="text-align:center">本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女<i class="fa fa-intersex" aria-hidden="true"></i>友！</h4></div>
-            
+           
 
         </div>
       </header>
@@ -608,101 +606,37 @@
 
       
       
-        <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
-          
-          
-            <div class="post-gallery-row">
-              <img src="/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg" itemprop="contentUrl">
-            
-          
-
-          
-          </div>
-        </div>
-      
 
       
-        <h2 id="编解码概述"><a href="#编解码概述" class="headerlink" title="编解码概述"></a>编解码概述</h2><p>书写编解码插件之前首先需要书写Profile文件，定义如下。</p>
-<p>Profile文件用于描述一款设备的能力特性。IOT平台通过解析Profile文件，获取该设备支持的服务（通信协议里面的一条完整报文）、属性（报文中的一个字段）、命令（报文中的一个字段）等信息。</p>
-<p>IOT平台通过编解码插件，对NB设备上报的数据和下发给NB设备的命令进行格式转换，即将设备上报的16进制格式的报文转换成json，json数据的具体属性名称将由Profile文件来确定。</p>
-<h3 id="知识储备"><a href="#知识储备" class="headerlink" title="知识储备"></a>知识储备</h3><p>熟悉javase基础编程，maven项目管理工具基本命令，jackson类库。</p>
-<h3 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h3><p>Eclipse，jdk1.8，maven，NB设备通信协议。</p>
-<hr>
-<h2 id="编解码结构分析"><a href="#编解码结构分析" class="headerlink" title="编解码结构分析"></a>编解码结构分析</h2><h3 id="Profile结构"><a href="#Profile结构" class="headerlink" title="Profile结构"></a>Profile结构</h3><p>Profile文件是一个深度为四级的文件夹如图所示。</p>
-<p>红色方框中为第一级目录，目录名称为当前项目的名称，命名规则为：设备类型-厂商ID-设备型号，例如WellMonitor_Apple_A1865，对应图中功能结构中的Product模块。</p>
-<p>绿色方框中为第二级目录，包含两个文件夹profile和service。profile文件夹下放置一个devicetype-capability.json，被用来描述一款设备的能力特征，包括设备类型、厂商、型号、协议类型以及提供的服务类型。相当于对当前整个Profile项目信息的一个概述。service文件夹下则包含设备具备的服务能力，每个服务具备的属性、命令以及命令的参数，对应图中Service模块。</p>
-<p>蓝色方框中代表三级目录，代表具体的服务，每个服务中又包含了属性和命令，属性用于描述设备上报数据，命令用于下发指令给设备，分别对应图中的Property模块和Command模块。</p>
-<p>此外只有红色与蓝色方框中文件的命名可以改动，其他名称固定不变。</p>
-<p>例如图2‑1，service中包含了WellWaterCommand代表井盖+水位设备所有的下行命令；WellWaterDeviceInfo代表该设备上报的设备信息；WellWaterTiming代表该设备定时上报的信息，共计三个服务。关于如何根据设备的通信协议划分服务，将在第三章中详细介绍。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/4e8ad1d840e65bfc32b745a7004fb776.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/04eeb087a81cf47f9575f929e56b629a.png" alt></p>
-<hr>
-<h3 id="编解码插件结构"><a href="#编解码插件结构" class="headerlink" title="编解码插件结构"></a>编解码插件结构</h3><p>编解码插件使用java开发且jdk版本必须为1.8，maven进行项目管理，建议使用eclipse开发工具。其工程目录结构如图所示。工程的命名建议和Profile项目相同，即采用：设备类型-厂商ID-设备型号的格式。其余包名类名无需更改，即使用华为提供的名称。</p>
-<p>其中下行数据编码表示该类将平台下发的json格式的命令转化为字节数组。</p>
-<p>上行数据解码则表示该类将设备上报的字节数组转化为json格式数据。</p>
-<p>主类则负责调用下行数据编码或者上行数据解码。</p>
-<p>工具类中包含了不同数据类型之间转换的方法。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/b0668ded531bc180ba453f0e2176c521.png" alt></p>
-<hr>
-<h2 id="编解码插件开发"><a href="#编解码插件开发" class="headerlink" title="编解码插件开发"></a>编解码插件开发</h2><h3 id="Profile开发"><a href="#Profile开发" class="headerlink" title="Profile开发"></a>Profile开发</h3><h4 id="新建工程"><a href="#新建工程" class="headerlink" title="新建工程"></a>新建工程</h4><p>新建名称为：设备类型-厂商ID-设备型号的文件夹，例如WellMonitor_Apple_A1865，打开该文件夹新建profile和service两个子文件夹，如图所示。<strong>注意profile和service这两个文件夹名称是固定不变的。</strong></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/99ef6fe911261c7f8eb2c73f36a5137f.png" alt></p>
-<h4 id="创建概述文件"><a href="#创建概述文件" class="headerlink" title="创建概述文件"></a>创建概述文件</h4><p>打开profile文件夹新建devicetype-capability.json文件，编辑该json文件如图所示。其中每个字段所代表的含义如图所示。serviceTypeCapabilities<br>Json数组包含了该Profile文件所有的服务模块，即每增加一个service都需要在这个数组中添加一个对应的json对象。例如Apple公司采用CoAP协议，设备型号为A1865的井盖设备包含三个服务（功能）模块，井盖命令、井盖开机信息，井盖定时上报信息。</p>
-<h4 id="Service划分"><a href="#Service划分" class="headerlink" title="Service划分"></a>Service划分</h4><p>关于一个设备service的划分，可以采用根据设备通信协议中上报报文的功能码进行划分的方法，即协议中一条上报报文对应一个service（通常一条报文占用一个功能码）。</p>
-<p>Service划分步骤：</p>
-<ol>
-<li><p>将通信协议中的报文区分为上行数据和下行数据两类。</p>
-</li>
-<li><p>将下行数据（命令）写在一个service里面。</p>
-</li>
-<li><p>将上行数据根据功能码的不同，分成若干个不同的service。</p>
-</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ddf34b95238e815fe87246e0e110fc64.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ab01d431876d7fe3d2f8ba67a53e85b5.png" alt></p>
-<h4 id="创建service"><a href="#创建service" class="headerlink" title="创建service"></a>创建service</h4><p>打开第二级目录的service文件夹，根据步骤二devicetype-capability.json文件中serviceTypeCapabilities数组中定义的service创建对应的文件夹，文件夹名称为serviceId对应的值。每个文件夹下分别创建profile文件夹，profile文件夹下创建servicetype-capability.json文件，用来描述具体服务的功能，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/a9957a368fcf5a0081ca6a016d0a20b4.png" alt></p>
-<p>接下来编写每个service对应的servicetype-capability.json，如图所示的Profile，将井盖水位设备的所有命令下发模块单独写在了一个service中，即WellWaterCommand模块；将设备的上报数据信息按照通信协议中每个报文的功能码区分为不同的service，即WellWaterDeviceInfo（开机信息）模块与WellWaterTiming（定时上报）模块。</p>
-<h4 id="编写下行service"><a href="#编写下行service" class="headerlink" title="编写下行service"></a>编写下行service</h4><p>下行命令在service中的书写格式如图3‑5所示。Commands数组里面存放若干个命令对象，每个命令对象包含CommandName命令的名称和paras命令携带的参数数组，以及responses命令回应数组。paras数组里面包含若干个参数对象。参数对象包含paraName等一系列属性。这每一个参数对象都对应通信协议报文中的一个属性。serviceType的值一定要与当前服务文件夹名称保持一致。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/1a510309babebf4bc44c419eb84e7dba.png" alt></p>
-<h4 id="编写上行service"><a href="#编写上行service" class="headerlink" title="编写上行service"></a>编写上行service</h4><p>上行属性service比命令service要简单，properties数组中存放的是设备上报上来的数据，每一个json对象对应通信协议报文中的一个属性。propertyName的值可以随意定义，dataType的值如不能根据通信协议中的默认参数值明显的判断该属性的数据类型，应找相关人员确认，否则解析将会出现数据错误。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/f3aa9a21509479ad6e0d2ec7f8ee9b65.png" alt></p>
-<h4 id="打包Profile"><a href="#打包Profile" class="headerlink" title="打包Profile"></a>打包Profile</h4><p>将WellMonitor_Apple_A1865文件夹下的profile和service文件打包为zip格式，命名为WellMonitor_Apple_A1865，并且压缩包内不能包含WellMonitor_Apple_A1865文件夹这一层目录。</p>
-<hr>
-<h3 id="编解码开发"><a href="#编解码开发" class="headerlink" title="编解码开发"></a>编解码开发</h3><p>使用eclipse配置本地maven仓库，并导入华为提供的demo工程。</p>
-<p>修改pom.xml中的&lt;artifactId&gt;XXX&lt;/artifactId&gt;和&lt;Bundle-SymbolicName&gt;XXX&lt;/Bundle-SymbolicName&gt;命名规范：设备类型-厂商ID-设备型号，与Profile文件保持一致。如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0fae57687737d2580c8a4057b7361c0d.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0a1598030403de62421404d272d03449.png" alt></p>
-<p>修改ProtocolAdapterImpl.java中的厂商名称与设备型号，注意与Profile保持一致。如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/46aebb425e311ba4d59f8637297121aa.png" alt></p>
-<h4 id="编写下行编码"><a href="#编写下行编码" class="headerlink" title="编写下行编码"></a>编写下行编码</h4><p>数据下行编码流程如图所示，通过获取OC平台发送过来的json数据，首先根据serviceId将对应数据保存到全局变量中，然后调用toByte方法，将各种类型的数据装换为16进制的比特数组。拼装成一条完整的报文并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/cfb74c29be05bbbd2d1c729f3f642b24.png" alt></p>
-<h4 id="编写上行解码"><a href="#编写上行解码" class="headerlink" title="编写上行解码"></a>编写上行解码</h4><p>数据上行解码流程如图所示。通过获取OC平台发送过来的16进制比特数组格式数据，首先根据比特数组中的功能码（功能码在数据哪个位置，请从通信协议中查看），将不同服务对应的不同数据，根据通信协议将byte类型的属性转换为所需类型，保存到全局变量中，然后调用toJsonNode方法，拼装成一个Json对象并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d3d96855d73d6672e148012e8eccc772.png" alt></p>
-<h4 id="打包编解码"><a href="#打包编解码" class="headerlink" title="打包编解码"></a>打包编解码</h4><p>打包编解码，即将该maven工程打包成jar文件。检查pom.xml中的&lt;packaging&gt;bundle&lt;/packaging&gt;值是否为bundle，不能为jar。以eclipse为例，在工程上右键选择Run<br>As然后选择Maven build…如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/6b61595390f369c7f5b0363149265e1f.png" alt></p>
-<p>在Goals中输入clean package点击Run按钮，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d89e750364de272a6d6eb8e3999150d6.png" alt></p>
-<p>等待控制台出现BUILD<br>SUCCESS，即可在当前项目的target目录下找到打包好的jar文件，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/625906a1d5ede2c57835af1fd6f60a9e.png" alt></p>
-<p>新建package文件夹，文件夹下包含preload文件夹以及package-info.json描述文件，将打包好的jar文件放到preload文件夹下，如图所示。<br><img src="/image/package.jpg" alt></p>
-<p>按照内容修改package-info.json描述文件，如图所示。</p>
-<p><img src="/image/package-info.jpg" alt></p>
-<p>最后将package文件夹压缩为package.zip,并且压缩包内不能包含package文件夹这一层目录。</p>
-<hr>
-<h2 id="上传离线插件到OC开发者平台"><a href="#上传离线插件到OC开发者平台" class="headerlink" title="上传离线插件到OC开发者平台"></a>上传离线插件到OC开发者平台</h2><h3 id="上传Profile"><a href="#上传Profile" class="headerlink" title="上传Profile"></a>上传Profile</h3><p>有两种上传方式。</p>
-<ul>
-<li>登录开发者门户，选择产品开发下的添加按钮。</li>
-</ul>
-<p><img src="/image/oc-product.jpg" alt></p>
-<p>选择从本地导入产品创建-&gt;上传Profil文件。将上文中打包好的Profile文件WellMonitor_Apple_A1865.zip进行上传。<br><img src="/image/oc-add.jpg" alt></p>
-<ul>
-<li>登录管理门户，选择设备管理-&gt;产品模型-&gt;本地导入产品模型，添加完成后会自动同步到开发者门户，然后在开发者门户继续下面的上传插件操作。</li>
-</ul>
-<h3 id="上传插件"><a href="#上传插件" class="headerlink" title="上传插件"></a>上传插件</h3><p>上传Profile以后就会自动生成一个产品，选择第二步编解码插件开发-&gt;插件管理-&gt;上传插件。将上文中打包好的package.zip文件上传。插件上传成功，即可注册设备进行下一步的开发。<br><img src="/image/oc-plugin.jpg" alt><br>附录</p>
-<div><div class="fold_hider"><div class="close hider_title">点击显/隐内容</div></div><div class="fold">
-<p>Nothing to show you.</p>
+        <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>用户进程在能够读/写一个文件之前必须要先“打开”这个文件。对文件的读/写从概念上说是一种进程与文件系统之间的一种“有连接”通信，所谓“打开文件”实质上就是在进程与文件之间建立起链接。在文件系统的处理中，每当一个进程重复打开同一个文件时就建立起一个由file数据结构代表的独立的上下文。通常，一个file数据结构，即一个读/写文件的上下文，都由一个打开文件号（fd）加以标识。</p>
+<h1 id="2-do-sys-open"><a href="#2-do-sys-open" class="headerlink" title="2. do_sys_open"></a>2. do_sys_open</h1><p>打开文件的系统调用是open()，在内核中通过do_sys_open()实现，其代码在 fs/open.c中:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">do_sys_open</span><span class="params">(<span class="keyword">int</span> dfd, <span class="keyword">const</span> <span class="keyword">char</span> __user *filename, <span class="keyword">int</span> flags, <span class="keyword">int</span> mode)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">open_flags</span> <span class="title">op</span>;</span></span><br><span class="line">        <span class="comment">//检查给定的 flags 参数是否有效，并处理不同的 flags 和 mode 条件。</span></span><br><span class="line">	<span class="keyword">int</span> lookup = build_open_flags(flags, mode, &amp;op);</span><br><span class="line">        <span class="comment">//将文件路径从用户空间拷贝到内核空间。</span></span><br><span class="line">	<span class="keyword">char</span> *tmp = getname(filename);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> fd = PTR_ERR(tmp);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!IS_ERR(tmp)) &#123;</span><br><span class="line">                <span class="comment">//从当前进程的打开文件表（files_struct）中找到一个空闲的表项，该表项的下标即为“打开文件号”。</span></span><br><span class="line">		fd = get_unused_fd_flags(flags);</span><br><span class="line">		<span class="keyword">if</span> (fd &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//创建进程与文件的链接，或者说创建file结构体代表该读写文件的上下文。</span></span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">f</span> = <span class="title">do_filp_open</span>(<span class="title">dfd</span>, <span class="title">tmp</span>, &amp;<span class="title">op</span>, <span class="title">lookup</span>);</span></span><br><span class="line">			<span class="keyword">if</span> (IS_ERR(f)) &#123;</span><br><span class="line">                <span class="comment">//如果发生了错误，释放已分配的 fd 文件描述符</span></span><br><span class="line">				put_unused_fd(fd);</span><br><span class="line">                <span class="comment">//释放已分配的 struct file </span></span><br><span class="line">				fd = PTR_ERR(f);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				fsnotify_open(f);</span><br><span class="line">                            <span class="comment">//将这个file结构体的指针填入当前进程的打开文件表中。</span></span><br><span class="line">				fd_install(fd, f);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		putname(tmp);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> fd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pathname:代表需要打开的文件的文件名；</span><br><span class="line"></span><br><span class="line">flags：表示打开的标识；</span><br><span class="line"></span><br><span class="line">O_ACCMODE&lt;<span class="number">0003</span>&gt;: 读写文件操作时，用于取出flag的低<span class="number">2</span>位。</span><br><span class="line">O_RDONLY&lt;<span class="number">00</span>&gt;: 只读打开</span><br><span class="line">O_WRONLY&lt;<span class="number">01</span>&gt;: 只写打开</span><br><span class="line">O_RDWR&lt;<span class="number">02</span>&gt;: 读写打开</span><br><span class="line">O_CREAT&lt;<span class="number">0100</span>&gt;: 文件不存在则创建，需要<span class="keyword">mode_t</span></span><br><span class="line">O_EXCL&lt;<span class="number">0200</span>&gt;: 如果同时指定了O_CREAT，而文件已经存在，则出错</span><br><span class="line">O_NOCTTY&lt;<span class="number">0400</span>&gt;: 如果pathname代表终端设备，则不将此设备分配作为此进程的控制终端</span><br><span class="line">O_TRUNC&lt;<span class="number">01000</span>&gt;: 如果此文件存在，而且为只读或只写成功打开，则将其长度截短为<span class="number">0</span>  </span><br><span class="line">O_APPEND&lt;<span class="number">02000</span>&gt;: 每次写时都加到文件的尾端</span><br><span class="line">O_NONBLOCK&lt;<span class="number">04000</span>&gt;: 如果p a t h n a m e指的是一个F I F O、一个块特殊文件或一个字符特殊文件，则此选择项为此文件的本次打开操作和后续的I / O操作设置非阻塞方式。</span><br><span class="line">O_NDELAY&lt;O_NONBLOCK&gt;</span><br><span class="line">O_SYNC&lt;<span class="number">010000</span>&gt;: 使每次write都等到物理I/O操作完成。</span><br><span class="line">FASYNC&lt;<span class="number">020000</span>&gt;: 兼容BSD的fcntl同步操作</span><br><span class="line">O_DIRECT&lt;<span class="number">040000</span>&gt;: 直接磁盘操作标识，每次读写都不使用内核提供的缓存，直接读写磁盘设备</span><br><span class="line">O_LARGEFILE&lt;<span class="number">0100000</span>&gt;: 大文件标识</span><br><span class="line">O_DIRECTORY&lt;<span class="number">0200000</span>&gt;: 必须是目录</span><br><span class="line">O_NOFOLLOW&lt;<span class="number">0400000</span>&gt;: 不获取连接文件</span><br><span class="line">O_NOATIME&lt;<span class="number">01000000</span>&gt;: 暂无</span><br><span class="line"></span><br><span class="line">mode:当新创建一个文件时，需要指定mode参数，以下说明的格式如宏定义名称&lt;实际常数值&gt;: 描述如下：</span><br><span class="line"></span><br><span class="line">S_IRWXU&lt;<span class="number">00700</span>&gt;：文件拥有者有读写执行权限</span><br><span class="line">S_IRUSR (S_IREAD)&lt;<span class="number">00400</span>&gt;：文件拥有者仅有读权限</span><br><span class="line">S_IWUSR (S_IWRITE)&lt;<span class="number">00200</span>&gt;：文件拥有者仅有写权限</span><br><span class="line">S_IXUSR (S_IEXEC)&lt;<span class="number">00100</span>&gt;：文件拥有者仅有执行权限</span><br><span class="line">S_IRWXG&lt;<span class="number">00070</span>&gt;：组用户有读写执行权限</span><br><span class="line">S_IRGRP&lt;<span class="number">00040</span>&gt;：组用户仅有读权限</span><br><span class="line">S_IWGRP&lt;<span class="number">00020</span>&gt;：组用户仅有写权限</span><br><span class="line">S_IXGRP&lt;<span class="number">00010</span>&gt;：组用户仅有执行权限</span><br><span class="line">S_IRWXO&lt;<span class="number">00007</span>&gt;：其他用户有读写执行权限</span><br><span class="line">S_IROTH&lt;<span class="number">00004</span>&gt;：其他用户仅有读权限</span><br><span class="line">S_IWOTH&lt;<span class="number">00002</span>&gt;：其他用户仅有写权限</span><br><span class="line">S_IXOTH&lt;<span class="number">00001</span>&gt;：其他用户仅有执行权限</span><br></pre></td></tr></table></figure>
 
-</div></div>
+<p>dfd是传入的AT_FDCWD，其定义在 include/uapi/linux/fcntl.h。该值表明当 filename 为相对路径的情况下将当前进程的工作目录设置为起始路径。相对而言， 你可以在另一个系统调用 openat 中为这个起始路径指定一个目录， 此时 AT_FDCWD 就会被该目录的描述符所替代。</p>
+<p>进程的task_struct结构中有个指针files，指向本进程的files_struct数据结构。与打开文件有关的信息都保存在这个数据结构中，其定义在include/linux/sched.h 中:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">files_struct</span> &#123;</span></span><br><span class="line"><span class="keyword">atomic_t</span> count;<span class="comment">//引用计数</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fdtable</span> __<span class="title">rcu</span> *<span class="title">fdt</span>;</span><span class="comment">//指向自身成员fdtab或动态分配的struct fdtable实例</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fdtable</span> <span class="title">fdtab</span>;</span><span class="comment">//当可打开文件的最大数目为NR_OPEN_DEFAULT时使用</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">spinlock_t</span> file_lock ____cacheline_aligned_in_smp;</span><br><span class="line"><span class="keyword">int</span> next_fd;<span class="comment">//已分配的描述符加1</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">embedded_fd_set</span> <span class="title">close_on_exec_init</span>;</span><span class="comment">//位图，比特位数目刚好与NR_OPEN_DEFAULT一致</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">embedded_fd_set</span> <span class="title">open_fds_init</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file</span> __<span class="title">rcu</span> * <span class="title">fd_array</span>[<span class="title">NR_OPEN_DEFAULT</span>];</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fdtable</span> &#123;</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> max_fds;<span class="comment">//当前可打开文件的最大数目，决定struct file指针数组fd的大小，close_on_exec和open_fds位图的比特位总数</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file</span> __<span class="title">rcu</span> **<span class="title">fd</span>;</span><span class="comment">//指向内置它的struct files_struct结构体的成员fd_array或动态分配的struct file指针数组</span></span><br><span class="line">fd_set *close_on_exec;<span class="comment">//指向内置它的struct files_struct结构体的成员close_on_exec_init或动态分配的位图</span></span><br><span class="line">fd_set *open_fds;<span class="comment">//指向内置它的struct files_struct结构体的成员open_fds_init或动态分配的位图</span></span><br><span class="line">   <span class="comment">//后两个成员在销毁时使用</span></span><br><span class="line">   <span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span> <span class="title">rcu</span>;</span>    <span class="comment">//rcu机制</span></span><br><span class="line">   <span class="class"><span class="keyword">struct</span> <span class="title">fdtable</span> *<span class="title">next</span>;</span>    <span class="comment">//用于加入fdtable_defer_list链表</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>其结构如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201126151934968.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="3-do-filp-open"><a href="#3-do-filp-open" class="headerlink" title="3.do_filp_open"></a>3.do_filp_open</h1><p>sys_do_open主要调用的函数为do_filp_open。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">struct file * <span class="title">do_filp_open</span><span class="params">(<span class="keyword">int</span> dfd, struct filename * pathname,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">const</span> struct open_flags * op)</span> </span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nameidata</span> <span class="title">nd</span>;</span></span><br><span class="line">	<span class="keyword">int</span> flags = op-&gt;lookup_flags;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> * <span class="title">filp</span>;</span></span><br><span class="line">	set_nameidata(&amp;nd, dfd, pathname);</span><br><span class="line">	filp = path_openat(&amp;nd, op, flags | LOOKUP_RCU);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (unlikely(filp == ERR_PTR(-ECHILD)))</span><br><span class="line">		filp = path_openat(&amp;nd, op, flags);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (unlikely(filp == ERR_PTR(-ESTALE)))</span><br><span class="line">		filp = path_openat(&amp;nd, op, flags | LOOKUP_REVAL);</span><br><span class="line"></span><br><span class="line">	restore_nameidata();</span><br><span class="line">	<span class="keyword">return</span> filp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参数 dfd 是相对路径的基准目录对应的文件描述符，参数 name 指向文件路径，参数 op 是查找标志。=<br>在路径查找中有个很重要的数据结构 nameidata 用来向解析函数传递参数，保存解析结果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">nameidata</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">path</span> <span class="title">path</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">qstr</span> <span class="title">last</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">path</span> <span class="title">root</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> * <span class="title">inode</span>;</span> <span class="comment">//path.dentry.d_inode</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> flags;</span><br><span class="line">	<span class="keyword">unsigned</span> seq, m_seq;</span><br><span class="line">	<span class="keyword">int</span> last_type;</span><br><span class="line">	<span class="keyword">unsigned</span> depth;</span><br><span class="line">	<span class="keyword">int</span> total_link_count;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">saved</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">path</span> <span class="title">link</span>;</span></span><br><span class="line">		<span class="keyword">void</span> * cookie;</span><br><span class="line">		<span class="keyword">const</span> <span class="keyword">char</span> * name;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> * <span class="title">inode</span>;</span></span><br><span class="line">		<span class="keyword">unsigned</span> seq;</span><br><span class="line">	&#125; * <span class="built_in">stack</span>, internal[EMBEDDED_LEVELS];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">filename</span> * <span class="title">name</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">nameidata</span> * <span class="title">saved</span>;</span></span><br><span class="line">	<span class="keyword">unsigned</span> root_seq;</span><br><span class="line">	<span class="keyword">int</span> dfd;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>成员 last 存放需要解析的文件路径的分量（以前提到的组件）,是一个快速字符串(quick string),<br>不仅包字符串,还包含长度和散列值。<br>成员 path 存放解析得到的挂载描述符和目录项,成员 iode 存放目录项对应的索引节点。<br>path 保存已经成功解析到的信息，last 用来存放当前需要解析的信息，如果 last 解析成功<br>那么就会更新 path。</p>
+<p>函数 do_flp_open 三次调用函数 path_openat以解析文件路径。</p>
+<ul>
+<li>第一次解析传入标志 LOOKUP_RCU,使用 RCU 查找(rcu-walk)方式。在散列表中根据{父目录, 名称}查找目录的过程中,使用 RCU 保护散列桶的链表,使用序列号保护目录，其他处理器可以并行地修改目录, RCU 查找方式速度最快。</li>
+</ul>
+<ul>
+<li>如果在第一次解析的过程中发现其他处理器修改了正在查找的目录,返回错误号-ECHILD，那么第二次使用引用查找（ref-walk）REF 方式，在散列表中根据{父目录, 名称}查找目录的过程中,使用 RCU 保护散列桶的链表,使用自旋锁保护目录，并且把目录的引用计数加1。引用查找方式速度比较慢。</li>
+</ul>
+<ul>
+<li>网络文件系统的文件在网络的服务器上，本地上次查询得到的信息可能过期,和服务器的当前状态不一致。如果第二次解析发现信息过期，返回错误号 -ESTALE，那么第三次解析传入标志 LOOKUP_REVAL，表示需要重新确认信息是否有效。</li>
+</ul>
+<p>调用 set_nameidata() 保护当前进程现场信息。 接着调用 filp = path_openat(&amp;nd, op, flags | LOOKUP_RCU);</p>
+<h1 id="4-path-openat"><a href="#4-path-openat" class="headerlink" title="4.path_openat"></a>4.path_openat</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> struct file * <span class="title">path_openat</span><span class="params">(struct nameidata * nd,</span></span></span><br><span class="line"><span class="function"><span class="params">	<span class="keyword">const</span> struct open_flags * op, <span class="keyword">unsigned</span> flags)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> * s;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> * <span class="title">file</span>;</span></span><br><span class="line">	<span class="keyword">int</span> opened = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> error;</span><br><span class="line">  	<span class="comment">// 获取一个空的 file 描述符。</span></span><br><span class="line">	file = get_empty_filp();</span><br><span class="line"></span><br><span class="line">  	<span class="comment">//获取失败，返回。</span></span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(file))</span><br><span class="line">		<span class="keyword">return</span> file;</span><br><span class="line">  	<span class="comment">//设置 file 描述符的查找标志。</span></span><br><span class="line">	file-&gt;f_flags = op-&gt;open_flag;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 如果是本次目标是创建一个临时文件，这里就不深入了，只研究正常的文件打开操作。</span></span><br><span class="line">	<span class="keyword">if</span> (unlikely(file-&gt;f_flags &amp; __ O_TMPFILE)) &#123;</span><br><span class="line">		error = do_tmpfile(nd, flags, op, file, &amp;opened);</span><br><span class="line">		<span class="keyword">goto</span> out2;</span><br><span class="line">	&#125;</span><br><span class="line">  	<span class="comment">// 路径初始化，确定查找的起始目录，初始化结构体 nameidata 的成员 path。</span></span><br><span class="line">	s = path_init(nd, flags);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//如果获取的路径（待查找的路径）无效，则释放 file 描述符，返回错误。</span></span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(s)) &#123;</span><br><span class="line">		put_filp(file);</span><br><span class="line">		<span class="keyword">return</span> ERR_CAST(s);</span><br><span class="line">	&#125;</span><br><span class="line">  	<span class="comment">// 调用函数 link_path_walk 解析文件路径的每个分量，最后一个分量除外。</span></span><br><span class="line">  	<span class="comment">// 调用函数 do_last，解析文件路径的最后一个分量，并且打开文件。</span></span><br><span class="line">	<span class="keyword">while</span> (! (error = link_path_walk(s, nd)) &amp;&amp; (error = do_last(nd, file, op, &amp;opened)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		nd-&gt;flags &amp;= ~(LOOKUP_OPEN | LOOKUP_CREATE | LOOKUP_EXCL);</span><br><span class="line">    	<span class="comment">// 如果最后一个分量是符号链接，调用 trailing_symlink 函数进行处理</span></span><br><span class="line">    	<span class="comment">// 读取符号链接文件的数据，新的文件路径是符号链接链接文件的数据，然后继续 while</span></span><br><span class="line">    	<span class="comment">// 循环，解析新的文件路径。</span></span><br><span class="line">		s = trailing_symlink(nd);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (IS_ERR(s)) &#123;</span><br><span class="line">			error = PTR_ERR(s);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">  	<span class="comment">// 结束查找，释放解析文件路径的过程中保存的目录项和挂载描述符。</span></span><br><span class="line">	terminate_walk(nd);</span><br><span class="line"></span><br><span class="line">out2:</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (! (opened &amp; FILE_OPENED)) &#123;</span><br><span class="line">		BUG_ON(!error);</span><br><span class="line">		put_filp(file);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (unlikely(error)) &#123;</span><br><span class="line">		<span class="keyword">if</span> (error == -EOPENSTALE) &#123;</span><br><span class="line">			<span class="keyword">if</span> (flags &amp; LOOKUP_RCU)</span><br><span class="line">				error = -ECHILD;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				error = -ESTALE;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		file = ERR_PTR(error);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> file;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -775,7 +709,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    换个角度看编解码插件开发
+    open系统调用（一）
   </li>
 
   <li class="post-copyright-author">
@@ -783,16 +717,16 @@
 
   <li class="post-copyright-license">
     <strong>发布时间：</strong>
-    2019年06月24日 - 10:57:19
+    2020年11月26日 - 14:38:12
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 16:30:30
+    2021年08月03日 - 16:23:34
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/" title="换个角度看编解码插件开发">https://szp2016.github.io/iot/oceanconnect-plugin-dev/</a>
+    <a href="https://szp2016.github.io/linux/open系统调用/" title="open系统调用（一）">https://szp2016.github.io/linux/open系统调用/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -809,9 +743,9 @@
         
         <div class="post-tags">
           
-            <a href="/tags/编解码/" rel="tag"><i class="fa fa-tag"></i> 编解码</a>
+            <a href="/tags/文件系统/" rel="tag"><i class="fa fa-tag"></i> 文件系统</a>
           
-            <a href="/tags/OceanConnect/" rel="tag"><i class="fa fa-tag"></i> OceanConnect</a>
+            <a href="/tags/open系统调用/" rel="tag"><i class="fa fa-tag"></i> open系统调用</a>
           
         </div>
       
@@ -845,8 +779,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/iot/编解码插件书写笔记/" rel="next" title="堪比华为还详细的编解码插件线下开发教程">
-                <i class="fa fa-chevron-left"></i> 堪比华为还详细的编解码插件线下开发教程
+              <a href="/linux/编写字符设备驱动程序/" rel="next" title="编写字符设备驱动程序">
+                <i class="fa fa-chevron-left"></i> 编写字符设备驱动程序
               </a>
             
           </div>
@@ -855,8 +789,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/git/本地Git关联Github/" rel="prev" title="本地Git关联Github">
-                本地Git关联Github <i class="fa fa-chevron-right"></i>
+              <a href="/linux/简单键盘驱动程序与中断/" rel="prev" title="简单字符驱动程序与中断">
+                简单字符驱动程序与中断 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -1123,7 +1057,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码概述"><span class="nav-number">1.</span> <span class="nav-text">编解码概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#知识储备"><span class="nav-number">1.1.</span> <span class="nav-text">知识储备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开发工具"><span class="nav-number">1.2.</span> <span class="nav-text">开发工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码结构分析"><span class="nav-number">2.</span> <span class="nav-text">编解码结构分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profile结构"><span class="nav-number">2.1.</span> <span class="nav-text">Profile结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编解码插件结构"><span class="nav-number">2.2.</span> <span class="nav-text">编解码插件结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码插件开发"><span class="nav-number">3.</span> <span class="nav-text">编解码插件开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profile开发"><span class="nav-number">3.1.</span> <span class="nav-text">Profile开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#新建工程"><span class="nav-number">3.1.1.</span> <span class="nav-text">新建工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建概述文件"><span class="nav-number">3.1.2.</span> <span class="nav-text">创建概述文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Service划分"><span class="nav-number">3.1.3.</span> <span class="nav-text">Service划分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建service"><span class="nav-number">3.1.4.</span> <span class="nav-text">创建service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写下行service"><span class="nav-number">3.1.5.</span> <span class="nav-text">编写下行service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写上行service"><span class="nav-number">3.1.6.</span> <span class="nav-text">编写上行service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包Profile"><span class="nav-number">3.1.7.</span> <span class="nav-text">打包Profile</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编解码开发"><span class="nav-number">3.2.</span> <span class="nav-text">编解码开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写下行编码"><span class="nav-number">3.2.1.</span> <span class="nav-text">编写下行编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写上行解码"><span class="nav-number">3.2.2.</span> <span class="nav-text">编写上行解码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包编解码"><span class="nav-number">3.2.3.</span> <span class="nav-text">打包编解码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上传离线插件到OC开发者平台"><span class="nav-number">4.</span> <span class="nav-text">上传离线插件到OC开发者平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上传Profile"><span class="nav-number">4.1.</span> <span class="nav-text">上传Profile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传插件"><span class="nav-number">4.2.</span> <span class="nav-text">上传插件</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-do-sys-open"><span class="nav-number">2.</span> <span class="nav-text">2. do_sys_open</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-do-filp-open"><span class="nav-number">3.</span> <span class="nav-text">3.do_filp_open</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-path-openat"><span class="nav-number">4.</span> <span class="nav-text">4.path_openat</span></a></li></ol></div>
             
 
           </div>
@@ -1369,7 +1303,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'iot/oceanconnect-plugin-dev/'
+    refer: 'linux/open系统调用/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

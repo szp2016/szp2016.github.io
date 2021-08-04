@@ -114,20 +114,18 @@
 
 
 
-  <meta name="description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="keywords" content="编解码,OceanConnect">
+  <meta name="description" content="前言一个通常意义上的文件系统驱动可以单独被编译成模块动态加载，也可以被直接编译到内核中，为了调试的方便，本文中的文件系统采用动态加载的方式实现。实现一个文件系统必须遵照内核的一些“规则”，以下我将以递进的顺序阐述文件系统的实现过程。 1.文件系统的加载与卸载首先为了能够成功加载文件系统，文件系统需要提供文件系统的名字，超级块的加载和删除方法。这些东西反应在file_system,_type中。 1">
+<meta name="keywords" content="文件系统">
 <meta property="og:type" content="article">
-<meta property="og:title" content="换个角度看编解码插件开发">
-<meta property="og:url" content="https://szp2016.github.io/iot/oceanconnect-plugin-dev/index.html">
+<meta property="og:title" content="编写文件系统之装载与卸载">
+<meta property="og:url" content="https://szp2016.github.io/linux/编写文件系统之装载与卸载/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
+<meta property="og:description" content="前言一个通常意义上的文件系统驱动可以单独被编译成模块动态加载，也可以被直接编译到内核中，为了调试的方便，本文中的文件系统采用动态加载的方式实现。实现一个文件系统必须遵照内核的一些“规则”，以下我将以递进的顺序阐述文件系统的实现过程。 1.文件系统的加载与卸载首先为了能够成功加载文件系统，文件系统需要提供文件系统的名字，超级块的加载和删除方法。这些东西反应在file_system,_type中。 1">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
-<meta property="og:updated_time" content="2021-08-03T08:30:30.509Z">
+<meta property="og:updated_time" content="2021-08-03T08:24:12.425Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="换个角度看编解码插件开发">
-<meta name="twitter:description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="twitter:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
+<meta name="twitter:title" content="编写文件系统之装载与卸载">
+<meta name="twitter:description" content="前言一个通常意义上的文件系统驱动可以单独被编译成模块动态加载，也可以被直接编译到内核中，为了调试的方便，本文中的文件系统采用动态加载的方式实现。实现一个文件系统必须遵照内核的一些“规则”，以下我将以递进的顺序阐述文件系统的实现过程。 1.文件系统的加载与卸载首先为了能够成功加载文件系统，文件系统需要提供文件系统的名字，超级块的加载和删除方法。这些东西反应在file_system,_type中。 1">
 
 
 
@@ -135,7 +133,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/编写文件系统之装载与卸载/">
 
 
 
@@ -145,7 +143,7 @@
   };
 </script>
 
-  <title>换个角度看编解码插件开发 | 桃花猿记</title>
+  <title>编写文件系统之装载与卸载 | 桃花猿记</title>
   
 
 
@@ -461,7 +459,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/编写文件系统之装载与卸载/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -478,7 +476,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">换个角度看编解码插件开发
+          <h2 class="post-title" itemprop="name headline">编写文件系统之装载与卸载
 
               
             
@@ -504,7 +502,7 @@
                 
               
 
-              <time title="创建时间：2019-06-24 10:57:19" itemprop="dateCreated datePublished" datetime="2019-06-24T10:57:19+08:00">2019-06-24</time>
+              <time title="创建时间：2020-08-31 15:26:45" itemprop="dateCreated datePublished" datetime="2020-08-31T15:26:45+08:00">2020-08-31</time>
             
 
             
@@ -521,7 +519,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 16:30:30" itemprop="dateModified" datetime="2021-08-03T16:30:30+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:24:12" itemprop="dateModified" datetime="2021-08-03T16:24:12+08:00">2021-08-03</time>
               
             
           </span>
@@ -538,7 +536,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iot/" itemprop="url" rel="index"><span itemprop="name">iot</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -574,7 +572,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">4.1k</span>
+                <span title="本文字数">3.2k</span>
               
 
               
@@ -588,14 +586,12 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">4 分钟</span>
+                <span title="阅读时长">3 分钟</span>
               
             </div>
           
 
-          
-            <div class="post-description"><h4 style="text-align:center">本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女<i class="fa fa-intersex" aria-hidden="true"></i>友！</h4></div>
-            
+           
 
         </div>
       </header>
@@ -608,101 +604,53 @@
 
       
       
-        <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
-          
-          
-            <div class="post-gallery-row">
-              <img src="/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg" itemprop="contentUrl">
-            
-          
-
-          
-          </div>
-        </div>
-      
 
       
-        <h2 id="编解码概述"><a href="#编解码概述" class="headerlink" title="编解码概述"></a>编解码概述</h2><p>书写编解码插件之前首先需要书写Profile文件，定义如下。</p>
-<p>Profile文件用于描述一款设备的能力特性。IOT平台通过解析Profile文件，获取该设备支持的服务（通信协议里面的一条完整报文）、属性（报文中的一个字段）、命令（报文中的一个字段）等信息。</p>
-<p>IOT平台通过编解码插件，对NB设备上报的数据和下发给NB设备的命令进行格式转换，即将设备上报的16进制格式的报文转换成json，json数据的具体属性名称将由Profile文件来确定。</p>
-<h3 id="知识储备"><a href="#知识储备" class="headerlink" title="知识储备"></a>知识储备</h3><p>熟悉javase基础编程，maven项目管理工具基本命令，jackson类库。</p>
-<h3 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h3><p>Eclipse，jdk1.8，maven，NB设备通信协议。</p>
-<hr>
-<h2 id="编解码结构分析"><a href="#编解码结构分析" class="headerlink" title="编解码结构分析"></a>编解码结构分析</h2><h3 id="Profile结构"><a href="#Profile结构" class="headerlink" title="Profile结构"></a>Profile结构</h3><p>Profile文件是一个深度为四级的文件夹如图所示。</p>
-<p>红色方框中为第一级目录，目录名称为当前项目的名称，命名规则为：设备类型-厂商ID-设备型号，例如WellMonitor_Apple_A1865，对应图中功能结构中的Product模块。</p>
-<p>绿色方框中为第二级目录，包含两个文件夹profile和service。profile文件夹下放置一个devicetype-capability.json，被用来描述一款设备的能力特征，包括设备类型、厂商、型号、协议类型以及提供的服务类型。相当于对当前整个Profile项目信息的一个概述。service文件夹下则包含设备具备的服务能力，每个服务具备的属性、命令以及命令的参数，对应图中Service模块。</p>
-<p>蓝色方框中代表三级目录，代表具体的服务，每个服务中又包含了属性和命令，属性用于描述设备上报数据，命令用于下发指令给设备，分别对应图中的Property模块和Command模块。</p>
-<p>此外只有红色与蓝色方框中文件的命名可以改动，其他名称固定不变。</p>
-<p>例如图2‑1，service中包含了WellWaterCommand代表井盖+水位设备所有的下行命令；WellWaterDeviceInfo代表该设备上报的设备信息；WellWaterTiming代表该设备定时上报的信息，共计三个服务。关于如何根据设备的通信协议划分服务，将在第三章中详细介绍。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/4e8ad1d840e65bfc32b745a7004fb776.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/04eeb087a81cf47f9575f929e56b629a.png" alt></p>
-<hr>
-<h3 id="编解码插件结构"><a href="#编解码插件结构" class="headerlink" title="编解码插件结构"></a>编解码插件结构</h3><p>编解码插件使用java开发且jdk版本必须为1.8，maven进行项目管理，建议使用eclipse开发工具。其工程目录结构如图所示。工程的命名建议和Profile项目相同，即采用：设备类型-厂商ID-设备型号的格式。其余包名类名无需更改，即使用华为提供的名称。</p>
-<p>其中下行数据编码表示该类将平台下发的json格式的命令转化为字节数组。</p>
-<p>上行数据解码则表示该类将设备上报的字节数组转化为json格式数据。</p>
-<p>主类则负责调用下行数据编码或者上行数据解码。</p>
-<p>工具类中包含了不同数据类型之间转换的方法。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/b0668ded531bc180ba453f0e2176c521.png" alt></p>
-<hr>
-<h2 id="编解码插件开发"><a href="#编解码插件开发" class="headerlink" title="编解码插件开发"></a>编解码插件开发</h2><h3 id="Profile开发"><a href="#Profile开发" class="headerlink" title="Profile开发"></a>Profile开发</h3><h4 id="新建工程"><a href="#新建工程" class="headerlink" title="新建工程"></a>新建工程</h4><p>新建名称为：设备类型-厂商ID-设备型号的文件夹，例如WellMonitor_Apple_A1865，打开该文件夹新建profile和service两个子文件夹，如图所示。<strong>注意profile和service这两个文件夹名称是固定不变的。</strong></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/99ef6fe911261c7f8eb2c73f36a5137f.png" alt></p>
-<h4 id="创建概述文件"><a href="#创建概述文件" class="headerlink" title="创建概述文件"></a>创建概述文件</h4><p>打开profile文件夹新建devicetype-capability.json文件，编辑该json文件如图所示。其中每个字段所代表的含义如图所示。serviceTypeCapabilities<br>Json数组包含了该Profile文件所有的服务模块，即每增加一个service都需要在这个数组中添加一个对应的json对象。例如Apple公司采用CoAP协议，设备型号为A1865的井盖设备包含三个服务（功能）模块，井盖命令、井盖开机信息，井盖定时上报信息。</p>
-<h4 id="Service划分"><a href="#Service划分" class="headerlink" title="Service划分"></a>Service划分</h4><p>关于一个设备service的划分，可以采用根据设备通信协议中上报报文的功能码进行划分的方法，即协议中一条上报报文对应一个service（通常一条报文占用一个功能码）。</p>
-<p>Service划分步骤：</p>
-<ol>
-<li><p>将通信协议中的报文区分为上行数据和下行数据两类。</p>
-</li>
-<li><p>将下行数据（命令）写在一个service里面。</p>
-</li>
-<li><p>将上行数据根据功能码的不同，分成若干个不同的service。</p>
-</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ddf34b95238e815fe87246e0e110fc64.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ab01d431876d7fe3d2f8ba67a53e85b5.png" alt></p>
-<h4 id="创建service"><a href="#创建service" class="headerlink" title="创建service"></a>创建service</h4><p>打开第二级目录的service文件夹，根据步骤二devicetype-capability.json文件中serviceTypeCapabilities数组中定义的service创建对应的文件夹，文件夹名称为serviceId对应的值。每个文件夹下分别创建profile文件夹，profile文件夹下创建servicetype-capability.json文件，用来描述具体服务的功能，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/a9957a368fcf5a0081ca6a016d0a20b4.png" alt></p>
-<p>接下来编写每个service对应的servicetype-capability.json，如图所示的Profile，将井盖水位设备的所有命令下发模块单独写在了一个service中，即WellWaterCommand模块；将设备的上报数据信息按照通信协议中每个报文的功能码区分为不同的service，即WellWaterDeviceInfo（开机信息）模块与WellWaterTiming（定时上报）模块。</p>
-<h4 id="编写下行service"><a href="#编写下行service" class="headerlink" title="编写下行service"></a>编写下行service</h4><p>下行命令在service中的书写格式如图3‑5所示。Commands数组里面存放若干个命令对象，每个命令对象包含CommandName命令的名称和paras命令携带的参数数组，以及responses命令回应数组。paras数组里面包含若干个参数对象。参数对象包含paraName等一系列属性。这每一个参数对象都对应通信协议报文中的一个属性。serviceType的值一定要与当前服务文件夹名称保持一致。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/1a510309babebf4bc44c419eb84e7dba.png" alt></p>
-<h4 id="编写上行service"><a href="#编写上行service" class="headerlink" title="编写上行service"></a>编写上行service</h4><p>上行属性service比命令service要简单，properties数组中存放的是设备上报上来的数据，每一个json对象对应通信协议报文中的一个属性。propertyName的值可以随意定义，dataType的值如不能根据通信协议中的默认参数值明显的判断该属性的数据类型，应找相关人员确认，否则解析将会出现数据错误。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/f3aa9a21509479ad6e0d2ec7f8ee9b65.png" alt></p>
-<h4 id="打包Profile"><a href="#打包Profile" class="headerlink" title="打包Profile"></a>打包Profile</h4><p>将WellMonitor_Apple_A1865文件夹下的profile和service文件打包为zip格式，命名为WellMonitor_Apple_A1865，并且压缩包内不能包含WellMonitor_Apple_A1865文件夹这一层目录。</p>
-<hr>
-<h3 id="编解码开发"><a href="#编解码开发" class="headerlink" title="编解码开发"></a>编解码开发</h3><p>使用eclipse配置本地maven仓库，并导入华为提供的demo工程。</p>
-<p>修改pom.xml中的&lt;artifactId&gt;XXX&lt;/artifactId&gt;和&lt;Bundle-SymbolicName&gt;XXX&lt;/Bundle-SymbolicName&gt;命名规范：设备类型-厂商ID-设备型号，与Profile文件保持一致。如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0fae57687737d2580c8a4057b7361c0d.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0a1598030403de62421404d272d03449.png" alt></p>
-<p>修改ProtocolAdapterImpl.java中的厂商名称与设备型号，注意与Profile保持一致。如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/46aebb425e311ba4d59f8637297121aa.png" alt></p>
-<h4 id="编写下行编码"><a href="#编写下行编码" class="headerlink" title="编写下行编码"></a>编写下行编码</h4><p>数据下行编码流程如图所示，通过获取OC平台发送过来的json数据，首先根据serviceId将对应数据保存到全局变量中，然后调用toByte方法，将各种类型的数据装换为16进制的比特数组。拼装成一条完整的报文并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/cfb74c29be05bbbd2d1c729f3f642b24.png" alt></p>
-<h4 id="编写上行解码"><a href="#编写上行解码" class="headerlink" title="编写上行解码"></a>编写上行解码</h4><p>数据上行解码流程如图所示。通过获取OC平台发送过来的16进制比特数组格式数据，首先根据比特数组中的功能码（功能码在数据哪个位置，请从通信协议中查看），将不同服务对应的不同数据，根据通信协议将byte类型的属性转换为所需类型，保存到全局变量中，然后调用toJsonNode方法，拼装成一个Json对象并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d3d96855d73d6672e148012e8eccc772.png" alt></p>
-<h4 id="打包编解码"><a href="#打包编解码" class="headerlink" title="打包编解码"></a>打包编解码</h4><p>打包编解码，即将该maven工程打包成jar文件。检查pom.xml中的&lt;packaging&gt;bundle&lt;/packaging&gt;值是否为bundle，不能为jar。以eclipse为例，在工程上右键选择Run<br>As然后选择Maven build…如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/6b61595390f369c7f5b0363149265e1f.png" alt></p>
-<p>在Goals中输入clean package点击Run按钮，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d89e750364de272a6d6eb8e3999150d6.png" alt></p>
-<p>等待控制台出现BUILD<br>SUCCESS，即可在当前项目的target目录下找到打包好的jar文件，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/625906a1d5ede2c57835af1fd6f60a9e.png" alt></p>
-<p>新建package文件夹，文件夹下包含preload文件夹以及package-info.json描述文件，将打包好的jar文件放到preload文件夹下，如图所示。<br><img src="/image/package.jpg" alt></p>
-<p>按照内容修改package-info.json描述文件，如图所示。</p>
-<p><img src="/image/package-info.jpg" alt></p>
-<p>最后将package文件夹压缩为package.zip,并且压缩包内不能包含package文件夹这一层目录。</p>
-<hr>
-<h2 id="上传离线插件到OC开发者平台"><a href="#上传离线插件到OC开发者平台" class="headerlink" title="上传离线插件到OC开发者平台"></a>上传离线插件到OC开发者平台</h2><h3 id="上传Profile"><a href="#上传Profile" class="headerlink" title="上传Profile"></a>上传Profile</h3><p>有两种上传方式。</p>
-<ul>
-<li>登录开发者门户，选择产品开发下的添加按钮。</li>
-</ul>
-<p><img src="/image/oc-product.jpg" alt></p>
-<p>选择从本地导入产品创建-&gt;上传Profil文件。将上文中打包好的Profile文件WellMonitor_Apple_A1865.zip进行上传。<br><img src="/image/oc-add.jpg" alt></p>
-<ul>
-<li>登录管理门户，选择设备管理-&gt;产品模型-&gt;本地导入产品模型，添加完成后会自动同步到开发者门户，然后在开发者门户继续下面的上传插件操作。</li>
-</ul>
-<h3 id="上传插件"><a href="#上传插件" class="headerlink" title="上传插件"></a>上传插件</h3><p>上传Profile以后就会自动生成一个产品，选择第二步编解码插件开发-&gt;插件管理-&gt;上传插件。将上文中打包好的package.zip文件上传。插件上传成功，即可注册设备进行下一步的开发。<br><img src="/image/oc-plugin.jpg" alt><br>附录</p>
-<div><div class="fold_hider"><div class="close hider_title">点击显/隐内容</div></div><div class="fold">
-<p>Nothing to show you.</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>一个通常意义上的文件系统驱动可以单独被编译成模块动态加载，也可以被直接编译到内核中，为了调试的方便，本文中的文件系统采用动态加载的方式实现。实现一个文件系统必须遵照内核的一些“规则”，以下我将以递进的顺序阐述文件系统的实现过程。</p>
+<h1 id="1-文件系统的加载与卸载"><a href="#1-文件系统的加载与卸载" class="headerlink" title="1.文件系统的加载与卸载"></a>1.文件系统的加载与卸载</h1><p>首先为了能够成功加载文件系统，文件系统需要提供文件系统的名字，超级块的加载和删除方法。这些东西反应在file_system,_type中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct file_system_type MISER_fs_type = &#123;  </span><br><span class="line">    .owner = THIS_MODULE,  </span><br><span class="line">    .name = &quot;MISER_fs&quot;,  </span><br><span class="line">    .mount = MISER_fs_mount,  </span><br><span class="line">    .kill_sb = MISER_fs_kill_superblock, /* unmount */  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-</div></div>
+<p>文件系统作为一种块设备驱动，自然也需要实现module_init以及mocule_exit。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/* Called when the module is loaded. */  </span><br><span class="line">int MISER_fs_init(void)  </span><br><span class="line">&#123;  </span><br><span class="line">    int ret;  </span><br><span class="line">    ret = register_filesystem(&amp;MISER_fs_type);  </span><br><span class="line">    if (ret == 0)  </span><br><span class="line">        printk(KERN_INFO &quot;Sucessfully registered MISER_fs\n&quot;);  </span><br><span class="line">    else  </span><br><span class="line">        printk(KERN_ERR &quot;Failed to register MISER_fs. Error: [%d]\n&quot;, ret);  </span><br><span class="line">    return ret;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">/* Called when the module is unloaded. */  </span><br><span class="line">void MISER_fs_exit(void)  </span><br><span class="line"></span><br><span class="line">    int ret;  </span><br><span class="line">    ret = unregister_filesystem(&amp;MISER_fs_type);  </span><br><span class="line">    if (ret == 0)  </span><br><span class="line">        printk(KERN_INFO &quot;Sucessfully unregistered MISER_fs\n&quot;);  </span><br><span class="line">    else  </span><br><span class="line">        printk(KERN_ERR &quot;Failed to unregister MISER_fs. Error: [%d]\n&quot;, ret);  </span><br><span class="line">&#125;  </span><br><span class="line">module_init(MISER_fs_init);  </span><br><span class="line">module_exit(MISER_fs_exit);  </span><br><span class="line">  </span><br><span class="line">MODULE_LICENSE(&quot;MIT&quot;);  </span><br><span class="line">MODULE_AUTHOR(&quot;cv&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，设备驱动加载的时候，驱动向内核注册了文件系统，而驱动卸载的时候，文件系统的信息也被删除。文件系统加载时调用的函数为MISER_fs_mount，实际上，这个函数向内核注册了一个回调：</p>
+<p>int MISER_fs_fill_super(struct super_block *sb, void *data, int silent)<br>这个函数是用来与VFS交互从而生成VFS超级块的。在MISER fs中，超级块在磁盘的第二个4096字节上，即块号为1。这个函数执行时会从磁盘中读取信息，填充到VFS提供的超级块结构体中，下列为部分关键代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">int MISER_fs_fill_super(struct super_block *sb, void *data, int silent)  &#123;  </span><br><span class="line">    struct buffer_head *bh;  </span><br><span class="line">    bh = sb_bread(sb, 1);  </span><br><span class="line">    struct MISER_fs_super_block *sb_disk;  </span><br><span class="line">    sb_disk = (struct MISER_fs_super_block *)bh-&gt;b_data;  </span><br><span class="line">    struct inode *root_inode;  </span><br><span class="line">    if (sb_disk-&gt;block_size != 4096) &#123;  </span><br><span class="line">        printk(KERN_ERR &quot;MISER_fs expects a blocksize of %d\n&quot;, 4096);  </span><br><span class="line">        ret = -EFAULT;  </span><br><span class="line">        goto release;  </span><br><span class="line">   &#125;  </span><br><span class="line">   //fill vfs super block  </span><br><span class="line">    sb-&gt;s_magic = sb_disk-&gt;magic;  </span><br><span class="line">    sb-&gt;s_fs_info = sb_disk;  </span><br><span class="line">    sb-&gt;s_maxbytes = MISER_BLOCKSIZE * MISER_N_BLOCKS; /* Max file size */  </span><br><span class="line">    sb-&gt;s_op = &amp;MISER_fs_super_ops;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上述代码可以看出，我们用sb_read来读取磁盘上的内容，然后填充super_block结构体。值得注意的是，有关超级块的操作函数即superblock_operations也是在此处赋值的。由于super_block* sb在文件系统卸载之前是一直存在于内存中的，所以我们可以使用s_fs_info来存储原始的超级块信息，避免后期交互时 再次读取磁盘。<br>文件系统卸载的时候超级块信息需要被删除，所以MISER_fs_kill_superblock的作用时释放该超级块，通知VFS该挂载点已经卸载。<br>实现基本函数后，可以对文件系统进行挂载操作，挂载操作的脚本内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo umount ./test  </span><br><span class="line">sudo rmmod MISER_fs  </span><br><span class="line">dd bs=4096 count=100 if=/dev/zero of=image  </span><br><span class="line">./mkfs image  </span><br><span class="line">insmod MISER_fs.ko  </span><br><span class="line">mount -o loop -t MISER_fs image ./test  </span><br><span class="line">dmesg</span><br></pre></td></tr></table></figure>
+
+<p>上述脚本，将项目下的test文件夹作为文件系统的挂载点，并在挂载之后答应出了内核调试目录。成功执行该脚本的截图如下：<br>成功运行<br>我们可以看到test目录已经挂载成功而且内核调试信息显示文件系统挂载成功。</p>
+<h1 id="2-ls命令的实现"><a href="#2-ls命令的实现" class="headerlink" title="2.ls命令的实现"></a>2.ls命令的实现</h1><p>加载文件系统之后第一个要实现的功能是读取文件系统中的数据，所以选择实现文件夹读取操作，这一操作在2.x内核中是.readdir函数指针，在最新版本中是,.iterate函数指针。这个指针在保存在file_operation中，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const struct file_operations MISER_fs_dir_ops = &#123;  </span><br><span class="line">    .owner = THIS_MODULE,  </span><br><span class="line">    .iterate = MISER_fs_iterate,  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>MISER_fs_iterate函数主要功能逻辑是读取inode的块数据，并且将块数据中的inode和文件名通过dir_emit函数传输到VFS层。以根目录为例，根目录的包含三个数据项，分别是父目录，当前目录和欢迎文件，所以该函数会执行以下三个语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//参数分别表示上下文，文件/目录名，文件/目录名长度，inode号，文件类型  </span><br><span class="line">dir_emit(ctx, &quot;.&quot;, 1,0, DT_DIR);  </span><br><span class="line">dir_emit(ctx, &quot;..&quot;, 2,0, DT_DIR);  </span><br><span class="line">dir_emit(ctx, &quot;file&quot;, 4,1, DT_REG);</span><br></pre></td></tr></table></figure>
+
+<p>完成该函数后，在填充根目录inode时将MISER_fs_dir_ops指针赋值，即可在挂在文件系统后执行ls命令。<br>成功运行ls<br>如上图所示，我们成功看到了欢迎文件。但是此时我们不能对文件进行任何操作，因为还没有实现其他的接口。</p>
+<h1 id="3-磁盘管理相关逻辑的实现"><a href="#3-磁盘管理相关逻辑的实现" class="headerlink" title="3.磁盘管理相关逻辑的实现"></a>3.磁盘管理相关逻辑的实现</h1><p>这个磁盘管理的内涵包括向磁盘写入和从磁盘取出读取inode，更新inode信息，维护imap，bmap，inode table等操作。为了使磁盘上的内容有序的组合起来，磁盘空间的管理十分的重要，后续的文件读写操作都与此相关。<br>写入和删除inode的操作存放在super_operations这个结构体中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">const struct super_operations MISER_fs_super_ops = &#123;  </span><br><span class="line">    .evict_inode = MISER_evict_inode,  </span><br><span class="line">    .write_inode = MISER_write_inode,  </span><br><span class="line">&#125;;</span><br><span class="line">MISER_fs_super_ops需要在填充超级块时赋值到super_block的s_ops字段中。MISER_write_inode函数的功能是将内存中的inode保存在磁盘上。关键代码如下。</span><br><span class="line"></span><br><span class="line">int MISER_write_inode(struct inode *inode, struct writeback_control *wbc)  </span><br><span class="line">&#123;  </span><br><span class="line">    struct buffer_head * bh;  </span><br><span class="line">    struct MISER_inode * raw_inode = NULL;  </span><br><span class="line">    MISER_fs_get_inode(inode-&gt;i_sb, inode-&gt;i_ino, raw_inode);  </span><br><span class="line">    if (!raw_inode)  </span><br><span class="line">        return -EFAULT;  </span><br><span class="line">    raw_inode-&gt;mode = inode-&gt;i_mode;  </span><br><span class="line">    raw_inode-&gt;i_uid = fs_high2lowuid(i_uid_read(inode));  </span><br><span class="line">    raw_inode-&gt;i_gid = fs_high2lowgid(i_gid_read(inode));  </span><br><span class="line">    raw_inode-&gt;i_nlink = inode-&gt;i_nlink;  </span><br><span class="line">    raw_inode-&gt;file_size = inode-&gt;i_size;      </span><br><span class="line">    raw_inode-&gt;i_atime = (inode-&gt;i_atime.tv_sec);  </span><br><span class="line">    raw_inode-&gt;i_mtime = (inode-&gt;i_mtime.tv_sec);  </span><br><span class="line">    raw_inode-&gt;i_ctime = (inode-&gt;i_ctime.tv_sec);  </span><br><span class="line">    mark_buffer_dirty(bh);  </span><br><span class="line">    brelse(bh);  </span><br><span class="line">    return 0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，该函数的将vfs inode中的相关信息存储到MISER_inode结构体中，然后写入磁盘。这个是单独的写入磁盘操作，事实上，当我们申请inode时，imap也是需要检查刷新的，需要把相应位置标记为1。同理，evict_inode函数的作用时删除inode，删除成功后，我们需要刷新imap的值，把相应位置标记为0。<br>设置和写入map的操作都在map.c中，以下以imap为例。对于imap来讲，申请inode的时候需要检查第一个空闲的inode编号，当inode被释放的时候也要及时清零对应的imap。与此相关的函数如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//从磁盘中读取数据并存在imap数组中  </span><br><span class="line">int get_imap(struct super_block* sb, uint8_t* imap, ssize_t imap_size);  </span><br><span class="line">//在vaddr数组中找到第一个为0的bit，这个函数用于定位空inode或者block  </span><br><span class="line">int MISER_find_first_zero_bit(const void *vaddr, unsigned size);  </span><br><span class="line">//将imap的某一位置0或者1，并保存在磁盘上  </span><br><span class="line">int set_and_save_imap(struct super_block* sb, uint64_t inode_num, uint8_t value);  </span><br><span class="line">//定义的位操作宏如下  </span><br><span class="line">#define setbit(number,x) number |= 1UL &lt;&lt; x  </span><br><span class="line">#define clearbit(number, x) number &amp;= ~(1UL &lt;&lt; x)</span><br></pre></td></tr></table></figure>
+
+<p>由于本文件系统并不是为了实际使用，所以上述的操作都没有考虑性能以及准确性问题。事实上，能够加上校验或者冗余备份是最好的。</p>
+<h1 id="4-读写文件内容"><a href="#4-读写文件内容" class="headerlink" title="4.读写文件内容"></a>4.读写文件内容</h1><p>为了能够快速看到文件系统在正常工作，所以接下来需要实现文件的读写操作。文件读写操作按照一般处理，应该是实现在struct file_operations这个结构体中的。事实上，最开始我是实现在这个结构体中的read_iter函数指针中的。但是比较有趣的一点是，如果我们实现了struct address_space_operations结构体中的函数，那么struct file_operations结构体中的函数则可以交由VFS实现。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">const struct file_operations MISER_fs_file_ops = &#123;  </span><br><span class="line">    .owner = THIS_MODULE,  </span><br><span class="line">    .llseek = generic_file_llseek,  </span><br><span class="line">    .mmap = generic_file_mmap,  </span><br><span class="line">    .fsync = generic_file_fsync,  </span><br><span class="line">    .read_iter = generic_file_read_iter,  </span><br><span class="line">    .write_iter = generic_file_write_iter,  </span><br><span class="line">&#125;;  </span><br><span class="line">const struct   address_space_operations MISER_fs_aops = &#123;  </span><br><span class="line">    .readpage = MISER_fs_readpage,  </span><br><span class="line">    .writepage = MISER_fs_writepage,  </span><br><span class="line">    .write_begin = MISER_fs_write_begin,  </span><br><span class="line">    .write_end = generic_write_end,  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>上述的generic开头的函数是不需要我们手动实现的。上述的address_space_operations操作其实是实现了页高速缓存的一些操作。页高速缓存是linux内核实现的一种主要磁盘缓存，它主要用来减少对磁盘的IO操作，具体地讲，是通过把磁盘中的数据缓存到物理内存中，把对磁盘的访问变为对物理内存的访问。这些接口一旦实现，那么对文件的操作就可以转移到内存中，这就是为什么可以使用generic开头的这些函数来代替手写。<br>MISER_fs_readpage, MISER_fs_writepage以及MISER_fs_write_begin都被注册回调到同一个函数MISER_fs_get_block。MISER_fs_get_block主要返回内核请求长度的数据。至于读写操作，内核调用__bwrite函数最终调用块设备驱动执行。因为在我没有采用二级或者多级索引，故而MISER_fs_get_block函数逻辑比较简单，部分代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">int MISER_fs_get_block(struct inode *inode, sector_t block,  </span><br><span class="line">              struct buffer_head *bh, int create)  </span><br><span class="line">&#123;  </span><br><span class="line">    struct super_block *sb = inode-&gt;i_sb;  </span><br><span class="line">    if (block &gt; MISER_N_BLOCKS) </span><br><span class="line">        return -ENOSPC;  </span><br><span class="line">    struct MISER_inode H_inode;  </span><br><span class="line">    if (-1 == MISER_fs_get_inode(sb, inode-&gt;i_ino, &amp;H_inode))  </span><br><span class="line">        return -EFAULT;  </span><br><span class="line">    if (H_inode.blocks == 0)  </span><br><span class="line">        if(alloc_block_for_inode(sb, &amp;H_inode, 1)) </span><br><span class="line">            return -EFAULT;  </span><br><span class="line">    map_bh(bh, sb, H_inode.block[block]);  </span><br><span class="line">    return 0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上所示，该函数判断传入的block的大小，并将磁盘内容映射到bh中。后续的读写操作将有VFS帮我们完成。</p>
+<h1 id="5-inode操作"><a href="#5-inode操作" class="headerlink" title="5.inode操作"></a>5.inode操作</h1><p>Inode操作涉及文件(夹)的创建删除，将MISER_inode映射到VFS中的inode等操作。具体实现的函数如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const struct inode_operations MISER_fs_inode_ops = &#123;  </span><br><span class="line">    .lookup = MISER_fs_lookup,  </span><br><span class="line">    .mkdir = MISER_fs_mkdir,  </span><br><span class="line">    .create = MISER_fs_create,  </span><br><span class="line">    .unlink = MISER_fs_unlink,  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>MISER_fs_lookup是其中比较复杂的一个函数，它负责将一个目录下的inode信息交由VFS管理。首先，MISER_fs_lookup读取文件夹的内容，然后遍历文件夹下面的MISER_inode，找到我们想要的MISER_inode，根据不同的文件属性，申请vfs_inode；并对不同的vfs_inode设置不同的操作。假设vfs_inode对应的是一个文件，那么就设置vfs_inode-&gt;mapping-&gt;a_ops，如果vfs_inode对应的是文件夹，那么就设置vfs_inode-&gt;f_ops = &MISER_fs_dir_ops;最后将vfs_inode注册到VFS中。这部分的关键代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">struct dentry *MISER_fs_lookup(struct inode *parent_inode,  </span><br><span class="line">                  struct dentry *child_dentry, unsigned int flags)  </span><br><span class="line">&#123;  </span><br><span class="line">    struct super_block *sb = parent_inode-&gt;i_sb;  </span><br><span class="line">    struct MISER_inode H_inode;  </span><br><span class="line">//省略代码  </span><br><span class="line">    for (i = 0; i &lt; H_inode.dir_children_count; i++) &#123;  </span><br><span class="line">        if (strncmp  </span><br><span class="line">            (child_dentry-&gt;d_name.name, dtptr[i].filename,  </span><br><span class="line">             MISER_FILENAME_MAX_LEN) == 0)&#123;  </span><br><span class="line">            inode = iget_locked(sb, dtptr[i].inode_no);  </span><br><span class="line">            if (inode-&gt;i_state &amp; I_NEW) &#123;  </span><br><span class="line">                inode_init_owner(inode, parent_inode, 0);  </span><br><span class="line">                struct MISER_inode H_child_inode;  </span><br><span class="line">                if (-1 == MISER_fs_get_inode(sb, dtptr[i].inode_no, &amp;H_child_inode))  </span><br><span class="line">                    return ERR_PTR(-EFAULT);  </span><br><span class="line">                MISER_fs_convert_inode(&amp;H_child_inode, inode);  </span><br><span class="line">                inode-&gt;i_op = &amp;MISER_fs_inode_ops;  </span><br><span class="line">                if (S_ISDIR(H_child_inode.mode)) &#123;  </span><br><span class="line">                    inode-&gt;i_fop = &amp;MISER_fs_dir_ops;  </span><br><span class="line">                &#125; else if (S_ISREG(H_child_inode.mode)) &#123;  </span><br><span class="line">                    inode-&gt;i_fop = &amp;MISER_fs_file_ops;;  </span><br><span class="line">                    inode-&gt;i_mapping-&gt;a_ops = &amp;MISER_fs_aops;  </span><br><span class="line">                &#125;  </span><br><span class="line">                inode-&gt;i_mode = H_child_inode.mode;  </span><br><span class="line">                inode-&gt;i_size = H_child_inode.file_size;  </span><br><span class="line">                insert_inode_hash(inode);  </span><br><span class="line">                unlock_new_inode(inode);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">//省略代码  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只有在这里注册了相关函数，系统调用才能正常执行。不然就会出现不支持的操作这种报错信息。<br>.create与.mkdir都是对应了inode的创建，只是inode的属性不能而已。.create创建普通文件而.mkdir创建文件夹。所以这两个函数的功能被函数MISER_fs_create_obj所处理。这个函数接受新建文件（夹）的请求，检查磁盘的大小，检查是否有空余的indoe，并且分配inode号，然后更新imap信息，最后更新超级块信息。由于该函数逻辑简单但是代码量比较大，故而不在此展示其具体实现。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在完成上述工作之后，我们的文件系统基本已经完成了，这个系统采用线性（区别于minixi二级索引用树来管理）的方式管理磁盘空间，支持基本的增删改查文件操作，支持文件权限，支持多用户。</p>
+
       
     </div>
 
@@ -775,7 +723,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    换个角度看编解码插件开发
+    编写文件系统之装载与卸载
   </li>
 
   <li class="post-copyright-author">
@@ -783,16 +731,16 @@
 
   <li class="post-copyright-license">
     <strong>发布时间：</strong>
-    2019年06月24日 - 10:57:19
+    2020年08月31日 - 15:26:45
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 16:30:30
+    2021年08月03日 - 16:24:12
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/" title="换个角度看编解码插件开发">https://szp2016.github.io/iot/oceanconnect-plugin-dev/</a>
+    <a href="https://szp2016.github.io/linux/编写文件系统之装载与卸载/" title="编写文件系统之装载与卸载">https://szp2016.github.io/linux/编写文件系统之装载与卸载/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -809,9 +757,7 @@
         
         <div class="post-tags">
           
-            <a href="/tags/编解码/" rel="tag"><i class="fa fa-tag"></i> 编解码</a>
-          
-            <a href="/tags/OceanConnect/" rel="tag"><i class="fa fa-tag"></i> OceanConnect</a>
+            <a href="/tags/文件系统/" rel="tag"><i class="fa fa-tag"></i> 文件系统</a>
           
         </div>
       
@@ -845,8 +791,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/iot/编解码插件书写笔记/" rel="next" title="堪比华为还详细的编解码插件线下开发教程">
-                <i class="fa fa-chevron-left"></i> 堪比华为还详细的编解码插件线下开发教程
+              <a href="/linux/编写文件系统之格式化磁盘/" rel="next" title="编写文件系统之格式化磁盘">
+                <i class="fa fa-chevron-left"></i> 编写文件系统之格式化磁盘
               </a>
             
           </div>
@@ -855,8 +801,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/git/本地Git关联Github/" rel="prev" title="本地Git关联Github">
-                本地Git关联Github <i class="fa fa-chevron-right"></i>
+              <a href="/linux/dd命令测试磁盘/" rel="prev" title="dd命令测试磁盘">
+                dd命令测试磁盘 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -1123,7 +1069,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码概述"><span class="nav-number">1.</span> <span class="nav-text">编解码概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#知识储备"><span class="nav-number">1.1.</span> <span class="nav-text">知识储备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开发工具"><span class="nav-number">1.2.</span> <span class="nav-text">开发工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码结构分析"><span class="nav-number">2.</span> <span class="nav-text">编解码结构分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profile结构"><span class="nav-number">2.1.</span> <span class="nav-text">Profile结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编解码插件结构"><span class="nav-number">2.2.</span> <span class="nav-text">编解码插件结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码插件开发"><span class="nav-number">3.</span> <span class="nav-text">编解码插件开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profile开发"><span class="nav-number">3.1.</span> <span class="nav-text">Profile开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#新建工程"><span class="nav-number">3.1.1.</span> <span class="nav-text">新建工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建概述文件"><span class="nav-number">3.1.2.</span> <span class="nav-text">创建概述文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Service划分"><span class="nav-number">3.1.3.</span> <span class="nav-text">Service划分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建service"><span class="nav-number">3.1.4.</span> <span class="nav-text">创建service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写下行service"><span class="nav-number">3.1.5.</span> <span class="nav-text">编写下行service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写上行service"><span class="nav-number">3.1.6.</span> <span class="nav-text">编写上行service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包Profile"><span class="nav-number">3.1.7.</span> <span class="nav-text">打包Profile</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编解码开发"><span class="nav-number">3.2.</span> <span class="nav-text">编解码开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写下行编码"><span class="nav-number">3.2.1.</span> <span class="nav-text">编写下行编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写上行解码"><span class="nav-number">3.2.2.</span> <span class="nav-text">编写上行解码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包编解码"><span class="nav-number">3.2.3.</span> <span class="nav-text">打包编解码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上传离线插件到OC开发者平台"><span class="nav-number">4.</span> <span class="nav-text">上传离线插件到OC开发者平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上传Profile"><span class="nav-number">4.1.</span> <span class="nav-text">上传Profile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传插件"><span class="nav-number">4.2.</span> <span class="nav-text">上传插件</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-文件系统的加载与卸载"><span class="nav-number">2.</span> <span class="nav-text">1.文件系统的加载与卸载</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-ls命令的实现"><span class="nav-number">3.</span> <span class="nav-text">2.ls命令的实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-磁盘管理相关逻辑的实现"><span class="nav-number">4.</span> <span class="nav-text">3.磁盘管理相关逻辑的实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-读写文件内容"><span class="nav-number">5.</span> <span class="nav-text">4.读写文件内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-inode操作"><span class="nav-number">6.</span> <span class="nav-text">5.inode操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
@@ -1369,7 +1315,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'iot/oceanconnect-plugin-dev/'
+    refer: 'linux/编写文件系统之装载与卸载/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

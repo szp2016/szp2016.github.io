@@ -114,20 +114,31 @@
 
 
 
-  <meta name="description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="keywords" content="编解码,OceanConnect">
+  <meta name="description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
+<meta name="keywords" content="文件系统">
 <meta property="og:type" content="article">
-<meta property="og:title" content="换个角度看编解码插件开发">
-<meta property="og:url" content="https://szp2016.github.io/iot/oceanconnect-plugin-dev/index.html">
+<meta property="og:title" content="文件共享与保护">
+<meta property="og:url" content="https://szp2016.github.io/linux/文件共享与保护/index.html">
 <meta property="og:site_name" content="桃花猿记">
-<meta property="og:description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
+<meta property="og:description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
-<meta property="og:updated_time" content="2021-08-03T08:30:30.509Z">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-14-14-17-59.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-14-14-24-27.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-14-14-30-39.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-14-08-53-01.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-12-48-15.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-14-08-57-33.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-14-01-26.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-13-43-52.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-13-46-13.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-13-56-37.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-13-58-35.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-13-13-59-18.png">
+<meta property="og:updated_time" content="2021-08-03T08:21:07.562Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="换个角度看编解码插件开发">
-<meta name="twitter:description" content="本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="twitter:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
+<meta name="twitter:title" content="文件共享与保护">
+<meta name="twitter:description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
+<meta name="twitter:image" content="https://szp2016.github.io/linux/文件共享与保护/images/2020-07-14-14-17-59.png">
 
 
 
@@ -135,7 +146,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/">
+  <link rel="canonical" href="https://szp2016.github.io/linux/文件共享与保护/">
 
 
 
@@ -145,7 +156,7 @@
   };
 </script>
 
-  <title>换个角度看编解码插件开发 | 桃花猿记</title>
+  <title>文件共享与保护 | 桃花猿记</title>
   
 
 
@@ -461,7 +472,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/文件共享与保护/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -478,7 +489,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">换个角度看编解码插件开发
+          <h2 class="post-title" itemprop="name headline">文件共享与保护
 
               
             
@@ -504,7 +515,7 @@
                 
               
 
-              <time title="创建时间：2019-06-24 10:57:19" itemprop="dateCreated datePublished" datetime="2019-06-24T10:57:19+08:00">2019-06-24</time>
+              <time title="创建时间：2020-07-13 08:44:04" itemprop="dateCreated datePublished" datetime="2020-07-13T08:44:04+08:00">2020-07-13</time>
             
 
             
@@ -521,7 +532,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 16:30:30" itemprop="dateModified" datetime="2021-08-03T16:30:30+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-03 16:21:07" itemprop="dateModified" datetime="2021-08-03T16:21:07+08:00">2021-08-03</time>
               
             
           </span>
@@ -538,7 +549,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iot/" itemprop="url" rel="index"><span itemprop="name">iot</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -574,7 +585,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">4.1k</span>
+                <span title="本文字数">6k</span>
               
 
               
@@ -588,14 +599,12 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">4 分钟</span>
+                <span title="阅读时长">5 分钟</span>
               
             </div>
           
 
-          
-            <div class="post-description"><h4 style="text-align:center">本文记录了线下开发编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女<i class="fa fa-intersex" aria-hidden="true"></i>友！</h4></div>
-            
+           
 
         </div>
       </header>
@@ -608,101 +617,145 @@
 
       
       
-        <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
-          
-          
-            <div class="post-gallery-row">
-              <img src="/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg" itemprop="contentUrl">
-            
-          
-
-          
-          </div>
-        </div>
-      
 
       
-        <h2 id="编解码概述"><a href="#编解码概述" class="headerlink" title="编解码概述"></a>编解码概述</h2><p>书写编解码插件之前首先需要书写Profile文件，定义如下。</p>
-<p>Profile文件用于描述一款设备的能力特性。IOT平台通过解析Profile文件，获取该设备支持的服务（通信协议里面的一条完整报文）、属性（报文中的一个字段）、命令（报文中的一个字段）等信息。</p>
-<p>IOT平台通过编解码插件，对NB设备上报的数据和下发给NB设备的命令进行格式转换，即将设备上报的16进制格式的报文转换成json，json数据的具体属性名称将由Profile文件来确定。</p>
-<h3 id="知识储备"><a href="#知识储备" class="headerlink" title="知识储备"></a>知识储备</h3><p>熟悉javase基础编程，maven项目管理工具基本命令，jackson类库。</p>
-<h3 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h3><p>Eclipse，jdk1.8，maven，NB设备通信协议。</p>
-<hr>
-<h2 id="编解码结构分析"><a href="#编解码结构分析" class="headerlink" title="编解码结构分析"></a>编解码结构分析</h2><h3 id="Profile结构"><a href="#Profile结构" class="headerlink" title="Profile结构"></a>Profile结构</h3><p>Profile文件是一个深度为四级的文件夹如图所示。</p>
-<p>红色方框中为第一级目录，目录名称为当前项目的名称，命名规则为：设备类型-厂商ID-设备型号，例如WellMonitor_Apple_A1865，对应图中功能结构中的Product模块。</p>
-<p>绿色方框中为第二级目录，包含两个文件夹profile和service。profile文件夹下放置一个devicetype-capability.json，被用来描述一款设备的能力特征，包括设备类型、厂商、型号、协议类型以及提供的服务类型。相当于对当前整个Profile项目信息的一个概述。service文件夹下则包含设备具备的服务能力，每个服务具备的属性、命令以及命令的参数，对应图中Service模块。</p>
-<p>蓝色方框中代表三级目录，代表具体的服务，每个服务中又包含了属性和命令，属性用于描述设备上报数据，命令用于下发指令给设备，分别对应图中的Property模块和Command模块。</p>
-<p>此外只有红色与蓝色方框中文件的命名可以改动，其他名称固定不变。</p>
-<p>例如图2‑1，service中包含了WellWaterCommand代表井盖+水位设备所有的下行命令；WellWaterDeviceInfo代表该设备上报的设备信息；WellWaterTiming代表该设备定时上报的信息，共计三个服务。关于如何根据设备的通信协议划分服务，将在第三章中详细介绍。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/4e8ad1d840e65bfc32b745a7004fb776.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/04eeb087a81cf47f9575f929e56b629a.png" alt></p>
-<hr>
-<h3 id="编解码插件结构"><a href="#编解码插件结构" class="headerlink" title="编解码插件结构"></a>编解码插件结构</h3><p>编解码插件使用java开发且jdk版本必须为1.8，maven进行项目管理，建议使用eclipse开发工具。其工程目录结构如图所示。工程的命名建议和Profile项目相同，即采用：设备类型-厂商ID-设备型号的格式。其余包名类名无需更改，即使用华为提供的名称。</p>
-<p>其中下行数据编码表示该类将平台下发的json格式的命令转化为字节数组。</p>
-<p>上行数据解码则表示该类将设备上报的字节数组转化为json格式数据。</p>
-<p>主类则负责调用下行数据编码或者上行数据解码。</p>
-<p>工具类中包含了不同数据类型之间转换的方法。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/b0668ded531bc180ba453f0e2176c521.png" alt></p>
-<hr>
-<h2 id="编解码插件开发"><a href="#编解码插件开发" class="headerlink" title="编解码插件开发"></a>编解码插件开发</h2><h3 id="Profile开发"><a href="#Profile开发" class="headerlink" title="Profile开发"></a>Profile开发</h3><h4 id="新建工程"><a href="#新建工程" class="headerlink" title="新建工程"></a>新建工程</h4><p>新建名称为：设备类型-厂商ID-设备型号的文件夹，例如WellMonitor_Apple_A1865，打开该文件夹新建profile和service两个子文件夹，如图所示。<strong>注意profile和service这两个文件夹名称是固定不变的。</strong></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/99ef6fe911261c7f8eb2c73f36a5137f.png" alt></p>
-<h4 id="创建概述文件"><a href="#创建概述文件" class="headerlink" title="创建概述文件"></a>创建概述文件</h4><p>打开profile文件夹新建devicetype-capability.json文件，编辑该json文件如图所示。其中每个字段所代表的含义如图所示。serviceTypeCapabilities<br>Json数组包含了该Profile文件所有的服务模块，即每增加一个service都需要在这个数组中添加一个对应的json对象。例如Apple公司采用CoAP协议，设备型号为A1865的井盖设备包含三个服务（功能）模块，井盖命令、井盖开机信息，井盖定时上报信息。</p>
-<h4 id="Service划分"><a href="#Service划分" class="headerlink" title="Service划分"></a>Service划分</h4><p>关于一个设备service的划分，可以采用根据设备通信协议中上报报文的功能码进行划分的方法，即协议中一条上报报文对应一个service（通常一条报文占用一个功能码）。</p>
-<p>Service划分步骤：</p>
+        <h1 id="文件共享"><a href="#文件共享" class="headerlink" title="文件共享"></a>文件共享</h1><p>在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。 </p>
+<p>随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全世界的文件共享。</p>
+<p>早在20世纪的60和70年代，已经出现了不少实现文件共享的方法，如绕弯路法、连访法，以及利用基本文件实现文件共享的方法;而现代的一些文件共享方法，也是在早期这些方法的基础上发展起来的。下面我们仅介绍当前常用的两种文件共享方法，它们是在树形结构目录的基础上经适当修改形成的。</p>
+<h2 id="基于有向无循环图实现文件共享（硬链接）"><a href="#基于有向无循环图实现文件共享（硬链接）" class="headerlink" title="基于有向无循环图实现文件共享（硬链接）"></a>基于有向无循环图实现文件共享（硬链接）</h2><h3 id="有向无循环图DAG-Directed-Acyclic-Graph"><a href="#有向无循环图DAG-Directed-Acyclic-Graph" class="headerlink" title="有向无循环图DAG(Directed Acyclic Graph)"></a>有向无循环图DAG(Directed Acyclic Graph)</h3><p>在严格的树形结构目录中，每个文件只允许有一个父目录，父目录可以有效地拥有该文件，其它用户要想访问它，必须经过其属主目录来访问该文件。这就是说，对文件的共享是不对称的，或者说，树形结构目录是不适合文件共享的。如果允许一个文件可以有多个父目录，即有多个属于不同用户的多个目录，同时指向同一个文件，这样虽会破坏树的特性，但这些用户可用对称的方式实现文件共享，而不必再通过其属主目录来访问。</p>
+<p><img src="images/2020-07-14-14-17-59.png" alt></p>
+<p>上图展示出了一个有向无循环图，它允许每一个文件都可以有多个父目录。如图中的<br>文件F8有三个父目录，它们分别是D5、D6和D3,其中D5和D3还使用了相同的名字p,目录D6有两个父目录D2和D1。</p>
+<p>由上所述得知，当有多个用户要共享一个子目录或文件时，必须将共享文件或子目录链接到多个用户的父目录中，才能方便地找到该文件。现在的问题是，<strong>如何建立父目录D5<br>与共享文件F8之间的链接呢?</strong></p>
+<p>如果在文件目录中所包含的是文件的物理地址,即文件所在盘块的盘块号，则在链接时，必须将文件的物理地址拷贝到D5目录中去。但如果以后D5或D6还要继续向该文件中添加新内容，也必然要相应地再增加新的盘块，这些是由附加操作Append 来完成的。而这些新增加的盘块也只会出现在执行了操作的目录中。</p>
+<p><strong>可见, 这种变化对其他用户而言，是不可见的，因而新增加的这部分内容已不能被共享。</strong></p>
+<h3 id="利用索引结点"><a href="#利用索引结点" class="headerlink" title="利用索引结点"></a>利用索引结点</h3><p>为了解决这个问题，可以引用索引结点，即诸如文件的物理地址及其它的文件属性等信息，不再是放在目录项中，而是放在索引结点中。在文件目录中只设置文件名及指向相应索引结点的指针，如下图所示。 </p>
+<p><img src="images/2020-07-14-14-24-27.png" alt></p>
+<p>图中的用户Wang和Lee的文件目录中，都设置有指向共享文件的索引结点指针。此时，由任何用户对共享文件所进<br>行的Append操作或修改，都将引起其相应结点内容的改变(例如，增加了新的盘块号和文件长度等)，这些改变是其他用户可见的，从而也就能提供给其他用户来共享。</p>
+<p>在索引结点中还应有一个链接计数count,用于表示链接到本索引结点(亦即文件)上的用户目录项的数目。当count=3 时，表示有三个用户目录项连接到本文件上，或者说是有<br>三个用户共享此文件。</p>
+<p>当用户C创建一个新文件时，他便是该文件的所有者，此时将count置1。当有用户B要共享此文件时，在用户B的目录中增加一目录项,并设置一指针指向该文件的索引结点，<br>此时，文件主仍然是C,count=2。如果用户C不再需要此文件，是否能将此文件删除呢?回答是否定的。因为，若删除了该文件，也必然删除了该文件的索引结点，这样便会使B的指针悬空，而B则可能正在此文件上执行写操作，此时将因此半途而废。但如果C不删除此文件而等待B继续使用，这样，由于文件主是C,如果系统要记账收费，则C必须为B<br>使用此共享文件而付账，直至B不再需要。下图展示出了B链接到文件前后的情况。</p>
+<p><img src="images/2020-07-14-14-30-39.png" alt></p>
+<p>ln命令可以创建硬链接：</p>
+<blockquote>
+<p>ln 源文件 目标文件</p>
+</blockquote>
+<p><img src="images/2020-07-14-08-53-01.png" alt></p>
+<p>这里顺便说一下目录文件的”链接数”。创建目录时，默认会生成两个目录项：”.”和”..”。前者的inode号码就是当前目录的inode号码，等同于当前目录的”硬链接”；后者的inode号码就是当前目录的父目录的inode号码，等同于父目录的”硬链接”。所以，任何一个目录的”硬链接”总数，总是等于2加上它的子目录总数（含隐藏目录）。</p>
+<h2 id="基于符号链的共享方式（软链接）"><a href="#基于符号链的共享方式（软链接）" class="headerlink" title="基于符号链的共享方式（软链接）"></a>基于符号链的共享方式（软链接）</h2><h3 id="符号链接基本思想"><a href="#符号链接基本思想" class="headerlink" title="符号链接基本思想"></a>符号链接基本思想</h3><p>利用符号链接实现文件共享的基本思想，是允许一个文件或子目录有多个父目录，但其中仅有一个作为主(属主)父目录，其它的几个父目录都是通过符号链接方式与之相链接的(简称链接父目录)。 </p>
+<p><img src="images/2020-07-13-12-48-15.png" alt></p>
+<p>当访问“c”时，操作系统判断文件“c”属于Link 类型文件，于是会根据其中记录的路径层层查找目录，最终找到目录表1中的“a”表项，于是就找到了文件1的索引结点。</p>
+<h3 id="符号链接实现共享的优点"><a href="#符号链接实现共享的优点" class="headerlink" title="符号链接实现共享的优点"></a>符号链接实现共享的优点</h3><p>在利用符号链方式实现文件共享时，只是文件主才拥有指向其索引结点的指针；而共享该文件的其他用户则只有该文件的路径名，并不拥有指向其索引结点的指针。这样，也就不会发生在文件主删除一共享文件后留下一悬空指针的情况。当文件的拥有者把一个共享文件删除后，如果其他用户又试图通过符号链去访问一个已被删除的共享文件，则会因系统找不到该文件而使访问失败，于是再将符号链删除，此时不会产生任何影响。</p>
+<p>值得一提的是，在计算机网络中，Web浏览器在进行浏览时所使用的文件是HTML类型的文件。在HTML文件中有着许多链接符，通过这些链接符能够链接(通过计算机网络)<br>世界上任何地方的机器中的文件。在利用符号链实现共享时，同样可以通过网络链接到分布在世界各地的计算机系统中的文件。</p>
+<blockquote>
+<p>&lt; a href=”url”&gt;链接文本&lt;/ a&gt;</p>
+</blockquote>
+<p>ln -s命令可以创建软链接：</p>
+<blockquote>
+<p>ln -s 源文文件或目录 目标文件或目录</p>
+</blockquote>
+<p><img src="images/2020-07-14-08-57-33.png" alt></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p><img src="images/2020-07-13-14-01-26.png" alt></p>
+<h1 id="文件系统的安全性"><a href="#文件系统的安全性" class="headerlink" title="文件系统的安全性"></a>文件系统的安全性</h1><h2 id="安全性两个方面"><a href="#安全性两个方面" class="headerlink" title="安全性两个方面"></a>安全性两个方面</h2><p>确保未经授权的用户不能存取某些文件。涉及到技术、管理、法律、道德和政治等问题。</p>
+<p>安全性的两个重要方面：</p>
 <ol>
-<li><p>将通信协议中的报文区分为上行数据和下行数据两类。</p>
+<li>数据丢失。<ul>
+<li>灾难</li>
+<li>硬件或软件故障</li>
+<li>人的失误。可通过磁盘容错技术和备份(存放在另一处)来解决。</li>
+</ul>
 </li>
-<li><p>将下行数据（命令）写在一个service里面。</p>
-</li>
-<li><p>将上行数据根据功能码的不同，分成若干个不同的service。</p>
+<li>入侵者。（积极的或消极的)<ul>
+<li>非技术人员的偶然窥视</li>
+<li>入侵者的窥视</li>
+<li>明确的偷窃企图</li>
+<li>商业或军事间谍活动</li>
+</ul>
 </li>
 </ol>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ddf34b95238e815fe87246e0e110fc64.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ab01d431876d7fe3d2f8ba67a53e85b5.png" alt></p>
-<h4 id="创建service"><a href="#创建service" class="headerlink" title="创建service"></a>创建service</h4><p>打开第二级目录的service文件夹，根据步骤二devicetype-capability.json文件中serviceTypeCapabilities数组中定义的service创建对应的文件夹，文件夹名称为serviceId对应的值。每个文件夹下分别创建profile文件夹，profile文件夹下创建servicetype-capability.json文件，用来描述具体服务的功能，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/a9957a368fcf5a0081ca6a016d0a20b4.png" alt></p>
-<p>接下来编写每个service对应的servicetype-capability.json，如图所示的Profile，将井盖水位设备的所有命令下发模块单独写在了一个service中，即WellWaterCommand模块；将设备的上报数据信息按照通信协议中每个报文的功能码区分为不同的service，即WellWaterDeviceInfo（开机信息）模块与WellWaterTiming（定时上报）模块。</p>
-<h4 id="编写下行service"><a href="#编写下行service" class="headerlink" title="编写下行service"></a>编写下行service</h4><p>下行命令在service中的书写格式如图3‑5所示。Commands数组里面存放若干个命令对象，每个命令对象包含CommandName命令的名称和paras命令携带的参数数组，以及responses命令回应数组。paras数组里面包含若干个参数对象。参数对象包含paraName等一系列属性。这每一个参数对象都对应通信协议报文中的一个属性。serviceType的值一定要与当前服务文件夹名称保持一致。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/1a510309babebf4bc44c419eb84e7dba.png" alt></p>
-<h4 id="编写上行service"><a href="#编写上行service" class="headerlink" title="编写上行service"></a>编写上行service</h4><p>上行属性service比命令service要简单，properties数组中存放的是设备上报上来的数据，每一个json对象对应通信协议报文中的一个属性。propertyName的值可以随意定义，dataType的值如不能根据通信协议中的默认参数值明显的判断该属性的数据类型，应找相关人员确认，否则解析将会出现数据错误。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/f3aa9a21509479ad6e0d2ec7f8ee9b65.png" alt></p>
-<h4 id="打包Profile"><a href="#打包Profile" class="headerlink" title="打包Profile"></a>打包Profile</h4><p>将WellMonitor_Apple_A1865文件夹下的profile和service文件打包为zip格式，命名为WellMonitor_Apple_A1865，并且压缩包内不能包含WellMonitor_Apple_A1865文件夹这一层目录。</p>
-<hr>
-<h3 id="编解码开发"><a href="#编解码开发" class="headerlink" title="编解码开发"></a>编解码开发</h3><p>使用eclipse配置本地maven仓库，并导入华为提供的demo工程。</p>
-<p>修改pom.xml中的&lt;artifactId&gt;XXX&lt;/artifactId&gt;和&lt;Bundle-SymbolicName&gt;XXX&lt;/Bundle-SymbolicName&gt;命名规范：设备类型-厂商ID-设备型号，与Profile文件保持一致。如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0fae57687737d2580c8a4057b7361c0d.png" alt></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0a1598030403de62421404d272d03449.png" alt></p>
-<p>修改ProtocolAdapterImpl.java中的厂商名称与设备型号，注意与Profile保持一致。如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/46aebb425e311ba4d59f8637297121aa.png" alt></p>
-<h4 id="编写下行编码"><a href="#编写下行编码" class="headerlink" title="编写下行编码"></a>编写下行编码</h4><p>数据下行编码流程如图所示，通过获取OC平台发送过来的json数据，首先根据serviceId将对应数据保存到全局变量中，然后调用toByte方法，将各种类型的数据装换为16进制的比特数组。拼装成一条完整的报文并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/cfb74c29be05bbbd2d1c729f3f642b24.png" alt></p>
-<h4 id="编写上行解码"><a href="#编写上行解码" class="headerlink" title="编写上行解码"></a>编写上行解码</h4><p>数据上行解码流程如图所示。通过获取OC平台发送过来的16进制比特数组格式数据，首先根据比特数组中的功能码（功能码在数据哪个位置，请从通信协议中查看），将不同服务对应的不同数据，根据通信协议将byte类型的属性转换为所需类型，保存到全局变量中，然后调用toJsonNode方法，拼装成一个Json对象并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d3d96855d73d6672e148012e8eccc772.png" alt></p>
-<h4 id="打包编解码"><a href="#打包编解码" class="headerlink" title="打包编解码"></a>打包编解码</h4><p>打包编解码，即将该maven工程打包成jar文件。检查pom.xml中的&lt;packaging&gt;bundle&lt;/packaging&gt;值是否为bundle，不能为jar。以eclipse为例，在工程上右键选择Run<br>As然后选择Maven build…如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/6b61595390f369c7f5b0363149265e1f.png" alt></p>
-<p>在Goals中输入clean package点击Run按钮，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d89e750364de272a6d6eb8e3999150d6.png" alt></p>
-<p>等待控制台出现BUILD<br>SUCCESS，即可在当前项目的target目录下找到打包好的jar文件，如图所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/625906a1d5ede2c57835af1fd6f60a9e.png" alt></p>
-<p>新建package文件夹，文件夹下包含preload文件夹以及package-info.json描述文件，将打包好的jar文件放到preload文件夹下，如图所示。<br><img src="/image/package.jpg" alt></p>
-<p>按照内容修改package-info.json描述文件，如图所示。</p>
-<p><img src="/image/package-info.jpg" alt></p>
-<p>最后将package文件夹压缩为package.zip,并且压缩包内不能包含package文件夹这一层目录。</p>
-<hr>
-<h2 id="上传离线插件到OC开发者平台"><a href="#上传离线插件到OC开发者平台" class="headerlink" title="上传离线插件到OC开发者平台"></a>上传离线插件到OC开发者平台</h2><h3 id="上传Profile"><a href="#上传Profile" class="headerlink" title="上传Profile"></a>上传Profile</h3><p>有两种上传方式。</p>
+<p>设计安全时要考虑是那一类入侵者.</p>
+<h2 id="文件的保护机制"><a href="#文件的保护机制" class="headerlink" title="文件的保护机制"></a>文件的保护机制</h2><p>(1) 文件保护<br>      用于提供安全性的特定的操作系统机制。<br>     (有权限的用户, 应让其进行相应操作, 否则, 应禁止)<br>     实现：用户验证、存取控制</p>
+<p>(2) 用户验证<br>用户登录, 检验其身份</p>
 <ul>
-<li>登录开发者门户，选择产品开发下的添加按钮。</li>
+<li><p>口令</p>
+</li>
+<li><p>物理鉴定</p>
+</li>
 </ul>
-<p><img src="/image/oc-product.jpg" alt></p>
-<p>选择从本地导入产品创建-&gt;上传Profil文件。将上文中打包好的Profile文件WellMonitor_Apple_A1865.zip进行上传。<br><img src="/image/oc-add.jpg" alt></p>
+<p>磁卡，指纹，签名分析，手指长度分析</p>
+<p>(3) 存取控制</p>
 <ul>
-<li>登录管理门户，选择设备管理-&gt;产品模型-&gt;本地导入产品模型，添加完成后会自动同步到开发者门户，然后在开发者门户继续下面的上传插件操作。</li>
+<li><p>审查用户的权限</p>
+</li>
+<li><p>审查本次操作的合法性</p>
+</li>
 </ul>
-<h3 id="上传插件"><a href="#上传插件" class="headerlink" title="上传插件"></a>上传插件</h3><p>上传Profile以后就会自动生成一个产品，选择第二步编解码插件开发-&gt;插件管理-&gt;上传插件。将上文中打包好的package.zip文件上传。插件上传成功，即可注册设备进行下一步的开发。<br><img src="/image/oc-plugin.jpg" alt><br>附录</p>
-<div><div class="fold_hider"><div class="close hider_title">点击显/隐内容</div></div><div class="fold">
-<p>Nothing to show you.</p>
+<p><strong>为了确保文件系统的安全性，可针对上述原因而采取以<br>下措施:</strong></p>
+<p>(1)通过存取控制机制来防止由人为因素所造成的文件<br>不安全性。</p>
+<p>(2)通过磁盘容错技术来防止由磁盘部分的故障所造成<br>的文件不安全性。</p>
+<p>(3)通过“后备系统”来防止由自然因素所造成的不安<br>全性。</p>
+<p><strong>接下来我们主要看一下第二方面磁盘容错技术。</strong></p>
+<h2 id="第一级-磁盘容错技术SFT-1"><a href="#第一级-磁盘容错技术SFT-1" class="headerlink" title="第一级 磁盘容错技术SFT-1"></a>第一级 磁盘容错技术SFT-1</h2><p>第一级容错技术(SFT- I )是最基本的一种磁盘容错技术,主要用于防止因磁盘表面缺陷所造成的数据丢失。它包含双份目录、双份文件分配表及写后读校验等措施。</p>
+<h3 id="双份目录和双份文件分配表"><a href="#双份目录和双份文件分配表" class="headerlink" title="双份目录和双份文件分配表"></a>双份目录和双份文件分配表</h3><p>在磁盘上存放的文件目录和文件分配表FAT，是文件管<br>理所用的重要数据结构。</p>
+<p>为了防止这些表格被破坏，可在不<br>同的磁盘上或在磁盘的不同区域中，分别建立(双份)目录表<br>和FAT。</p>
+<p>其中一份为主目录及主FAT;另一份为备份目录及备<br>份FAT。一但由于磁盘表面缺陷而造成主文件目录或主FAT的<br>损坏时，系统便自动启用备份文件目录及备份FAT，从而可<br>以保证磁盘上的数据仍是可访问的。</p>
+<h3 id="热修复重定向和写后读校验"><a href="#热修复重定向和写后读校验" class="headerlink" title="热修复重定向和写后读校验"></a>热修复重定向和写后读校验</h3><p>由于磁盘价格昂贵，当磁盘表面有少量缺陷时，则可采取某种补救措施后继续使用磁盘。一般主要采取以下两个补救措施:</p>
+<ol>
+<li><p>热修复重定向:系统将磁盘容量的一部分(例如<br>2%~ 3%)作为热修复重定向区，用于存放当发现磁盘有缺<br>陷时的待写数据，并对写入该区的所有数据进行登记，以<br>便于以后对数据进行访问。</p>
+</li>
+<li><p>写后读校验方式。<br>为了保证所有写入磁盘的数据都能写入到完好的盘块中，应该在每次从内存缓冲区向磁盘中写入一个数据块后，又立即从磁盘上读出该数据块，并送至另缓冲区中，再将该缓冲区内容与内存缓冲区中在写后仍保留的数据进行比较。若两者一致，便认为此次写入成功, 可继续写下一一个盘块;否则，再重写。若重写后两者仍不一致,<br>则认为该盘块有缺陷，此时，便将应写入该盘块的数据，写<br>入到热修复重定向区中。</p>
+</li>
+</ol>
+<h2 id="第二级磁盘容错技术SFT-2"><a href="#第二级磁盘容错技术SFT-2" class="headerlink" title="第二级磁盘容错技术SFT-2"></a>第二级磁盘容错技术SFT-2</h2><h3 id="磁盘镜像-两个磁盘驱动器互为备份"><a href="#磁盘镜像-两个磁盘驱动器互为备份" class="headerlink" title="磁盘镜像-两个磁盘驱动器互为备份"></a>磁盘镜像-两个磁盘驱动器互为备份</h3><p>为了避免磁盘驱动器发生故障而丢失数据，便增设了磁盘镜像功能。为实现该功能，须在同一磁盘控制器下再增设一个完全相同的磁盘驱动器，如图所示。当采用磁盘镜像方式时，在每次向主磁盘写入数据后，都需要将数据再写到备份磁盘上，使两个磁盘上具有完全相同的位像图。</p>
+<p><img src="images/2020-07-13-13-43-52.png" alt></p>
+<p>把备份磁盘看作是主磁盘的一面镜子，当主磁盘驱动器发生故障<br>时，由于有备份磁盘的存在，在进行切换后，使主机仍能正常工作。磁盘镜像虽然实现了容错功能，但未能使服务器的磁盘I/O速度得到提高，却使磁盘的利用率降至仅为50%。</p>
+<h3 id="磁盘双工-Disk-Duplexing"><a href="#磁盘双工-Disk-Duplexing" class="headerlink" title="磁盘双工(Disk Duplexing)"></a>磁盘双工(Disk Duplexing)</h3><p>如果控制这两台磁盘驱动器的磁盘控制器发生故障，或主机到磁盘控制器之间的通道发生了故障，磁盘镜像功能便起不到数据保护的作用。</p>
+<p><img src="images/2020-07-13-13-46-13.png" alt></p>
+<p>因此，在第二级容错技术中，又增加了磁盘双工功能，即将两台磁盘驱动器分别接到两个磁盘控制器上，同样使这两台磁盘机镜像成对，如图所示。在磁盘双工时，文件服务器同时将数据写到两个处于不同控制器下的磁盘上，使两者有完全相同的位像图。如果某个通道或控制器发生故障时，另一个通道上的磁盘仍能正常工作，不会造成数据的丢失。在磁盘双工时，由于每一个磁盘都有自己的独立通道，故可同时(并行)地将数据写入磁盘,或读出数据。</p>
+<h2 id="文件系统的数据一致性控制"><a href="#文件系统的数据一致性控制" class="headerlink" title="文件系统的数据一致性控制"></a>文件系统的数据一致性控制</h2><p>同一数据存放在不同的文件中, 对它修改时应对不同的文件都统一修改, 才能保证数据的一致性。修改时数据的流向是, 磁盘块、内存、写回磁盘块。若在写回之前, 系统崩溃, 则文件系统数据出现不一致。</p>
+<p>系统应配置保证数据一致性的软件和相应的硬件，硬件采取冗余技术配置一个高度可靠的存储系统, 称为稳定存储器; 目前广泛采用磁盘双工方式来实现稳定存储器。设计保证数据一致性的实用程序, 当系统再次启动时, 运行该程序, 检查磁盘块和目录系统。</p>
+<h3 id="事务定义"><a href="#事务定义" class="headerlink" title="事务定义"></a>事务定义</h3><p>事务是用于访问和修改数据的一个程序单位, 由一系列相关的读写操作组成; 被访问的数据可以分散在不同位置, 只有一系列读写操作全部完成才能以托付操作(Commit Operation)终止操作; 而只要有一个操作失败就执行夭折操作(Abort Operation)。</p>
+<p>为了保证数据的一致性, 对于夭折事务所操作过的数据必须恢复原来的状态, 使该事务退回(rolled back),保证一个事务对一批数据修改操作,要么全部完成要么 一个也不修改, 这种特性称事务的原子性。</p>
+<h3 id="事务记录"><a href="#事务记录" class="headerlink" title="事务记录"></a>事务记录</h3><p>为了实现上述的原子修改，通常须借助于称为事务记录的数据结构来实现。这些数据结构被放在稳定存储器中，用来记录在事务运行时数据项修改的全部信息，故又称为运行记录(Log)。该记录中包括有下列字段:</p>
+<pre><code>事务名:用于标识该事务的惟一名字;
 
-</div></div>
+数据项名:指被修改数据项的惟一名字;
+
+旧值:修改前数据项的值; 
+
+新值:修改后数据项将具有的值。</code></pre><h3 id="恢复算法"><a href="#恢复算法" class="headerlink" title="恢复算法"></a>恢复算法</h3><p>由于一组被事务Ti修改的数据以及它们被修改前和修改后的值都能在事务记录表中找到，因此，利用事务记录表， 系统能处理任何故障而不致使故障造成非易失性存储器中信 系统能处理任何故障而不致使故障造成非易失性存储器中信息的丢失。恢复算法可利用以下两个过程:</p>
+<ol>
+<li>undo〈Ti〉。</li>
+</ol>
+<p>该过程把所有被事务Ti修改过的数据 恢复为修改前的值。 恢复为修改前的值。 </p>
+<ol start="2">
+<li>redo〈Ti〉。</li>
+</ol>
+<p>该过程把所有被事务Ti修改过的数据设置为新值。</p>
+<h3 id="检查点"><a href="#检查点" class="headerlink" title="检查点"></a>检查点</h3><h4 id="检查点的作用"><a href="#检查点的作用" class="headerlink" title="检查点的作用"></a>检查点的作用</h4><p>使对为了对事务记录的清理工作经常化, 设置检查点记录; 每隔一定的时间做一次清理: </p>
+<p>将内存中的当前事务记录表的所有记录, 和所有已修改的数据,  输出到稳定存储器中; </p>
+<p>再将检查点记录输出到稳定存储器中; </p>
+<p>每当出现一个检查点记录便执行恢复操作。</p>
+<h4 id="新的恢复算法"><a href="#新的恢复算法" class="headerlink" title="新的恢复算法"></a>新的恢复算法</h4><p>发生故障后,恢复算法只需对最后一个检查点之后的事务记录进行处理。</p>
+<p>即从最后一个检查点之后的第一个事务记录开始,对所有的事务Tk , 在Log表中出现(Tk托付)记录则执行redo(Tk ), 未出现(Tk托付)记录则执行undo(Tk )。</p>
+<h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><p>由于事务具有的原子性, 使得一个事务执行完后才允许另一事务执行, 即事务对数据项的修改是互斥的,事务的这种特性称为顺序性,将实现顺序性的技术称为并发控制。可以用互斥信号量来保证事务处理的顺序性,但用的最广的是“锁”。</p>
+<h4 id="利用互斥锁实现顺序性"><a href="#利用互斥锁实现顺序性" class="headerlink" title="利用互斥锁实现顺序性"></a>利用互斥锁实现顺序性</h4><p>设置一种用于实现互斥的锁, 简称互斥锁,为每一个共享对象设一把互斥锁, 如果事务 Ti 需要对一批对象进行访问,则为了保证事务操作的原子性, 应先获得这批对象的互斥锁, 将他们全部锁住, 如果成功便可以对这批对象执行读写操作,然后全部开锁, 若某对象已被其它事务锁住, 则Ti 要将已锁住的对象全部开锁。</p>
+<h2 id="重复数据的一致性问题"><a href="#重复数据的一致性问题" class="headerlink" title="重复数据的一致性问题"></a>重复数据的一致性问题</h2><h3 id="重复文件的一致性"><a href="#重复文件的一致性" class="headerlink" title="重复文件的一致性"></a>重复文件的一致性</h3><p>以UNIX类型的文件系统为例,通常文件一个文件的目录项由一个文件名和一个索引结点号组成; 当有重复文件时, 一个文件的目录项由一个文件名和若干个索引结点号组成。保证重复文件的一致性用两种方法：</p>
+<p>(1) 当一个文件被修改后,可查目录, 从各i结点找到各拷贝的物理位置, 对这些拷贝做同样修改。</p>
+<p>(2) 为新修改的文件建立几个新拷贝取代原来的拷贝。</p>
+<p><img src="images/2020-07-13-13-56-37.png" alt></p>
+<h3 id="盘块号一致性的检查"><a href="#盘块号一致性的检查" class="headerlink" title="盘块号一致性的检查"></a>盘块号一致性的检查</h3><p>两张表，每块对应一个表中的计数器，初值为0，正常情况下空闲块计数表与数据块计数表对应项的值应该是互补关系。</p>
+<p>表一：记录了每块在空闲块表中出现的次数</p>
+<p>表二：记录了每块在文件中出现的次数</p>
+<p><img src="images/2020-07-13-13-58-35.png" alt><br><img src="images/2020-07-13-13-59-18.png" alt></p>
+<h3 id="链结数一致性的检查"><a href="#链结数一致性的检查" class="headerlink" title="链结数一致性的检查"></a>链结数一致性的检查</h3><p>在UNIX的文件目录中,索引结点中有一个链接计数 count, 它用来表示共享文件计数, 它应该和目录中指向该索引结点的数目一致。否则出错。</p>
+<p>为检查不一致差错, 同样配置一张计数器表, 为每个文件建立一个表项, 检查时从根结点开始, 查找并计数,检查完后, 将计数器表的每个计数值与count 对比, 一致则正确, 否则发生链接数不一致差错。</p>
+<ul>
+<li><p>count值大于计数表的计数值则该文件永远不会被删除; </p>
+</li>
+<li><p>count值小于计数表的计数值则该文件会被误删除; </p>
+<p>这两种情况解决方法是将count值修改正确。</p>
+</li>
+</ul>
+
       
     </div>
 
@@ -775,7 +828,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    换个角度看编解码插件开发
+    文件共享与保护
   </li>
 
   <li class="post-copyright-author">
@@ -783,16 +836,16 @@
 
   <li class="post-copyright-license">
     <strong>发布时间：</strong>
-    2019年06月24日 - 10:57:19
+    2020年07月13日 - 08:44:04
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 16:30:30
+    2021年08月03日 - 16:21:07
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/iot/oceanconnect-plugin-dev/" title="换个角度看编解码插件开发">https://szp2016.github.io/iot/oceanconnect-plugin-dev/</a>
+    <a href="https://szp2016.github.io/linux/文件共享与保护/" title="文件共享与保护">https://szp2016.github.io/linux/文件共享与保护/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -809,9 +862,7 @@
         
         <div class="post-tags">
           
-            <a href="/tags/编解码/" rel="tag"><i class="fa fa-tag"></i> 编解码</a>
-          
-            <a href="/tags/OceanConnect/" rel="tag"><i class="fa fa-tag"></i> OceanConnect</a>
+            <a href="/tags/文件系统/" rel="tag"><i class="fa fa-tag"></i> 文件系统</a>
           
         </div>
       
@@ -845,8 +896,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/iot/编解码插件书写笔记/" rel="next" title="堪比华为还详细的编解码插件线下开发教程">
-                <i class="fa fa-chevron-left"></i> 堪比华为还详细的编解码插件线下开发教程
+              <a href="/linux/Linux字符设备驱动程序/" rel="next" title="Linux字符设备驱动程序">
+                <i class="fa fa-chevron-left"></i> Linux字符设备驱动程序
               </a>
             
           </div>
@@ -855,8 +906,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/git/本地Git关联Github/" rel="prev" title="本地Git关联Github">
-                本地Git关联Github <i class="fa fa-chevron-right"></i>
+              <a href="/操作系统/系统调用机制/" rel="prev" title="系统调用机制">
+                系统调用机制 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -1123,7 +1174,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码概述"><span class="nav-number">1.</span> <span class="nav-text">编解码概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#知识储备"><span class="nav-number">1.1.</span> <span class="nav-text">知识储备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开发工具"><span class="nav-number">1.2.</span> <span class="nav-text">开发工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码结构分析"><span class="nav-number">2.</span> <span class="nav-text">编解码结构分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profile结构"><span class="nav-number">2.1.</span> <span class="nav-text">Profile结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编解码插件结构"><span class="nav-number">2.2.</span> <span class="nav-text">编解码插件结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码插件开发"><span class="nav-number">3.</span> <span class="nav-text">编解码插件开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profile开发"><span class="nav-number">3.1.</span> <span class="nav-text">Profile开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#新建工程"><span class="nav-number">3.1.1.</span> <span class="nav-text">新建工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建概述文件"><span class="nav-number">3.1.2.</span> <span class="nav-text">创建概述文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Service划分"><span class="nav-number">3.1.3.</span> <span class="nav-text">Service划分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建service"><span class="nav-number">3.1.4.</span> <span class="nav-text">创建service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写下行service"><span class="nav-number">3.1.5.</span> <span class="nav-text">编写下行service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写上行service"><span class="nav-number">3.1.6.</span> <span class="nav-text">编写上行service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包Profile"><span class="nav-number">3.1.7.</span> <span class="nav-text">打包Profile</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编解码开发"><span class="nav-number">3.2.</span> <span class="nav-text">编解码开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写下行编码"><span class="nav-number">3.2.1.</span> <span class="nav-text">编写下行编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写上行解码"><span class="nav-number">3.2.2.</span> <span class="nav-text">编写上行解码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包编解码"><span class="nav-number">3.2.3.</span> <span class="nav-text">打包编解码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上传离线插件到OC开发者平台"><span class="nav-number">4.</span> <span class="nav-text">上传离线插件到OC开发者平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上传Profile"><span class="nav-number">4.1.</span> <span class="nav-text">上传Profile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传插件"><span class="nav-number">4.2.</span> <span class="nav-text">上传插件</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件共享"><span class="nav-number">1.</span> <span class="nav-text">文件共享</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于有向无循环图实现文件共享（硬链接）"><span class="nav-number">1.1.</span> <span class="nav-text">基于有向无循环图实现文件共享（硬链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向无循环图DAG-Directed-Acyclic-Graph"><span class="nav-number">1.1.1.</span> <span class="nav-text">有向无循环图DAG(Directed Acyclic Graph)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用索引结点"><span class="nav-number">1.1.2.</span> <span class="nav-text">利用索引结点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于符号链的共享方式（软链接）"><span class="nav-number">1.2.</span> <span class="nav-text">基于符号链的共享方式（软链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接基本思想"><span class="nav-number">1.2.1.</span> <span class="nav-text">符号链接基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接实现共享的优点"><span class="nav-number">1.2.2.</span> <span class="nav-text">符号链接实现共享的优点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统的安全性"><span class="nav-number">2.</span> <span class="nav-text">文件系统的安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性两个方面"><span class="nav-number">2.1.</span> <span class="nav-text">安全性两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的保护机制"><span class="nav-number">2.2.</span> <span class="nav-text">文件的保护机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一级-磁盘容错技术SFT-1"><span class="nav-number">2.3.</span> <span class="nav-text">第一级 磁盘容错技术SFT-1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#双份目录和双份文件分配表"><span class="nav-number">2.3.1.</span> <span class="nav-text">双份目录和双份文件分配表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#热修复重定向和写后读校验"><span class="nav-number">2.3.2.</span> <span class="nav-text">热修复重定向和写后读校验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二级磁盘容错技术SFT-2"><span class="nav-number">2.4.</span> <span class="nav-text">第二级磁盘容错技术SFT-2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘镜像-两个磁盘驱动器互为备份"><span class="nav-number">2.4.1.</span> <span class="nav-text">磁盘镜像-两个磁盘驱动器互为备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘双工-Disk-Duplexing"><span class="nav-number">2.4.2.</span> <span class="nav-text">磁盘双工(Disk Duplexing)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统的数据一致性控制"><span class="nav-number">2.5.</span> <span class="nav-text">文件系统的数据一致性控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务定义"><span class="nav-number">2.5.1.</span> <span class="nav-text">事务定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务记录"><span class="nav-number">2.5.2.</span> <span class="nav-text">事务记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#恢复算法"><span class="nav-number">2.5.3.</span> <span class="nav-text">恢复算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查点"><span class="nav-number">2.5.4.</span> <span class="nav-text">检查点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检查点的作用"><span class="nav-number">2.5.4.1.</span> <span class="nav-text">检查点的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新的恢复算法"><span class="nav-number">2.5.4.2.</span> <span class="nav-text">新的恢复算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发控制"><span class="nav-number">2.5.5.</span> <span class="nav-text">并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用互斥锁实现顺序性"><span class="nav-number">2.5.5.1.</span> <span class="nav-text">利用互斥锁实现顺序性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重复数据的一致性问题"><span class="nav-number">2.6.</span> <span class="nav-text">重复数据的一致性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重复文件的一致性"><span class="nav-number">2.6.1.</span> <span class="nav-text">重复文件的一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#盘块号一致性的检查"><span class="nav-number">2.6.2.</span> <span class="nav-text">盘块号一致性的检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链结数一致性的检查"><span class="nav-number">2.6.3.</span> <span class="nav-text">链结数一致性的检查</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1369,7 +1420,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'iot/oceanconnect-plugin-dev/'
+    refer: 'linux/文件共享与保护/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];
