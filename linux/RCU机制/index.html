@@ -133,7 +133,7 @@
 <meta property="og:image" content="https://static.lwn.net/images/ns/kernel/rcu/MultiVersion8.jpg">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210712210939902.png">
 <meta property="og:image" content="https://static.lwn.net/images/ns/kernel/rcu/GracePeriodGood.png">
-<meta property="og:updated_time" content="2021-08-03T08:30:43.549Z">
+<meta property="og:updated_time" content="2021-08-06T02:16:06.977Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux RCU机制">
 <meta name="twitter:description" content="1. 简介RCU (Read-copy update)是2002年10月添加到Linux内核中的一种同步机制。作为数据同步的一种方式，在当前的Linux内核中发挥着重要的作用。 RCU主要针对的数据对象是链表，目的是提高遍历读取数据的效率，为了达到目的使用RCU机制读取数据的时候不对链表进行耗时的加锁操作。这样在同一时间可以有多个线程同时读取该链表，并且允许一个线程对链表进行修改（修改的时候，需要">
@@ -531,7 +531,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 16:30:43" itemprop="dateModified" datetime="2021-08-03T16:30:43+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-06 10:16:06" itemprop="dateModified" datetime="2021-08-06T10:16:06+08:00">2021-08-06</time>
               
             
           </span>
@@ -688,7 +688,9 @@
 <p>rcu_dereference()：读者调用它来获得一个被RCU保护的指针。<br>rcu_assign_pointer()：写者使用该函数来为被RCU保护的指针分配一个新的值。</p>
 </blockquote>
 <p>synchronize_rcu()：这是RCU的核心所在，它挂起写线程，等待读者都退出后释放老的数据。</p>
-<p>参考链接：<br><a href="https://lwn.net/Articles/262464/" target="_blank" rel="noopener">https://lwn.net/Articles/262464/</a><br><a href="https://www.cnblogs.com/schips/p/linux_cru.html" target="_blank" rel="noopener">https://www.cnblogs.com/schips/p/linux_cru.html</a></p>
+<p>参考链接：</p>
+<p><a href="https://lwn.net/Articles/262464/" target="_blank" rel="noopener">https://lwn.net/Articles/262464/</a></p>
+<p><a href="https://www.cnblogs.com/schips/p/linux_cru.html" target="_blank" rel="noopener">https://www.cnblogs.com/schips/p/linux_cru.html</a></p>
 
       
     </div>
@@ -773,7 +775,7 @@
     2021年07月12日 - 18:01:55
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 16:30:43
+    2021年08月06日 - 10:16:06
   
 
   <li class="post-copyright-link">
@@ -840,8 +842,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/xv6/xv6-syscall/" rel="prev" title="系统调用跟踪xv6">
-                系统调用跟踪xv6 <i class="fa fa-chevron-right"></i>
+              <a href="/xv6/xv6-syscall/" rel="prev" title="系统调用跟踪-xv6 lab syscall">
+                系统调用跟踪-xv6 lab syscall <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -1141,7 +1143,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">168k</span>
+    <span title="站点总字数">169k</span>
   
 
   
@@ -1150,7 +1152,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:33</span>
+    <span title="站点阅读时长">2:34</span>
   
 </div>
 

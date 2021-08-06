@@ -117,7 +117,7 @@
   <meta name="description" content="1.概述本文记录xv6操作系统的系统调用跟踪实验，xv6是一个类Unix的简单操作系统。该实验是要求实现一个trace系统调用，该系统调用的功能是根据用户传入的系统调用号跟踪某个或者某些进程的系统调用情况。 2. 实验要求2.1 实验铺垫有一个已给出的用户态trace.c程序如下： 1234567891011121314151617181920212223242526272829#include">
 <meta name="keywords" content="系统调用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="系统调用跟踪xv6">
+<meta property="og:title" content="系统调用跟踪-xv6 lab syscall">
 <meta property="og:url" content="https://szp2016.github.io/xv6/xv6-syscall/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1.概述本文记录xv6操作系统的系统调用跟踪实验，xv6是一个类Unix的简单操作系统。该实验是要求实现一个trace系统调用，该系统调用的功能是根据用户传入的系统调用号跟踪某个或者某些进程的系统调用情况。 2. 实验要求2.1 实验铺垫有一个已给出的用户态trace.c程序如下： 1234567891011121314151617181920212223242526272829#include">
@@ -125,9 +125,9 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210718173313228.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210718173351530.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210718222739152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
-<meta property="og:updated_time" content="2021-08-03T08:30:17.868Z">
+<meta property="og:updated_time" content="2021-08-06T12:19:30.181Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="系统调用跟踪xv6">
+<meta name="twitter:title" content="系统调用跟踪-xv6 lab syscall">
 <meta name="twitter:description" content="1.概述本文记录xv6操作系统的系统调用跟踪实验，xv6是一个类Unix的简单操作系统。该实验是要求实现一个trace系统调用，该系统调用的功能是根据用户传入的系统调用号跟踪某个或者某些进程的系统调用情况。 2. 实验要求2.1 实验铺垫有一个已给出的用户态trace.c程序如下： 1234567891011121314151617181920212223242526272829#include">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210718173313228.png">
 
@@ -147,7 +147,7 @@
   };
 </script>
 
-  <title>系统调用跟踪xv6 | 桃花猿记</title>
+  <title>系统调用跟踪-xv6 lab syscall | 桃花猿记</title>
   
 
 
@@ -480,7 +480,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">系统调用跟踪xv6
+          <h2 class="post-title" itemprop="name headline">系统调用跟踪-xv6 lab syscall
 
               
             
@@ -523,7 +523,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 16:30:17" itemprop="dateModified" datetime="2021-08-03T16:30:17+08:00">2021-08-03</time>
+                <time title="修改时间：2021-08-06 20:19:30" itemprop="dateModified" datetime="2021-08-06T20:19:30+08:00">2021-08-06</time>
               
             
           </span>
@@ -576,7 +576,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">3.4k</span>
+                <span title="本文字数">4.2k</span>
               
 
               
@@ -590,7 +590,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">3 分钟</span>
+                <span title="阅读时长">4 分钟</span>
               
             </div>
           
@@ -733,6 +733,28 @@
 <li>添加$U/_trace到Makefile中的UPROGS变量里，运行结果如下</li>
 </ol>
 <p><img src="https://img-blog.csdnimg.cn/20210718222739152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="6-添加系统调用sysinfo"><a href="#6-添加系统调用sysinfo" class="headerlink" title="6. 添加系统调用sysinfo"></a>6. 添加系统调用sysinfo</h1><p>该系统调用要求实现的功能有两个：</p>
+<p>1.获取当前系统中空闲的内存大小。<br>2.获取当前系统中的进程数量，即进程状态不是UNUSED的进程。<br>以上两个数据需要保存到struct sysinfo结构体中，根据sysinfotest.c文件中对该结构体的引用情况，对结构体定义如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//kernel/sysinfo.h</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sysinfo</span> &#123;</span></span><br><span class="line">  uint64 freemem;   <span class="comment">// amount of free memory (bytes)</span></span><br><span class="line">  uint64 nproc;     <span class="comment">// number of process</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>添加系统调用的整个过程与上文中的流程一样，流程如下：</p>
+<ul>
+<li>在user/user.h中声明系统调用函数 int sysinfo(struct sysinfo *)</li>
+<li>在user/usys.pl中注册entry</li>
+<li>在kernel/syscall.h中注册系统调用号</li>
+<li>在kernel/sysproc.c中对uint64 sys_sysinfo(void)进行实现</li>
+<li>在kernel/kalloc.c中实现空闲内存的计算</li>
+<li>在kernel/proc.c中实现统计进程数量</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">uint64</span><br><span class="line">sys_sysinfo(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sysinfo</span> <span class="title">info</span>;</span></span><br><span class="line">  uint64 addr;</span><br><span class="line">  <span class="comment">// 获取用户态传入的sysinfo结构体</span></span><br><span class="line">  <span class="keyword">if</span> (argaddr(<span class="number">0</span>, &amp;addr) &lt; <span class="number">0</span>) </span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  <span class="comment">//获取当前进程</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span>* <span class="title">p</span> = <span class="title">myproc</span>();</span></span><br><span class="line">  <span class="comment">//计算剩余内存</span></span><br><span class="line">  info.freemem = freememory();</span><br><span class="line">  <span class="comment">//计算进程数量</span></span><br><span class="line">  info.nproc = proc_size();</span><br><span class="line"> <span class="comment">//拷贝info到用户空间</span></span><br><span class="line">  <span class="keyword">if</span> (copyout(p-&gt;pagetable, addr, (<span class="keyword">char</span>*)&amp;info, <span class="keyword">sizeof</span>(info)) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在kernel/kalloc.c中实现freememsize()，xv6使用struct kmem结构体组成的链表freelist表示可用内存，统计keme.freelist中节点的个数乘以页大小就可以得到当前可用内存大小。</p>
+<p>xv6将内核之后的地址到PHYSTOP (KERNBASE + 128<em>1024</em>1024)之间的这段地址以PGSIZE为单位全部初始化为1，然后每次初始化一个PGSIZE就把这个页使用头插法插入到了kmem.freelist链表上，kmem.freelist始终指向链表的第一个节点。<br>因此只要遍历该链表就能计算出全部的空闲内存。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">uint64 </span><br><span class="line">freememory()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span>* <span class="title">p</span> = <span class="title">kmem</span>.<span class="title">freelist</span>;</span></span><br><span class="line">  uint64 num = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> (p)</span><br><span class="line">  &#123;</span><br><span class="line">    num ++;</span><br><span class="line">    p = p-&gt;next;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> num * PGSIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在kernel/kalloc.c中实现proc_size()。xv6使用proc[NPROC]数组存储系统中的进程，遍历该数组判断进程状态不为UNUSED的进程进行计数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">proc_size()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">int</span> i;</span><br><span class="line">  <span class="keyword">int</span> n = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; NPROC; i++)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> (proc[i].state != UNUSED) n++;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -806,7 +828,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    系统调用跟踪xv6
+    系统调用跟踪-xv6 lab syscall
   </li>
 
   <li class="post-copyright-author">
@@ -817,13 +839,13 @@
     2021年07月18日 - 14:48:59
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 16:30:17
+    2021年08月06日 - 20:19:30
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/xv6/xv6-syscall/" title="系统调用跟踪xv6">https://szp2016.github.io/xv6/xv6-syscall/</a>
+    <a href="https://szp2016.github.io/xv6/xv6-syscall/" title="系统调用跟踪-xv6 lab syscall">https://szp2016.github.io/xv6/xv6-syscall/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -1148,7 +1170,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-概述"><span class="nav-number">1.</span> <span class="nav-text">1.概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-实验要求"><span class="nav-number">2.</span> <span class="nav-text">2. 实验要求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-实验铺垫"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 实验铺垫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-实验内容"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 实验内容</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-xv6代码结构介绍"><span class="nav-number">3.</span> <span class="nav-text">3. xv6代码结构介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-创建第一个进程"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 创建第一个进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-系统调用"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 系统调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-添加系统调用sys-trace"><span class="nav-number">4.</span> <span class="nav-text">4. 添加系统调用sys_trace</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-实现跟踪打印系统调用"><span class="nav-number">5.</span> <span class="nav-text">5. 实现跟踪打印系统调用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-概述"><span class="nav-number">1.</span> <span class="nav-text">1.概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-实验要求"><span class="nav-number">2.</span> <span class="nav-text">2. 实验要求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-实验铺垫"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 实验铺垫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-实验内容"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 实验内容</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-xv6代码结构介绍"><span class="nav-number">3.</span> <span class="nav-text">3. xv6代码结构介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-创建第一个进程"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 创建第一个进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-系统调用"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 系统调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-添加系统调用sys-trace"><span class="nav-number">4.</span> <span class="nav-text">4. 添加系统调用sys_trace</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-实现跟踪打印系统调用"><span class="nav-number">5.</span> <span class="nav-text">5. 实现跟踪打印系统调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-添加系统调用sysinfo"><span class="nav-number">6.</span> <span class="nav-text">6. 添加系统调用sysinfo</span></a></li></ol></div>
             
 
           </div>
@@ -1181,7 +1203,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">168k</span>
+    <span title="站点总字数">169k</span>
   
 
   
@@ -1190,7 +1212,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:33</span>
+    <span title="站点阅读时长">2:34</span>
   
 </div>
 
