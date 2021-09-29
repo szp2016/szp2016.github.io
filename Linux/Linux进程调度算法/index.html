@@ -333,7 +333,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">48</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">50</span></a>
 
   </li>
         
@@ -636,7 +636,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">int</span> idx;</span><br><span class="line">...</span><br><span class="line">preempt_disable();</span><br><span class="line">...</span><br><span class="line">idx = sched_find_first_bit( <span class="built_in">array</span> -&gt; bitmap);</span><br><span class="line"><span class="built_in">queue</span> = <span class="built_in">array</span> -&gt; <span class="built_in">queue</span> + idx;</span><br><span class="line">next = list_entry( <span class="built_in">queue</span> -&gt; next, <span class="keyword">task_t</span>, run_list);</span><br><span class="line">...</span><br><span class="line">prev = context_switch( rq, prev, next);</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其中,sched_find_first_bit()能快速定位优先级最高的非空就绪进程链表,运行时间和就绪队列中的进程数无关,是实现O(1)调度算法的一个关键所在。<br>schedule()的执行流程:<br>首先,调用 pre_empt_disable(),关闭内核抢占,因为此时要对内核的一些重要数据结构进行操作,所以必须将内核抢占关闭;其次,调用sched_find_first_bit()找到位图中的第1个置1的位，该位正好对应于就绪队列中的最高优先级进程链表;<br>再者,调用 context_switch()执行进程切换,选择在最高优先级链表中的第 1个进程投入运行;</p>
-<p><img src="2020-10-03-23-44-25.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux进程调度算法/2020-10-03-23-44-25.png" alt></p>
 <p>图中的网格为 140 位优先级数组,queue[7]为优先级为 7 的就绪进程链表。此种算法保证了调度器运行的时间上限,加速了候选进程的定位过程。</p>
 <p>Linux2.4 调度系统在所有就绪进程的时间片都耗完以后在调度器中一次性重新计算,其中重算是用for循环相当耗时。</p>
 <p>Linux2.6 为每个 CPU 保留 active 和 expired 两个优先级数组, active 数组中包含了有剩余时间片的任务,expired 数组中包含了所有用完时间片的任务。</p>
@@ -658,6 +658,7 @@
 
     
  </div>
+ 
     
     
     
@@ -806,6 +807,7 @@
       
     </footer>
   </div>
+ 
   
   
   
@@ -872,7 +874,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-count">50</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1095,7 +1097,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">178k</span>
+    <span title="站点总字数">184k</span>
   
 
   
@@ -1104,7 +1106,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:42</span>
+    <span title="站点阅读时长">2:48</span>
   
 </div>
 

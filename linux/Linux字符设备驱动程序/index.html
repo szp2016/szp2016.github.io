@@ -133,7 +133,8 @@
 <meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-49-01.png">
 <meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-51-58.png">
 <meta property="og:image" content="https://szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-53-50.png">
-<meta property="og:updated_time" content="2021-08-19T14:14:24.099Z">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat.png">
+<meta property="og:updated_time" content="2021-09-29T08:59:45.246Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux字符设备驱动程序">
 <meta name="twitter:description" content="5.4 Linux设备驱动分类Linux系统将设备分为三个类：字符设备、块设备、网络设备，在这三大类中，字符设备相对比较简单，应用程序通过字符设备文件来访问字符设备，本讲主要介绍字符设备，如果对块设备和网络设备感兴趣的话，可以参看相关资料，并对其进行深入了解。   什么是字符设备？字符设备是指只能一个字节一个字节进行读写操作的设备，不能随机读取设备中的某一数据、读取数据要按照先后顺序。字符设备是面">
@@ -343,7 +344,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">48</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">50</span></a>
 
   </li>
         
@@ -531,7 +532,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-19 22:14:24" itemprop="dateModified" datetime="2021-08-19T22:14:24+08:00">2021-08-19</time>
+                <time title="修改时间：2021-09-29 16:59:45" itemprop="dateModified" datetime="2021-09-29T16:59:45+08:00">2021-09-29</time>
               
             
           </span>
@@ -619,10 +620,10 @@
 
       
         <h1 id="5-4-Linux设备驱动分类"><a href="#5-4-Linux设备驱动分类" class="headerlink" title="5.4 Linux设备驱动分类"></a>5.4 Linux设备驱动分类</h1><p>Linux系统将设备分为三个类：<strong>字符设备、块设备、网络设备</strong>，在这三大类中，字符设备相对比较简单，应用程序通过字符设备文件来访问字符设备，本讲主要介绍字符设备，如果对块设备和网络设备感兴趣的话，可以参看相关资料，并对其进行深入了解。</p>
-<p><img src="2020-07-06-10-22-51.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-10-22-51.png" alt></p>
 <hr>
 <h1 id="什么是字符设备？"><a href="#什么是字符设备？" class="headerlink" title="什么是字符设备？"></a>什么是字符设备？</h1><p>字符设备是指只能一个字节一个字节进行读写操作的设备，不能随机读取设备中的某一数据、读取数据要按照先后顺序。字符设备是面向流的设备，常见的字符设备有鼠标、键盘、串口、控制台和LED等。</p>
-<p><img src="2020-07-06-10-20-43.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-10-20-43.png" alt></p>
 <p>一般每个字符设备或者块设备都会在/dev目录下对应一个<strong>设备文件</strong>，并且每个设备文件都必须有主/次设备号，主设备号相同的设备是同类设备，使用同一个驱动程序。</p>
 <p>Linux用户层程序通过设备文件来使用驱动程序操作字符设备或块设备。</p>
 <p>可以通过 </p>
@@ -630,13 +631,13 @@
 <p>cat /proc/devices </p>
 </blockquote>
 <p>命令查看当前已经加载的设备驱动程序的主设备号。</p>
-<p><img src="2020-07-06-10-49-58.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-10-49-58.png" alt></p>
 <p>通过在/dev目录下执行命令</p>
 <blockquote>
 <p>ls -l</p>
 </blockquote>
 <p>可以看到所有设备文件的主设备号和次设备号：</p>
-<p><img src="2020-07-06-11-13-39.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-11-13-39.png" alt></p>
 <p>对常见设备文件作如下说明：</p>
 <details>
     <summary>点击查看详细内容</summary>
@@ -691,12 +692,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">struct file_operations &#123;</span><br><span class="line">       struct module *owner;</span><br><span class="line">       loff_t (*llseek) (struct file *, loff_t, int);</span><br><span class="line">       ssize_t (*read) (struct file *, char *, size_t, loff_t *);</span><br><span class="line">       ssize_t (*write) (struct file *, const char *, size_t, loff_t *);</span><br><span class="line">       int (*readdir) (struct file *, void *, filldir_t);</span><br><span class="line">       unsigned int (*poll) (struct file *, struct poll_table_struct *);</span><br><span class="line">       int (*ioctl) (struct inode *, struct file *, unsigned int, unsigned long);</span><br><span class="line">       int (*mmap) (struct file *, struct vm_area_struct *);</span><br><span class="line">       int (*open) (struct inode *, struct file *);</span><br><span class="line">       int (*flush) (struct file *);</span><br><span class="line">       int (*release) (struct inode *, struct file *);</span><br><span class="line">       int (*fsync) (struct file *, struct dentry *, int datasync);</span><br><span class="line">       int (*fasync) (int, struct file *, int);</span><br><span class="line">       int (*lock) (struct file *, int, struct file_lock *);</span><br><span class="line">       ssize_t (*readv) (struct file *, const struct iovec *, unsigned long,loff_t *);</span><br><span class="line">       ssize_t (*writev) (struct file *, const struct iovec *, unsigned long,    loff_t *);</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
 
 <p>用户进程利用在对设备文件进行诸如read，write操作的时候，系统调用通过设备文件的主设备号找到相应的设备驱动程序，然后读取这个数据结构相应的函数指针，接着把控制权交给该函数，这是Linux的设备驱动程序工作的基本原理。</p>
-<h1 id="字符设备与文件系统的接口"><a href="#字符设备与文件系统的接口" class="headerlink" title="字符设备与文件系统的接口"></a>字符设备与文件系统的接口</h1><p><img src="2020-07-06-12-28-37.png" alt></p>
+<h1 id="字符设备与文件系统的接口"><a href="#字符设备与文件系统的接口" class="headerlink" title="字符设备与文件系统的接口"></a>字符设备与文件系统的接口</h1><p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-28-37.png" alt></p>
 <p>如图，在Linux内核中，最左边， 使用cdev结构体来描述字符设备;通过其成员dev_t来定义设备号（分为主、次设备号）以确定字符设备的唯一性;通过其成员file_operations来定义字符设备驱动提供给虚拟文件系统VFS的接口函数，如常见的open()、read()、write()等,这些函数真正的操作硬件设备。</p>
-<p><img src="2020-07-06-12-30-31.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-30-31.png" alt></p>
 <p>在上一个图的基础上我们看这个图，字符设备驱动程序是以内核模块的形式加载到内核中的，首先模块加载函数按静态或者动态方式<strong>获取设备号</strong>；然后字符设备<strong>初始化函数</strong>建立<strong>cdev与 file_operations之间的连接</strong>， 通过<strong>注册函数</strong>向系统添加一个cdev以完成注册; 模块卸载时与加载对应，要注销cdev，并释放设备号。</p>
 <p>在用户程序中，可以通过系统调用open(), read(), write()等调用驱动程序在内核中所实现的这些函数。这样用户态到内核驱动之间的通路就打通了。</p>
-<h1 id="编写简单的字符设备驱动程序"><a href="#编写简单的字符设备驱动程序" class="headerlink" title="编写简单的字符设备驱动程序"></a>编写简单的字符设备驱动程序</h1><p><img src="2020-07-06-12-36-11.png" alt></p>
+<h1 id="编写简单的字符设备驱动程序"><a href="#编写简单的字符设备驱动程序" class="headerlink" title="编写简单的字符设备驱动程序"></a>编写简单的字符设备驱动程序</h1><p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-36-11.png" alt></p>
 <p>如图，编写字符设备驱动分为三大步骤：</p>
 <ol>
 <li>驱动的初始化，其中又分为四个步骤，调用相关的函数达到。</li>
@@ -704,19 +705,22 @@
 <li>驱动的注销，注销就是释放资源。</li>
 </ol>
 <p>其中调用的接口函数功能如下：</p>
-<p><img src="2020-07-06-12-39-55.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-39-55.png" alt></p>
 <p>第1个函数是分配函数，动态申请cdev的内存，给该结构分配内存空间。</p>
 <p>第2个函数是初始化函数，初始化cdev的成员，并建立cdev和file_operations之间关联.</p>
 <p>第3个函数注册cdev设备对象，也就是把字符设备添加到字符设备表中，就像大家入学时进行注册一样。</p>
 <p>第4个函数是注销驱动程序调用，将cdev对象从系统中删除。</p>
 <p>第5个函数释放cdev数据结构所占的内存。</p>
 <h2 id="设备号的申请和释放"><a href="#设备号的申请和释放" class="headerlink" title="设备号的申请和释放"></a>设备号的申请和释放</h2><p>一个字符设备或块设备都有一个主设备号和一个次设备号。<strong>主设备号用来标识与设备文件相连的驱动程序，用来反映设备类型</strong>。<strong>次设备号被驱动程序用来辨别操作的是哪个设备，用来区分同类型的设备</strong>。注册时申请设备号，注销时释放设备号，就像大家入学是有一个学号，毕业离开时就释放掉这个学号。</p>
-<p><img src="2020-07-06-12-49-01.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-49-01.png" alt></p>
 <h2 id="用户空间与内核空间数据的传送"><a href="#用户空间与内核空间数据的传送" class="headerlink" title="用户空间与内核空间数据的传送"></a>用户空间与内核空间数据的传送</h2><p>当我们在用户程序中调用read（）函数时，陷入内核空间，实际上要通过内核的copy_to_user()函数把内核空间缓冲区中的数据拷贝到用户空间的缓冲区，反之，当我们调用write（)函数时，内核通过调用copy_from_user()函数把用户空间的数据拷贝到内核缓冲区。</p>
-<p><img src="2020-07-06-12-51-58.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-51-58.png" alt></p>
 <h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>如何具体编写一个字符驱动程序，主要有三个步骤，一是驱动的初始化，二是实现对设备的具体操作，三是注销驱动程序， 在动手实践一节，将给出一个字符设备驱动程序的编写过程以及运行机制。</p>
-<p><img src="2020-07-06-12-53-50.png" alt></p>
-
+<p><img src="//szp2016.github.io/linux/Linux字符设备驱动程序/2020-07-06-12-53-50.png" alt></p>
+<br>
+<h3 style="text-align:center">获取更多精彩文章与资料，请访问微信公众号“知书码迹”！
+<br>
+<img src="/image/wechat.png" width="600px" height="100px" align="middle"></h3>
       
     </div>
 
@@ -731,6 +735,7 @@
 
     
  </div>
+ 
     
     
     
@@ -800,7 +805,7 @@
     2020年07月06日 - 10:09:56
   </li>
     <strong>最后更新：</strong>
-    2021年08月19日 - 22:14:24
+    2021年09月29日 - 16:59:45
   
 
   <li class="post-copyright-link">
@@ -879,6 +884,7 @@
       
     </footer>
   </div>
+ 
   
   
   
@@ -945,7 +951,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-count">50</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1135,7 +1141,9 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#5-4-Linux设备驱动分类"><span class="nav-number">1.</span> <span class="nav-text">5.4 Linux设备驱动分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是字符设备？"><span class="nav-number">2.</span> <span class="nav-text">什么是字符设备？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何建立设备文件？"><span class="nav-number">3.</span> <span class="nav-text">如何建立设备文件？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何描述字符设备？"><span class="nav-number">4.</span> <span class="nav-text">如何描述字符设备？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符设备与文件系统的接口"><span class="nav-number">5.</span> <span class="nav-text">字符设备与文件系统的接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写简单的字符设备驱动程序"><span class="nav-number">6.</span> <span class="nav-text">编写简单的字符设备驱动程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设备号的申请和释放"><span class="nav-number">6.1.</span> <span class="nav-text">设备号的申请和释放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户空间与内核空间数据的传送"><span class="nav-number">6.2.</span> <span class="nav-text">用户空间与内核空间数据的传送</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#5-4-Linux设备驱动分类"><span class="nav-number">1.</span> <span class="nav-text">5.4 Linux设备驱动分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是字符设备？"><span class="nav-number">2.</span> <span class="nav-text">什么是字符设备？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何建立设备文件？"><span class="nav-number">3.</span> <span class="nav-text">如何建立设备文件？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何描述字符设备？"><span class="nav-number">4.</span> <span class="nav-text">如何描述字符设备？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符设备与文件系统的接口"><span class="nav-number">5.</span> <span class="nav-text">字符设备与文件系统的接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写简单的字符设备驱动程序"><span class="nav-number">6.</span> <span class="nav-text">编写简单的字符设备驱动程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设备号的申请和释放"><span class="nav-number">6.1.</span> <span class="nav-text">设备号的申请和释放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户空间与内核空间数据的传送"><span class="nav-number">6.2.</span> <span class="nav-text">用户空间与内核空间数据的传送</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">7.0.1.</span> <span class="nav-text">获取更多精彩文章与资料，请访问微信公众号“知书码迹”！
+
+</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -1168,7 +1176,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">178k</span>
+    <span title="站点总字数">184k</span>
   
 
   
@@ -1177,7 +1185,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:42</span>
+    <span title="站点阅读时长">2:48</span>
   
 </div>
 
