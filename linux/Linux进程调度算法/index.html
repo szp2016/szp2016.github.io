@@ -34,13 +34,9 @@
   
   
     
-      
     
-    
-      
-    
-  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/black/pace-theme-loading-bar.css">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
 
 
 
@@ -123,7 +119,7 @@
 <meta property="og:description" content="1. 前言Linux 2.4中使用goodness()函数，给每个处于可运行状态的进程赋予一个权值（Weight）,使用这个权值衡量一个处于可运行状态的进程值得运行的程度。调度程序以这个权值作为选择进程的唯一依据。 虽然Linux2.4进程调度程序简单有效，但是也有其缺点。  单个就绪队列问题，时间片耗尽的进程依然会放进同一个就绪队列中，在不可被调度的情况下，还会参与调度。 多处理器问题，多个处理">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://szp2016.github.io/linux/Linux进程调度算法/2020-10-03-23-44-25.png">
-<meta property="og:updated_time" content="2021-08-19T14:14:19.486Z">
+<meta property="og:updated_time" content="2021-09-30T08:56:10.602Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux 2.6进程O(1)调度算法">
 <meta name="twitter:description" content="1. 前言Linux 2.4中使用goodness()函数，给每个处于可运行状态的进程赋予一个权值（Weight）,使用这个权值衡量一个处于可运行状态的进程值得运行的程度。调度程序以这个权值作为选择进程的唯一依据。 虽然Linux2.4进程调度程序简单有效，但是也有其缺点。  单个就绪队列问题，时间片耗尽的进程依然会放进同一个就绪队列中，在不可被调度的情况下，还会参与调度。 多处理器问题，多个处理">
@@ -314,7 +310,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
 
   </li>
         
@@ -333,7 +329,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">50</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">55</span></a>
 
   </li>
         
@@ -521,7 +517,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-19 22:14:19" itemprop="dateModified" datetime="2021-08-19T22:14:19+08:00">2021-08-19</time>
+                <time title="修改时间：2021-09-30 16:56:10" itemprop="dateModified" datetime="2021-09-30T16:56:10+08:00">2021-09-30</time>
               
             
           </span>
@@ -636,7 +632,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">int</span> idx;</span><br><span class="line">...</span><br><span class="line">preempt_disable();</span><br><span class="line">...</span><br><span class="line">idx = sched_find_first_bit( <span class="built_in">array</span> -&gt; bitmap);</span><br><span class="line"><span class="built_in">queue</span> = <span class="built_in">array</span> -&gt; <span class="built_in">queue</span> + idx;</span><br><span class="line">next = list_entry( <span class="built_in">queue</span> -&gt; next, <span class="keyword">task_t</span>, run_list);</span><br><span class="line">...</span><br><span class="line">prev = context_switch( rq, prev, next);</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其中,sched_find_first_bit()能快速定位优先级最高的非空就绪进程链表,运行时间和就绪队列中的进程数无关,是实现O(1)调度算法的一个关键所在。<br>schedule()的执行流程:<br>首先,调用 pre_empt_disable(),关闭内核抢占,因为此时要对内核的一些重要数据结构进行操作,所以必须将内核抢占关闭;其次,调用sched_find_first_bit()找到位图中的第1个置1的位，该位正好对应于就绪队列中的最高优先级进程链表;<br>再者,调用 context_switch()执行进程切换,选择在最高优先级链表中的第 1个进程投入运行;</p>
-<p><img src="//szp2016.github.io/linux/Linux进程调度算法/2020-10-03-23-44-25.png" alt></p>
+<p><img src="2020-10-03-23-44-25.png" alt></p>
 <p>图中的网格为 140 位优先级数组,queue[7]为优先级为 7 的就绪进程链表。此种算法保证了调度器运行的时间上限,加速了候选进程的定位过程。</p>
 <p>Linux2.4 调度系统在所有就绪进程的时间片都耗完以后在调度器中一次性重新计算,其中重算是用for循环相当耗时。</p>
 <p>Linux2.6 为每个 CPU 保留 active 和 expired 两个优先级数组, active 数组中包含了有剩余时间片的任务,expired 数组中包含了所有用完时间片的任务。</p>
@@ -658,7 +654,6 @@
 
     
  </div>
- 
     
     
     
@@ -728,7 +723,7 @@
     2020年10月03日 - 12:28:47
   </li>
     <strong>最后更新：</strong>
-    2021年08月19日 - 22:14:19
+    2021年09月30日 - 16:56:10
   
 
   <li class="post-copyright-link">
@@ -807,7 +802,6 @@
       
     </footer>
   </div>
- 
   
   
   
@@ -874,7 +868,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">50</span>
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -915,7 +909,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1085,7 +1083,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1097,7 +1095,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">200k</span>
   
 
   
@@ -1106,7 +1104,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:48</span>
+    <span title="站点阅读时长">3:02</span>
   
 </div>
 
@@ -1117,8 +1115,7 @@
 
 
 
-<span id="timeDate">站点运行天数</span>
-<span id="times">运行的时分秒</span>
+
 <script>
     var now = new Date(); 
     function createtime() { 
@@ -1210,7 +1207,7 @@ setInterval("createtime()",250);
   </script>
 
 <script>
-  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
 </script>
 
       </div>
@@ -1264,7 +1261,7 @@ setInterval("createtime()",250);
   <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-reading-progress@1/reading_progress.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
 
 
   

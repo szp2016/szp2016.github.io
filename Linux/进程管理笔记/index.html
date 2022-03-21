@@ -34,13 +34,9 @@
   
   
     
-      
     
-    
-      
-    
-  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/black/pace-theme-loading-bar.css">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
 
 
 
@@ -135,7 +131,8 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201103101207985.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201103101328962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20201103131311936.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2021-08-03T08:24:07.359Z">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
+<meta property="og:updated_time" content="2022-03-21T03:30:21.145Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="进程管理笔记">
 <meta name="twitter:description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
@@ -326,7 +323,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
 
   </li>
         
@@ -345,7 +342,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">50</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">55</span></a>
 
   </li>
         
@@ -533,7 +530,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-03 16:24:07" itemprop="dateModified" datetime="2021-08-03T16:24:07+08:00">2021-08-03</time>
+                <time title="修改时间：2022-03-21 11:30:21" itemprop="dateModified" datetime="2022-03-21T11:30:21+08:00">2022-03-21</time>
               
             
           </span>
@@ -750,7 +747,11 @@
 <p>当一个任务的时间片用完了就会重新计算其时间片,并插入到 expired 队列中,当 active 队列中所有进程用完时间片时,只需交换指向 active 和 expired 队列的指针即可。此交换是实现 O(1)算法的核心,由 schedule()中以下程序来实现:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">array</span> = rq -&gt;active;</span><br><span class="line"><span class="keyword">if</span> (unlikely(!<span class="built_in">array</span>-&gt;nr_active)) &#123;</span><br><span class="line">         rq -&gt; active = rq -&gt; expired;</span><br><span class="line">         rq -&gt; expired = <span class="built_in">array</span>;</span><br><span class="line">         <span class="built_in">array</span> = rq -&gt;active;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
 
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
       
     </div>
 
@@ -765,7 +766,6 @@
 
     
  </div>
- 
     
     
     
@@ -835,7 +835,7 @@
     2020年11月01日 - 15:46:43
   </li>
     <strong>最后更新：</strong>
-    2021年08月03日 - 16:24:07
+    2022年03月21日 - 11:30:21
   
 
   <li class="post-copyright-link">
@@ -914,7 +914,6 @@
       
     </footer>
   </div>
- 
   
   
   
@@ -981,7 +980,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">50</span>
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1022,7 +1021,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1171,7 +1174,11 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-如何提供有许多CPU的假象？"><span class="nav-number">2.</span> <span class="nav-text">2.如何提供有许多CPU的假象？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-操作系统是管理多个进程执行的软件"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 操作系统是管理多个进程执行的软件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-操作系统提供哪些系统调用API"><span class="nav-number">3.</span> <span class="nav-text">3.操作系统提供哪些系统调用API?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1创建（fork）"><span class="nav-number">4.</span> <span class="nav-text">3.1创建（fork）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-直面fork"><span class="nav-number">5.</span> <span class="nav-text">3.2 直面fork</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-1-实验一"><span class="nav-number">6.</span> <span class="nav-text">3.2.1 实验一</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-2-实验2"><span class="nav-number">7.</span> <span class="nav-text">3.2.2 实验2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-execve系统调用"><span class="nav-number">7.1.</span> <span class="nav-text">3.3 execve系统调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-exit系统调用"><span class="nav-number">7.2.</span> <span class="nav-text">3.4 exit系统调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-处理器调度"><span class="nav-number">8.</span> <span class="nav-text">4.处理器调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1中断以后选择哪个进程在处理器上执行？"><span class="nav-number">8.1.</span> <span class="nav-text">4.1中断以后选择哪个进程在处理器上执行？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2Linux系统中进程的组织方式"><span class="nav-number">8.2.</span> <span class="nav-text">4.2Linux系统中进程的组织方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3实际Linux内核的调度算法是如何取舍的？"><span class="nav-number">8.3.</span> <span class="nav-text">4.3实际Linux内核的调度算法是如何取舍的？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-就绪队列"><span class="nav-number">8.3.1.</span> <span class="nav-text">4.3.1 就绪队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-调度算法介绍"><span class="nav-number">8.3.2.</span> <span class="nav-text">4.3.2 调度算法介绍</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-如何提供有许多CPU的假象？"><span class="nav-number">2.</span> <span class="nav-text">2.如何提供有许多CPU的假象？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-操作系统是管理多个进程执行的软件"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 操作系统是管理多个进程执行的软件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-操作系统提供哪些系统调用API"><span class="nav-number">3.</span> <span class="nav-text">3.操作系统提供哪些系统调用API?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1创建（fork）"><span class="nav-number">4.</span> <span class="nav-text">3.1创建（fork）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-直面fork"><span class="nav-number">5.</span> <span class="nav-text">3.2 直面fork</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-1-实验一"><span class="nav-number">6.</span> <span class="nav-text">3.2.1 实验一</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-2-实验2"><span class="nav-number">7.</span> <span class="nav-text">3.2.2 实验2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-execve系统调用"><span class="nav-number">7.1.</span> <span class="nav-text">3.3 execve系统调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-exit系统调用"><span class="nav-number">7.2.</span> <span class="nav-text">3.4 exit系统调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-处理器调度"><span class="nav-number">8.</span> <span class="nav-text">4.处理器调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1中断以后选择哪个进程在处理器上执行？"><span class="nav-number">8.1.</span> <span class="nav-text">4.1中断以后选择哪个进程在处理器上执行？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2Linux系统中进程的组织方式"><span class="nav-number">8.2.</span> <span class="nav-text">4.2Linux系统中进程的组织方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3实际Linux内核的调度算法是如何取舍的？"><span class="nav-number">8.3.</span> <span class="nav-text">4.3实际Linux内核的调度算法是如何取舍的？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-就绪队列"><span class="nav-number">8.3.1.</span> <span class="nav-text">4.3.1 就绪队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-调度算法介绍"><span class="nav-number">8.3.2.</span> <span class="nav-text">4.3.2 调度算法介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">8.3.3.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1192,7 +1199,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1204,7 +1211,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">200k</span>
   
 
   
@@ -1213,7 +1220,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:48</span>
+    <span title="站点阅读时长">3:02</span>
   
 </div>
 
@@ -1224,8 +1231,7 @@
 
 
 
-<span id="timeDate">站点运行天数</span>
-<span id="times">运行的时分秒</span>
+
 <script>
     var now = new Date(); 
     function createtime() { 
@@ -1317,7 +1323,7 @@ setInterval("createtime()",250);
   </script>
 
 <script>
-  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
 </script>
 
       </div>
@@ -1371,7 +1377,7 @@ setInterval("createtime()",250);
   <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-reading-progress@1/reading_progress.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
 
 
   

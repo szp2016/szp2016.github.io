@@ -34,13 +34,9 @@
   
   
     
-      
     
-    
-      
-    
-  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/black/pace-theme-loading-bar.css">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
 
 
 
@@ -117,15 +113,15 @@
   <meta name="description" content="预读算法预读模式提高了Linux系统的读性能，但是在Android上直接使用传统的预读方案并不完全适用。移动设备上的请求大小和页面缓存大小要小很多，可能导致降低预读效率，从而损害用户体验，比如很多预读的页面没有被使用，导致频繁的页面缓存回收，导致额外的延迟。根据论文实验数据显示，传统的预读方案直接移植到移动设备，当预取100个页面到页面缓存时，平均大约有75个页面没有使用。 在当前的Linux内核">
 <meta name="keywords" content="Spring，Java，物联网，Linux">
 <meta property="og:type" content="article">
-<meta property="og:title" content="移动设备页缓存优化">
+<meta property="og:title" content="页缓存优化">
 <meta property="og:url" content="https://szp2016.github.io/uncategorized/页缓存优化/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="预读算法预读模式提高了Linux系统的读性能，但是在Android上直接使用传统的预读方案并不完全适用。移动设备上的请求大小和页面缓存大小要小很多，可能导致降低预读效率，从而损害用户体验，比如很多预读的页面没有被使用，导致频繁的页面缓存回收，导致额外的延迟。根据论文实验数据显示，传统的预读方案直接移植到移动设备，当预取100个页面到页面缓存时，平均大约有75个页面没有使用。 在当前的Linux内核">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://szp2016.github.io/image/lora.jpg">
-<meta property="og:updated_time" content="2021-09-28T14:26:19.255Z">
+<meta property="og:updated_time" content="2022-03-21T03:30:39.466Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="移动设备页缓存优化">
+<meta name="twitter:title" content="页缓存优化">
 <meta name="twitter:description" content="预读算法预读模式提高了Linux系统的读性能，但是在Android上直接使用传统的预读方案并不完全适用。移动设备上的请求大小和页面缓存大小要小很多，可能导致降低预读效率，从而损害用户体验，比如很多预读的页面没有被使用，导致频繁的页面缓存回收，导致额外的延迟。根据论文实验数据显示，传统的预读方案直接移植到移动设备，当预取100个页面到页面缓存时，平均大约有75个页面没有使用。 在当前的Linux内核">
 <meta name="twitter:image" content="https://szp2016.github.io/image/lora.jpg">
 
@@ -145,7 +141,7 @@
   };
 </script>
 
-  <title>移动设备页缓存优化 | 桃花猿记</title>
+  <title>页缓存优化 | 桃花猿记</title>
   
 
 
@@ -314,7 +310,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
 
   </li>
         
@@ -333,7 +329,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">50</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">55</span></a>
 
   </li>
         
@@ -478,7 +474,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">移动设备页缓存优化
+          <h2 class="post-title" itemprop="name headline">页缓存优化
 
               
             
@@ -504,12 +500,24 @@
                 
               
 
-              <time title="创建时间：2021-09-28 17:01:42 / 修改时间：22:26:19" itemprop="dateCreated datePublished" datetime="2021-09-28T17:01:42+08:00">2021-09-28</time>
+              <time title="创建时间：2021-09-28 17:01:42" itemprop="dateCreated datePublished" datetime="2021-09-28T17:01:42+08:00">2021-09-28</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-03-21 11:30:39" itemprop="dateModified" datetime="2022-03-21T11:30:39+08:00">2022-03-21</time>
               
             
           </span>
@@ -544,7 +552,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2k</span>
+                <span title="本文字数">3.1k</span>
               
 
               
@@ -558,7 +566,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">2 分钟</span>
+                <span title="阅读时长">3 分钟</span>
               
             </div>
           
@@ -590,7 +598,7 @@
       
 
       
-        <h2 id="预读算法"><a href="#预读算法" class="headerlink" title="预读算法"></a>预读算法</h2><p>预读模式提高了Linux系统的读性能，但是在Android上直接使用传统的预读方案并不完全适用。<br>移动设备上的请求大小和页面缓存大小要小很多，可能导致降低预读效率，从而损害用户体验，比如很多预读的页面没有被使用，导致频繁的页面缓存回收，导致额外的延迟。<br>根据论文实验数据显示，传统的预读方案直接移植到移动设备，当预取100个页面到页面缓存时，平均大约有75个页面没有使用。</p>
+        <h1 id="预读算法"><a href="#预读算法" class="headerlink" title="预读算法"></a>预读算法</h1><p>预读模式提高了Linux系统的读性能，但是在Android上直接使用传统的预读方案并不完全适用。<br>移动设备上的请求大小和页面缓存大小要小很多，可能导致降低预读效率，从而损害用户体验，比如很多预读的页面没有被使用，导致频繁的页面缓存回收，导致额外的延迟。<br>根据论文实验数据显示，传统的预读方案直接移植到移动设备，当预取100个页面到页面缓存时，平均大约有75个页面没有使用。</p>
 <p>在当前的Linux内核中预读算法的不足：当一个请求属于顺序读操作时，将执行预读操作，预取大小为该读请求的2或4倍的页面。如果达到预读操作，预取页面的大小将增加上一次预读操作的2倍，直到达到预读的最大大小(默认128KB)。这种激进的预读方案会很快填满页面缓存。</p>
 <p><strong>预读算法主要功能和任务：</strong></p>
 <ul>
@@ -600,10 +608,15 @@
 </ul>
 <p><strong>文件预读算法的关键要点：</strong></p>
 <ul>
-<li>读数据是按页为单位进行，不需要考虑从页面内的偏移量，仅考虑文件的访问页面部分。</li>
-<li>只要进程不断顺序读数据，预读可能逐渐递增。</li>
-<li>当前的访问与前面的访问不是顺序时(即随机访问)，预读必须缩小或停止</li>
-<li>当进程不断访问文件同一个页面时(仅访问文件的一小部分)，或者文件的所有页面均已在cache中时，必须停止预读。</li>
+<li>确定程序的访问模式，例如：顺序，逆序，随机。</li>
+<li>应该动态确定预读的大小，过大会导致预读命中率的下降。一个程序要读的页面一般与已经读的页面呈现正相关，程序读粒度越大，它重复顺序读的可能性也越大。</li>
+<li>异步预读，应当提前多长时间启动。</li>
+<li>预读触发的条件：1.缓存缺失页面，进行同步预读。2.预读标记页面（PG_readahead page）,进行异步预读。</li>
+<li>非对齐读和重试读。</li>
+</ul>
+<p><strong>预读算法评价指标：</strong></p>
+<ul>
+<li>预读命中率：在所有被预读的页面中，被实际访问页面所占的百分比。</li>
 </ul>
 <p>Linux页缓存涉及的重要数据结构与函数如下：<br><img src="https://img-blog.csdnimg.cn/dc5b38645a434222b9c9e8155ec17927.png?x-oss-process=,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
 <p>以ext4读操作为例，函数调用流程如下：<br><img src="https://img-blog.csdnimg.cn/371596c597114bf1bb792c0037119ffe.png?x-oss-process=,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
@@ -614,14 +627,39 @@
 <li><p>针对冷热文件数据，优化数据预取，将热数据尽可能地预读到page cache中，会大大提高page cache的命中率，相对于冷数据角度而言也提高了page cache的利用率。如果尽可能地预读热数据文件页，由于移动设备上的请求大小和页面缓存大小要小很多，可能有很有很多热数据页没有用到，反而降低了page cache的利用率。</p>
 </li>
 </ul>
-<h2 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h2><p><strong>直接回收</strong></p>
+<h2 id="缓存写入操作"><a href="#缓存写入操作" class="headerlink" title="缓存写入操作"></a>缓存写入操作</h2><ul>
+<li><p>调用块设备的write_begin函数，获取块设备缓存page；</p>
+</li>
+<li><p>调用iov_iter_copy_from_user_atomic将用户要写的用户空间的数据copy到块设备的缓存page中;</p>
+</li>
+<li><p>调用块设备的writer_end函数，在第2步骤已将用户数据copy到块设备的缓存page中，writer_end函数作用就是标记该page为最新、page_bh为dirty，等待在合适的时机被刷到设备中。</p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//缓存写具体实现</span></span><br><span class="line"><span class="keyword">ssize_t</span> generic_perform_write(struct file *file,</span><br><span class="line">				struct iov_iter *i, <span class="keyword">loff_t</span> pos)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span> = <span class="title">file</span>-&gt;<span class="title">f_mapping</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">address_space_operations</span> *<span class="title">a_ops</span> = <span class="title">mapping</span>-&gt;<span class="title">a_ops</span>;</span></span><br><span class="line">	<span class="keyword">long</span> status = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">ssize_t</span> written = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> flags = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">do</span> &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">page</span>;</span></span><br><span class="line">		<span class="keyword">unsigned</span> <span class="keyword">long</span> offset;	<span class="comment">/* Offset into pagecache page */</span></span><br><span class="line">		<span class="keyword">unsigned</span> <span class="keyword">long</span> bytes;	<span class="comment">/* Bytes to write to page */</span></span><br><span class="line">		<span class="keyword">size_t</span> copied;		<span class="comment">/* Bytes copied from user */</span></span><br><span class="line">		<span class="keyword">void</span> *fsdata;</span><br><span class="line"></span><br><span class="line">		offset = (pos &amp; (PAGE_SIZE - <span class="number">1</span>));<span class="comment">//pos在所在页中的偏移量</span></span><br><span class="line">		bytes = <span class="keyword">min_t</span>(<span class="keyword">unsigned</span> <span class="keyword">long</span>, PAGE_SIZE - offset,</span><br><span class="line">						iov_iter_count(i));<span class="comment">//第一次迭代写入的字节数，即pos所在页的剩余部分</span></span><br><span class="line"></span><br><span class="line">again:</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * Bring in the user page that we will copy from _first_.</span></span><br><span class="line"><span class="comment">		 * Otherwise there's a nasty deadlock on copying from the</span></span><br><span class="line"><span class="comment">		 * same page as we're writing to, without it being marked</span></span><br><span class="line"><span class="comment">		 * up-to-date.</span></span><br><span class="line"><span class="comment">		 *</span></span><br><span class="line"><span class="comment">		 * Not only is this an optimisation, but it is also required</span></span><br><span class="line"><span class="comment">		 * to check that the address is actually valid, when atomic</span></span><br><span class="line"><span class="comment">		 * usercopies are used, below.</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">if</span> (unlikely(iov_iter_fault_in_readable(i, bytes))) &#123;</span><br><span class="line">			status = -EFAULT;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (fatal_signal_pending(current)) &#123;</span><br><span class="line">			status = -EINTR;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//如果页缓存中没有该pos对应的page,则分配page并添加到address_space;如果找到对应page，就返回。</span></span><br><span class="line">		<span class="comment">//如果page内的数据不是最新（对于块设备以page内的块为单位进行判断是否最新），从磁盘读最新数据。</span></span><br><span class="line">		<span class="comment">//对于块设备，write_begin = blkdev_write_begin</span></span><br><span class="line"></span><br><span class="line">		status = a_ops-&gt;write_begin(file, mapping, pos, bytes, flags,</span><br><span class="line">						&amp;page, &amp;fsdata);</span><br><span class="line">		<span class="keyword">if</span> (unlikely(status &lt; <span class="number">0</span>))</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (mapping_writably_mapped(mapping))</span><br><span class="line">			<span class="comment">//</span></span><br><span class="line">			flush_dcache_page(page);</span><br><span class="line">		<span class="comment">//将用户态数据拷贝到内核态的page上，iov_iter</span></span><br><span class="line">		copied = iov_iter_copy_from_user_atomic(page, i, offset, bytes);</span><br><span class="line">		flush_dcache_page(page);</span><br><span class="line"></span><br><span class="line">		<span class="comment">//标记page_bh为dirty，page状态为uptodate，write_end = blkdev_write_end</span></span><br><span class="line">		status = a_ops-&gt;write_end(file, mapping, pos, bytes, copied,</span><br><span class="line">						page, fsdata);</span><br><span class="line">		<span class="keyword">if</span> (unlikely(status &lt; <span class="number">0</span>))</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		copied = status;</span><br><span class="line"></span><br><span class="line">		cond_resched();<span class="comment">//让出cpu</span></span><br><span class="line"></span><br><span class="line">		iov_iter_advance(i, copied);<span class="comment">//根据已完成的字节数，向前推荐迭代器</span></span><br><span class="line">		<span class="keyword">if</span> (unlikely(copied == <span class="number">0</span>)) &#123;</span><br><span class="line">			<span class="comment">/*</span></span><br><span class="line"><span class="comment">			 * If we were unable to copy any data at all, we must</span></span><br><span class="line"><span class="comment">			 * fall back to a single segment length write.</span></span><br><span class="line"><span class="comment">			 *</span></span><br><span class="line"><span class="comment">			 * If we didn't fallback here, we could livelock</span></span><br><span class="line"><span class="comment">			 * because not all segments in the iov can be copied at</span></span><br><span class="line"><span class="comment">			 * once without a pagefault.</span></span><br><span class="line"><span class="comment">			 */</span></span><br><span class="line">			bytes = <span class="keyword">min_t</span>(<span class="keyword">unsigned</span> <span class="keyword">long</span>, PAGE_SIZE - offset,</span><br><span class="line">						iov_iter_single_seg_count(i));</span><br><span class="line">			<span class="keyword">goto</span> again;</span><br><span class="line">		&#125;</span><br><span class="line">		pos += copied;<span class="comment">//偏移量+已完成的数据长度</span></span><br><span class="line">		written += copied;<span class="comment">//累计完成的写数量</span></span><br><span class="line"></span><br><span class="line">		balance_dirty_pages_ratelimited(mapping);<span class="comment">//平衡内存中的脏页，必要时进行刷写</span></span><br><span class="line">	&#125; <span class="keyword">while</span> (iov_iter_count(i));</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> written ? written : status;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(generic_perform_write);</span><br></pre></td></tr></table></figure>
+
+<p>在balance_dirty_pages_ratelimited里面，发现脏页的数目超过了规定的数目，就调用balance_dirty_pages-&gt;wb_start_background_writeback，启动一个背后线程开始回写。</p>
+<p>触发回写的场景还有：</p>
+<ul>
+<li>用户主动调用sync，将缓存刷到硬盘上去，最终会调用wakeup_flusher_threads，同步脏页；</li>
+<li>当内存十分紧张，以至于无法分配页面的时候，会调用free_more_memory，最终会调用wakeup_flusher_threads，释放脏页；</li>
+<li>脏页已经更新了较长时间，时间上超过了设定时间，需要及时回写，保持内存和磁盘上数据一致性。</li>
+</ul>
+<p>块设备的writer_begin函数是blkdev_write_begin, 该函数为块设备的缓存准备page。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * block_write_begin takes care of the basic task of block allocation and</span></span><br><span class="line"><span class="comment"> * bringing partial write blocks uptodate first.写操作不是整个page，先从磁盘读取最新的数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The filesystem needs to handle block truncation upon failure.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">block_write_begin</span><span class="params">(struct address_space *mapping, <span class="keyword">loff_t</span> pos, <span class="keyword">unsigned</span> len,</span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">unsigned</span> flags, struct page **pagep, <span class="keyword">get_block_t</span> *get_block)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">pgoff_t</span> index = pos &gt;&gt; PAGE_SHIFT;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">page</span>;</span></span><br><span class="line">	<span class="keyword">int</span> status;</span><br><span class="line">	<span class="comment">//在页缓存中查找pos对应的页，如果没有则申请新页，并加入address_space</span></span><br><span class="line">	<span class="comment">//返回该页，上锁。</span></span><br><span class="line">	page = grab_cache_page_write_begin(mapping, index, flags);</span><br><span class="line">	<span class="keyword">if</span> (!page)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//判断page映射的块的bh(包含了pos~pOS+ len的块)是否为最新(buffer_uptodate(bh)) </span></span><br><span class="line">	<span class="comment">//不是的话先从设备上读取数据(以块为单位读取)</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">//读取函数: block_write_begin --&gt; b1ock_write_begin_int --&gt;ll_rw_block(REQ_OP_READ, 0, 1, &amp;bh);</span></span><br><span class="line">	<span class="comment">//通过page映射的bh提交io</span></span><br><span class="line">	<span class="comment">//11_rw_b1ock的调用流程: ll_rw_block -&gt; submit_bh-&gt;	submit_bio</span></span><br><span class="line">	status = __block_write_begin(page, pos, len, get_block);</span><br><span class="line">	<span class="keyword">if</span> (unlikely(status)) &#123;</span><br><span class="line">		unlock_page(page);</span><br><span class="line">		put_page(page);</span><br><span class="line">		page = <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	*pagep = page;</span><br><span class="line">	<span class="keyword">return</span> status;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(block_write_begin);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __block_write_begin_int(struct page *page, <span class="keyword">loff_t</span> pos, <span class="keyword">unsigned</span> len,</span><br><span class="line">		<span class="keyword">get_block_t</span> *get_block, struct iomap *iomap)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">unsigned</span> from = pos &amp; (PAGE_SIZE - <span class="number">1</span>);<span class="comment">//计算pos在最后一页的页内偏移</span></span><br><span class="line">	<span class="keyword">unsigned</span> to = from + len;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span> = <span class="title">page</span>-&gt;<span class="title">mapping</span>-&gt;<span class="title">host</span>;</span></span><br><span class="line">	<span class="keyword">unsigned</span> block_start, block_end;</span><br><span class="line">	<span class="keyword">sector_t</span> block;</span><br><span class="line">	<span class="keyword">int</span> err = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">unsigned</span> blocksize, bbits;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> *<span class="title">bh</span>, *<span class="title">head</span>, *<span class="title">wait</span>[2], **<span class="title">wait_bh</span>=<span class="title">wait</span>;</span></span><br><span class="line"></span><br><span class="line">	BUG_ON(!PageLocked(page));</span><br><span class="line">	BUG_ON(from &gt; PAGE_SIZE);</span><br><span class="line">	BUG_ON(to &gt; PAGE_SIZE);</span><br><span class="line">	BUG_ON(from &gt; to);</span><br><span class="line"></span><br><span class="line">	head = create_page_buffers(page, inode, <span class="number">0</span>);</span><br><span class="line">	blocksize = head-&gt;b_size;<span class="comment">//块大小</span></span><br><span class="line">	bbits = block_size_bits(blocksize);<span class="comment">//位表示的块大小</span></span><br><span class="line"></span><br><span class="line">	block = (<span class="keyword">sector_t</span>)page-&gt;index &lt;&lt; (PAGE_SHIFT - bbits);</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//遍历入参page的所有block,查看要写的数据段from~to位于哪些block,</span></span><br><span class="line">	<span class="comment">//block数据是否最新，是否需要从设备读</span></span><br><span class="line">	<span class="keyword">for</span>(bh = head, block_start = <span class="number">0</span>; bh != head || !block_start;</span><br><span class="line">	    block++, block_start=block_end, bh = bh-&gt;b_this_page) &#123;</span><br><span class="line">		block_end = block_start + blocksize;</span><br><span class="line">		<span class="keyword">if</span> (block_end &lt;= from || block_start &gt;= to) &#123;</span><br><span class="line">			<span class="keyword">if</span> (PageUptodate(page)) &#123;</span><br><span class="line">				<span class="keyword">if</span> (!buffer_uptodate(bh))</span><br><span class="line">					set_buffer_uptodate(bh);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (buffer_new(bh))</span><br><span class="line">			clear_buffer_new(bh);</span><br><span class="line">		<span class="keyword">if</span> (!buffer_mapped(bh)) &#123;</span><br><span class="line">			WARN_ON(bh-&gt;b_size != blocksize);</span><br><span class="line">			<span class="keyword">if</span> (get_block) &#123;</span><br><span class="line">				err = get_block(inode, block, bh, <span class="number">1</span>);</span><br><span class="line">				<span class="keyword">if</span> (err)</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				iomap_to_bh(inode, block, bh, iomap);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (buffer_new(bh)) &#123;</span><br><span class="line">				clean_bdev_bh_alias(bh);</span><br><span class="line">				<span class="keyword">if</span> (PageUptodate(page)) &#123;</span><br><span class="line">					clear_buffer_new(bh);</span><br><span class="line">					set_buffer_uptodate(bh);</span><br><span class="line">					mark_buffer_dirty(bh);</span><br><span class="line">					<span class="keyword">continue</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (block_end &gt; to || block_start &lt; from)</span><br><span class="line">					zero_user_segments(page,</span><br><span class="line">						to, block_end,</span><br><span class="line">						block_start, from);</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (PageUptodate(page)) &#123;<span class="comment">//page中的数据是最新</span></span><br><span class="line">			<span class="keyword">if</span> (!buffer_uptodate(bh))</span><br><span class="line">				set_buffer_uptodate(bh);<span class="comment">//bh设置为最新</span></span><br><span class="line">			<span class="keyword">continue</span>; </span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//bh指向的块数据不是最新</span></span><br><span class="line">		<span class="keyword">if</span> (!buffer_uptodate(bh) &amp;&amp; !buffer_delay(bh) &amp;&amp;</span><br><span class="line">		    !buffer_unwritten(bh) &amp;&amp;</span><br><span class="line">		     (block_start &lt; from || block_end &gt; to)) &#123;</span><br><span class="line">			ll_rw_block(REQ_OP_READ, <span class="number">0</span>, <span class="number">1</span>, &amp;bh);</span><br><span class="line">			<span class="comment">//调用ll_rW_block从设备上读取该块的数据(以块为单位读取)			就			上锁,并提交bh</span></span><br><span class="line">			*wait_bh++=bh;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * If we issued read requests - let them complete.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">while</span>(wait_bh &gt; wait) &#123;</span><br><span class="line">		<span class="comment">//阻塞等待bh被解锁，io完成后在bh的回调end_buffer_read_sync中解锁</span></span><br><span class="line">		wait_on_buffer(*--wait_bh);</span><br><span class="line">		<span class="keyword">if</span> (!buffer_uptodate(*wait_bh))</span><br><span class="line">			err = -EIO;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (unlikely(err))</span><br><span class="line">		page_zero_new_buffers(page, from, to);</span><br><span class="line">	<span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>块设备的writer_end函数是blkdev_write_end，在第2步骤已将用户数据copy到块设备的缓存page中，blkdev_write_end函数作用就是标记该page为最新、page bh为dirty，等待在合适的时机被刷到设备中。</p>
+<h2 id="缓存读取操作"><a href="#缓存读取操作" class="headerlink" title="缓存读取操作"></a>缓存读取操作</h2><p>在generic_file_buffered_read函数中，首先在page cache里寻找是否有缓存页。如果没有找到，不但读取这一页，还要进行预读，这需要在page_cache_sync_readahead函数中实现。预读完了以后，再一次查找缓存页。</p>
+<p>如果第一次找缓存页就找到了，我们还是要判断，是不是应该继续预读；如果需要，就调用page_cache_async_readahead发起一个异步预读。</p>
+<p>最后，copy_page_to_iter会将内容从内核缓存页拷贝到用户内存空间。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">generic_file_buffered_read</span><span class="params">(struct kiocb *iocb,</span></span></span><br><span class="line"><span class="function"><span class="params">		struct iov_iter *iter, <span class="keyword">ssize_t</span> written)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">filp</span> = <span class="title">iocb</span>-&gt;<span class="title">ki_filp</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span> = <span class="title">filp</span>-&gt;<span class="title">f_mapping</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span> = <span class="title">mapping</span>-&gt;<span class="title">host</span>;</span></span><br><span class="line">	<span class="keyword">for</span> (;;) &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">page</span>;</span></span><br><span class="line">		<span class="keyword">pgoff_t</span> end_index;</span><br><span class="line">		<span class="keyword">loff_t</span> isize;</span><br><span class="line">		page = find_get_page(mapping, index);</span><br><span class="line">		<span class="keyword">if</span> (!page) &#123;</span><br><span class="line">			<span class="keyword">if</span> (iocb-&gt;ki_flags &amp; IOCB_NOWAIT)</span><br><span class="line">				<span class="keyword">goto</span> would_block;</span><br><span class="line">			page_cache_sync_readahead(mapping,</span><br><span class="line">					ra, filp,</span><br><span class="line">					index, last_index - index);</span><br><span class="line">			page = find_get_page(mapping, index);</span><br><span class="line">			<span class="keyword">if</span> (unlikely(page == <span class="literal">NULL</span>))</span><br><span class="line">				<span class="keyword">goto</span> no_cached_page;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (PageReadahead(page)) &#123;</span><br><span class="line">			page_cache_async_readahead(mapping,</span><br><span class="line">					ra, filp, page,</span><br><span class="line">					index, last_index - index);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * Ok, we have the page, and it's up-to-date, so</span></span><br><span class="line"><span class="comment">		 * now we can copy it to user space...</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		ret = copy_page_to_iter(page, offset, nr, iter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h1><p><strong>直接回收</strong></p>
 <p>空闲空间不够当前分配时触发，同步回收，停止内存分配。可能触发数据回写操作，系统开销大。</p>
 <p><strong>kswapd周期回收</strong></p>
 <p>异步回收，可与内存分配同时进行空闲页数量低于阈值时回收。最大的回收可能达到几千页。</p>
-<ol>
-<li>内存回收方案与手机应用的特性不匹配。表现在以下两个方面：</li>
-</ol>
-<ul>
+<h2 id="内存回收方案与手机应用的特性不匹配。表现在以下两个方面："><a href="#内存回收方案与手机应用的特性不匹配。表现在以下两个方面：" class="headerlink" title="内存回收方案与手机应用的特性不匹配。表现在以下两个方面："></a>内存回收方案与手机应用的特性不匹配。表现在以下两个方面：</h2><ul>
 <li>回收的尺寸太大，尺寸是指每个回收操作释放的页数。</li>
 </ul>
 <p><img src="https://img-blog.csdnimg.cn/3a2513ae6e97426eb3eb6ab3e15861cd.jpg?x-oss-process=,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
@@ -636,18 +674,12 @@
 <ul>
 <li>有限的回收区域加重了这种惩罚。回收区域指回收操作释放的页面区域，例如inactive_file_lru链表中的页面。<br>根据页面类型分类的lru链表还有：<br>LRU_INACTIVE_ANON：不活跃匿名页面链表<br>LRU_ACTIVE_ANON：活跃匿名页面链表<br>LRU_INACTIVE_FILE：不活跃文件映射页面链表<br>LRU_ACTIVE_FILE：活跃文件映射页面链表<br>LRU_UNEVICTABLE：不可回收页面链表</li>
 </ul>
-<ol start="2">
-<li>缺页产生的原因</li>
-</ol>
-<ul>
+<h2 id="缺页产生的原因"><a href="#缺页产生的原因" class="headerlink" title="缺页产生的原因"></a>缺页产生的原因</h2><ul>
 <li>第一次读取某个页，并没有分配物理内存。</li>
 <li>读取一个错误的页，进程会被杀死。</li>
 <li>读取一个被回收的页，请求的页面一直在内存中，但是被回收算法回收了。页面二次缺页率表示在被回收的所有页面中重新发生缺页的比例。</li>
 </ul>
-<ol start="3">
-<li>影响性能的因素</li>
-</ol>
-<ul>
+<h2 id="影响性能的因素"><a href="#影响性能的因素" class="headerlink" title="影响性能的因素"></a>影响性能的因素</h2><ul>
 <li><p>二次缺页<br>二次缺页受可用内存的大小影响。</p>
 </li>
 <li><p>直接回收</p>
@@ -662,15 +694,17 @@
 <li><p>kswapd后台回收通常大于32个页，而Android系统申请页通常小于16个页。最终为每个小的分配进行较大的回收，导致回收十分激进。较大的回收大小会延长后台回收的延迟，进而影响直接回收的频率，此外回收较大的粒度会导致更多不必要的refault。</p>
 </li>
 </ul>
-<ol start="4">
-<li>解决思路</li>
-</ol>
-<ul>
+<h2 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h2><ul>
 <li>在回收文件页之前考虑先回收后台进程使用的匿名页，因为前台进程在用户体验上来说比后台进程要重要。</li>
 <li>降低伙伴算法的阶数，移动设备最大的请求阶数为8，可以将order降低到9。降低拆分大空间的操作的次数。</li>
 </ul>
 <p><img src="https://img-blog.csdnimg.cn/a054451822b5497d8fddc70c0069610b.jpg" alt="在这里插入图片描述"></p>
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
 
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle">
+</h3>
       
     </div>
 
@@ -685,7 +719,6 @@
 
     
  </div>
- 
     
     
     
@@ -744,7 +777,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    移动设备页缓存优化
+    页缓存优化
   </li>
 
   <li class="post-copyright-author">
@@ -755,13 +788,13 @@
     2021年09月28日 - 17:01:42
   </li>
     <strong>最后更新：</strong>
-    2021年09月28日 - 22:26:19
+    2022年03月21日 - 11:30:39
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/uncategorized/页缓存优化/" title="移动设备页缓存优化">https://szp2016.github.io/uncategorized/页缓存优化/</a>
+    <a href="https://szp2016.github.io/uncategorized/页缓存优化/" title="页缓存优化">https://szp2016.github.io/uncategorized/页缓存优化/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -803,8 +836,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/uncategorized/采用radix-trees加快文件查找/" rel="next" title="采用radix_trees加快文件查找">
-                <i class="fa fa-chevron-left"></i> 采用radix_trees加快文件查找
+              <a href="/xv6/xv6-syscall/" rel="next" title="系统调用跟踪xv6">
+                <i class="fa fa-chevron-left"></i> 系统调用跟踪xv6
               </a>
             
           </div>
@@ -812,6 +845,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/uncategorized/xv6-pgtbl/" rel="prev" title="页表-xv6 lab">
+                页表-xv6 lab <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -821,7 +858,6 @@
       
     </footer>
   </div>
- 
   
   
   
@@ -888,7 +924,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">50</span>
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -929,7 +965,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1078,7 +1118,12 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预读算法"><span class="nav-number">1.</span> <span class="nav-text">预读算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回收算法"><span class="nav-number">2.</span> <span class="nav-text">回收算法</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#预读算法"><span class="nav-number">1.</span> <span class="nav-text">预读算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存写入操作"><span class="nav-number">1.1.</span> <span class="nav-text">缓存写入操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存读取操作"><span class="nav-number">1.2.</span> <span class="nav-text">缓存读取操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回收算法"><span class="nav-number">2.</span> <span class="nav-text">回收算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#内存回收方案与手机应用的特性不匹配。表现在以下两个方面："><span class="nav-number">2.1.</span> <span class="nav-text">内存回收方案与手机应用的特性不匹配。表现在以下两个方面：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺页产生的原因"><span class="nav-number">2.2.</span> <span class="nav-text">缺页产生的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#影响性能的因素"><span class="nav-number">2.3.</span> <span class="nav-text">影响性能的因素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决思路"><span class="nav-number">2.4.</span> <span class="nav-text">解决思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.4.1.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+
+</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1099,7 +1144,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1111,7 +1156,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">200k</span>
   
 
   
@@ -1120,7 +1165,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:48</span>
+    <span title="站点阅读时长">3:02</span>
   
 </div>
 
@@ -1131,8 +1176,7 @@
 
 
 
-<span id="timeDate">站点运行天数</span>
-<span id="times">运行的时分秒</span>
+
 <script>
     var now = new Date(); 
     function createtime() { 
@@ -1224,7 +1268,7 @@ setInterval("createtime()",250);
   </script>
 
 <script>
-  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
 </script>
 
       </div>
@@ -1278,7 +1322,7 @@ setInterval("createtime()",250);
   <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-reading-progress@1/reading_progress.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
 
 
   

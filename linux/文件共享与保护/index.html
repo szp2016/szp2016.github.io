@@ -34,13 +34,9 @@
   
   
     
-      
     
-    
-      
-    
-  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/black/pace-theme-loading-bar.css">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
 
 
 
@@ -134,7 +130,8 @@
 <meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-56-37.png">
 <meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-58-35.png">
 <meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-59-18.png">
-<meta property="og:updated_time" content="2021-08-19T14:13:26.809Z">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
+<meta property="og:updated_time" content="2022-03-21T03:30:14.101Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="文件共享与保护">
 <meta name="twitter:description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
@@ -325,7 +322,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
 
   </li>
         
@@ -344,7 +341,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">50</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">55</span></a>
 
   </li>
         
@@ -532,7 +529,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-08-19 22:13:26" itemprop="dateModified" datetime="2021-08-19T22:13:26+08:00">2021-08-19</time>
+                <time title="修改时间：2022-03-21 11:30:14" itemprop="dateModified" datetime="2022-03-21T11:30:14+08:00">2022-03-21</time>
               
             
           </span>
@@ -585,7 +582,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">6k</span>
+                <span title="本文字数">6.1k</span>
               
 
               
@@ -599,7 +596,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">5 分钟</span>
+                <span title="阅读时长">6 分钟</span>
               
             </div>
           
@@ -623,25 +620,25 @@
 <p>随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全世界的文件共享。</p>
 <p>早在20世纪的60和70年代，已经出现了不少实现文件共享的方法，如绕弯路法、连访法，以及利用基本文件实现文件共享的方法;而现代的一些文件共享方法，也是在早期这些方法的基础上发展起来的。下面我们仅介绍当前常用的两种文件共享方法，它们是在树形结构目录的基础上经适当修改形成的。</p>
 <h2 id="基于有向无循环图实现文件共享（硬链接）"><a href="#基于有向无循环图实现文件共享（硬链接）" class="headerlink" title="基于有向无循环图实现文件共享（硬链接）"></a>基于有向无循环图实现文件共享（硬链接）</h2><h3 id="有向无循环图DAG-Directed-Acyclic-Graph"><a href="#有向无循环图DAG-Directed-Acyclic-Graph" class="headerlink" title="有向无循环图DAG(Directed Acyclic Graph)"></a>有向无循环图DAG(Directed Acyclic Graph)</h3><p>在严格的树形结构目录中，每个文件只允许有一个父目录，父目录可以有效地拥有该文件，其它用户要想访问它，必须经过其属主目录来访问该文件。这就是说，对文件的共享是不对称的，或者说，树形结构目录是不适合文件共享的。如果允许一个文件可以有多个父目录，即有多个属于不同用户的多个目录，同时指向同一个文件，这样虽会破坏树的特性，但这些用户可用对称的方式实现文件共享，而不必再通过其属主目录来访问。</p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-14-17-59.png" alt></p>
+<p><img src="2020-07-14-14-17-59.png" alt></p>
 <p>上图展示出了一个有向无循环图，它允许每一个文件都可以有多个父目录。如图中的<br>文件F8有三个父目录，它们分别是D5、D6和D3,其中D5和D3还使用了相同的名字p,目录D6有两个父目录D2和D1。</p>
 <p>由上所述得知，当有多个用户要共享一个子目录或文件时，必须将共享文件或子目录链接到多个用户的父目录中，才能方便地找到该文件。现在的问题是，<strong>如何建立父目录D5<br>与共享文件F8之间的链接呢?</strong></p>
 <p>如果在文件目录中所包含的是文件的物理地址,即文件所在盘块的盘块号，则在链接时，必须将文件的物理地址拷贝到D5目录中去。但如果以后D5或D6还要继续向该文件中添加新内容，也必然要相应地再增加新的盘块，这些是由附加操作Append 来完成的。而这些新增加的盘块也只会出现在执行了操作的目录中。</p>
 <p><strong>可见, 这种变化对其他用户而言，是不可见的，因而新增加的这部分内容已不能被共享。</strong></p>
 <h3 id="利用索引结点"><a href="#利用索引结点" class="headerlink" title="利用索引结点"></a>利用索引结点</h3><p>为了解决这个问题，可以引用索引结点，即诸如文件的物理地址及其它的文件属性等信息，不再是放在目录项中，而是放在索引结点中。在文件目录中只设置文件名及指向相应索引结点的指针，如下图所示。 </p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-14-24-27.png" alt></p>
+<p><img src="2020-07-14-14-24-27.png" alt></p>
 <p>图中的用户Wang和Lee的文件目录中，都设置有指向共享文件的索引结点指针。此时，由任何用户对共享文件所进<br>行的Append操作或修改，都将引起其相应结点内容的改变(例如，增加了新的盘块号和文件长度等)，这些改变是其他用户可见的，从而也就能提供给其他用户来共享。</p>
 <p>在索引结点中还应有一个链接计数count,用于表示链接到本索引结点(亦即文件)上的用户目录项的数目。当count=3 时，表示有三个用户目录项连接到本文件上，或者说是有<br>三个用户共享此文件。</p>
 <p>当用户C创建一个新文件时，他便是该文件的所有者，此时将count置1。当有用户B要共享此文件时，在用户B的目录中增加一目录项,并设置一指针指向该文件的索引结点，<br>此时，文件主仍然是C,count=2。如果用户C不再需要此文件，是否能将此文件删除呢?回答是否定的。因为，若删除了该文件，也必然删除了该文件的索引结点，这样便会使B的指针悬空，而B则可能正在此文件上执行写操作，此时将因此半途而废。但如果C不删除此文件而等待B继续使用，这样，由于文件主是C,如果系统要记账收费，则C必须为B<br>使用此共享文件而付账，直至B不再需要。下图展示出了B链接到文件前后的情况。</p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-14-30-39.png" alt></p>
+<p><img src="2020-07-14-14-30-39.png" alt></p>
 <p>ln命令可以创建硬链接：</p>
 <blockquote>
 <p>ln 源文件 目标文件</p>
 </blockquote>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-08-53-01.png" alt></p>
+<p><img src="2020-07-14-08-53-01.png" alt></p>
 <p>这里顺便说一下目录文件的”链接数”。创建目录时，默认会生成两个目录项：”.”和”..”。前者的inode号码就是当前目录的inode号码，等同于当前目录的”硬链接”；后者的inode号码就是当前目录的父目录的inode号码，等同于父目录的”硬链接”。所以，任何一个目录的”硬链接”总数，总是等于2加上它的子目录总数（含隐藏目录）。</p>
 <h2 id="基于符号链的共享方式（软链接）"><a href="#基于符号链的共享方式（软链接）" class="headerlink" title="基于符号链的共享方式（软链接）"></a>基于符号链的共享方式（软链接）</h2><h3 id="符号链接基本思想"><a href="#符号链接基本思想" class="headerlink" title="符号链接基本思想"></a>符号链接基本思想</h3><p>利用符号链接实现文件共享的基本思想，是允许一个文件或子目录有多个父目录，但其中仅有一个作为主(属主)父目录，其它的几个父目录都是通过符号链接方式与之相链接的(简称链接父目录)。 </p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-12-48-15.png" alt></p>
+<p><img src="2020-07-13-12-48-15.png" alt></p>
 <p>当访问“c”时，操作系统判断文件“c”属于Link 类型文件，于是会根据其中记录的路径层层查找目录，最终找到目录表1中的“a”表项，于是就找到了文件1的索引结点。</p>
 <h3 id="符号链接实现共享的优点"><a href="#符号链接实现共享的优点" class="headerlink" title="符号链接实现共享的优点"></a>符号链接实现共享的优点</h3><p>在利用符号链方式实现文件共享时，只是文件主才拥有指向其索引结点的指针；而共享该文件的其他用户则只有该文件的路径名，并不拥有指向其索引结点的指针。这样，也就不会发生在文件主删除一共享文件后留下一悬空指针的情况。当文件的拥有者把一个共享文件删除后，如果其他用户又试图通过符号链去访问一个已被删除的共享文件，则会因系统找不到该文件而使访问失败，于是再将符号链删除，此时不会产生任何影响。</p>
 <p>值得一提的是，在计算机网络中，Web浏览器在进行浏览时所使用的文件是HTML类型的文件。在HTML文件中有着许多链接符，通过这些链接符能够链接(通过计算机网络)<br>世界上任何地方的机器中的文件。在利用符号链实现共享时，同样可以通过网络链接到分布在世界各地的计算机系统中的文件。</p>
@@ -652,8 +649,8 @@
 <blockquote>
 <p>ln -s 源文文件或目录 目标文件或目录</p>
 </blockquote>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-08-57-33.png" alt></p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-14-01-26.png" alt></p>
+<p><img src="2020-07-14-08-57-33.png" alt></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p><img src="2020-07-13-14-01-26.png" alt></p>
 <h1 id="文件系统的安全性"><a href="#文件系统的安全性" class="headerlink" title="文件系统的安全性"></a>文件系统的安全性</h1><h2 id="安全性两个方面"><a href="#安全性两个方面" class="headerlink" title="安全性两个方面"></a>安全性两个方面</h2><p>确保未经授权的用户不能存取某些文件。涉及到技术、管理、法律、道德和政治等问题。</p>
 <p>安全性的两个重要方面：</p>
 <ol>
@@ -705,10 +702,10 @@
 </li>
 </ol>
 <h2 id="第二级磁盘容错技术SFT-2"><a href="#第二级磁盘容错技术SFT-2" class="headerlink" title="第二级磁盘容错技术SFT-2"></a>第二级磁盘容错技术SFT-2</h2><h3 id="磁盘镜像-两个磁盘驱动器互为备份"><a href="#磁盘镜像-两个磁盘驱动器互为备份" class="headerlink" title="磁盘镜像-两个磁盘驱动器互为备份"></a>磁盘镜像-两个磁盘驱动器互为备份</h3><p>为了避免磁盘驱动器发生故障而丢失数据，便增设了磁盘镜像功能。为实现该功能，须在同一磁盘控制器下再增设一个完全相同的磁盘驱动器，如图所示。当采用磁盘镜像方式时，在每次向主磁盘写入数据后，都需要将数据再写到备份磁盘上，使两个磁盘上具有完全相同的位像图。</p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-43-52.png" alt></p>
+<p><img src="2020-07-13-13-43-52.png" alt></p>
 <p>把备份磁盘看作是主磁盘的一面镜子，当主磁盘驱动器发生故障<br>时，由于有备份磁盘的存在，在进行切换后，使主机仍能正常工作。磁盘镜像虽然实现了容错功能，但未能使服务器的磁盘I/O速度得到提高，却使磁盘的利用率降至仅为50%。</p>
 <h3 id="磁盘双工-Disk-Duplexing"><a href="#磁盘双工-Disk-Duplexing" class="headerlink" title="磁盘双工(Disk Duplexing)"></a>磁盘双工(Disk Duplexing)</h3><p>如果控制这两台磁盘驱动器的磁盘控制器发生故障，或主机到磁盘控制器之间的通道发生了故障，磁盘镜像功能便起不到数据保护的作用。</p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-46-13.png" alt></p>
+<p><img src="2020-07-13-13-46-13.png" alt></p>
 <p>因此，在第二级容错技术中，又增加了磁盘双工功能，即将两台磁盘驱动器分别接到两个磁盘控制器上，同样使这两台磁盘机镜像成对，如图所示。在磁盘双工时，文件服务器同时将数据写到两个处于不同控制器下的磁盘上，使两者有完全相同的位像图。如果某个通道或控制器发生故障时，另一个通道上的磁盘仍能正常工作，不会造成数据的丢失。在磁盘双工时，由于每一个磁盘都有自己的独立通道，故可同时(并行)地将数据写入磁盘,或读出数据。</p>
 <h2 id="文件系统的数据一致性控制"><a href="#文件系统的数据一致性控制" class="headerlink" title="文件系统的数据一致性控制"></a>文件系统的数据一致性控制</h2><p>同一数据存放在不同的文件中, 对它修改时应对不同的文件都统一修改, 才能保证数据的一致性。修改时数据的流向是, 磁盘块、内存、写回磁盘块。若在写回之前, 系统崩溃, 则文件系统数据出现不一致。</p>
 <p>系统应配置保证数据一致性的软件和相应的硬件，硬件采取冗余技术配置一个高度可靠的存储系统, 称为稳定存储器; 目前广泛采用磁盘双工方式来实现稳定存储器。设计保证数据一致性的实用程序, 当系统再次启动时, 运行该程序, 检查磁盘块和目录系统。</p>
@@ -741,11 +738,11 @@
 <h2 id="重复数据的一致性问题"><a href="#重复数据的一致性问题" class="headerlink" title="重复数据的一致性问题"></a>重复数据的一致性问题</h2><h3 id="重复文件的一致性"><a href="#重复文件的一致性" class="headerlink" title="重复文件的一致性"></a>重复文件的一致性</h3><p>以UNIX类型的文件系统为例,通常文件一个文件的目录项由一个文件名和一个索引结点号组成; 当有重复文件时, 一个文件的目录项由一个文件名和若干个索引结点号组成。保证重复文件的一致性用两种方法：</p>
 <p>(1) 当一个文件被修改后,可查目录, 从各i结点找到各拷贝的物理位置, 对这些拷贝做同样修改。</p>
 <p>(2) 为新修改的文件建立几个新拷贝取代原来的拷贝。</p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-56-37.png" alt></p>
+<p><img src="2020-07-13-13-56-37.png" alt></p>
 <h3 id="盘块号一致性的检查"><a href="#盘块号一致性的检查" class="headerlink" title="盘块号一致性的检查"></a>盘块号一致性的检查</h3><p>两张表，每块对应一个表中的计数器，初值为0，正常情况下空闲块计数表与数据块计数表对应项的值应该是互补关系。</p>
 <p>表一：记录了每块在空闲块表中出现的次数</p>
 <p>表二：记录了每块在文件中出现的次数</p>
-<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-58-35.png" alt><br><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-59-18.png" alt></p>
+<p><img src="2020-07-13-13-58-35.png" alt><br><img src="2020-07-13-13-59-18.png" alt></p>
 <h3 id="链结数一致性的检查"><a href="#链结数一致性的检查" class="headerlink" title="链结数一致性的检查"></a>链结数一致性的检查</h3><p>在UNIX的文件目录中,索引结点中有一个链接计数 count, 它用来表示共享文件计数, 它应该和目录中指向该索引结点的数目一致。否则出错。</p>
 <p>为检查不一致差错, 同样配置一张计数器表, 为每个文件建立一个表项, 检查时从根结点开始, 查找并计数,检查完后, 将计数器表的每个计数值与count 对比, 一致则正确, 否则发生链接数不一致差错。</p>
 <ul>
@@ -755,7 +752,11 @@
 <p>这两种情况解决方法是将count值修改正确。</p>
 </li>
 </ul>
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
 
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
       
     </div>
 
@@ -770,7 +771,6 @@
 
     
  </div>
- 
     
     
     
@@ -840,7 +840,7 @@
     2020年07月13日 - 08:44:04
   </li>
     <strong>最后更新：</strong>
-    2021年08月19日 - 22:13:26
+    2022年03月21日 - 11:30:14
   
 
   <li class="post-copyright-link">
@@ -919,7 +919,6 @@
       
     </footer>
   </div>
- 
   
   
   
@@ -986,7 +985,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">50</span>
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1027,7 +1026,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1176,7 +1179,11 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件共享"><span class="nav-number">1.</span> <span class="nav-text">文件共享</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于有向无循环图实现文件共享（硬链接）"><span class="nav-number">1.1.</span> <span class="nav-text">基于有向无循环图实现文件共享（硬链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向无循环图DAG-Directed-Acyclic-Graph"><span class="nav-number">1.1.1.</span> <span class="nav-text">有向无循环图DAG(Directed Acyclic Graph)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用索引结点"><span class="nav-number">1.1.2.</span> <span class="nav-text">利用索引结点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于符号链的共享方式（软链接）"><span class="nav-number">1.2.</span> <span class="nav-text">基于符号链的共享方式（软链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接基本思想"><span class="nav-number">1.2.1.</span> <span class="nav-text">符号链接基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接实现共享的优点"><span class="nav-number">1.2.2.</span> <span class="nav-text">符号链接实现共享的优点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统的安全性"><span class="nav-number">2.</span> <span class="nav-text">文件系统的安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性两个方面"><span class="nav-number">2.1.</span> <span class="nav-text">安全性两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的保护机制"><span class="nav-number">2.2.</span> <span class="nav-text">文件的保护机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一级-磁盘容错技术SFT-1"><span class="nav-number">2.3.</span> <span class="nav-text">第一级 磁盘容错技术SFT-1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#双份目录和双份文件分配表"><span class="nav-number">2.3.1.</span> <span class="nav-text">双份目录和双份文件分配表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#热修复重定向和写后读校验"><span class="nav-number">2.3.2.</span> <span class="nav-text">热修复重定向和写后读校验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二级磁盘容错技术SFT-2"><span class="nav-number">2.4.</span> <span class="nav-text">第二级磁盘容错技术SFT-2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘镜像-两个磁盘驱动器互为备份"><span class="nav-number">2.4.1.</span> <span class="nav-text">磁盘镜像-两个磁盘驱动器互为备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘双工-Disk-Duplexing"><span class="nav-number">2.4.2.</span> <span class="nav-text">磁盘双工(Disk Duplexing)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统的数据一致性控制"><span class="nav-number">2.5.</span> <span class="nav-text">文件系统的数据一致性控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务定义"><span class="nav-number">2.5.1.</span> <span class="nav-text">事务定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务记录"><span class="nav-number">2.5.2.</span> <span class="nav-text">事务记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#恢复算法"><span class="nav-number">2.5.3.</span> <span class="nav-text">恢复算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查点"><span class="nav-number">2.5.4.</span> <span class="nav-text">检查点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检查点的作用"><span class="nav-number">2.5.4.1.</span> <span class="nav-text">检查点的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新的恢复算法"><span class="nav-number">2.5.4.2.</span> <span class="nav-text">新的恢复算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发控制"><span class="nav-number">2.5.5.</span> <span class="nav-text">并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用互斥锁实现顺序性"><span class="nav-number">2.5.5.1.</span> <span class="nav-text">利用互斥锁实现顺序性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重复数据的一致性问题"><span class="nav-number">2.6.</span> <span class="nav-text">重复数据的一致性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重复文件的一致性"><span class="nav-number">2.6.1.</span> <span class="nav-text">重复文件的一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#盘块号一致性的检查"><span class="nav-number">2.6.2.</span> <span class="nav-text">盘块号一致性的检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链结数一致性的检查"><span class="nav-number">2.6.3.</span> <span class="nav-text">链结数一致性的检查</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件共享"><span class="nav-number">1.</span> <span class="nav-text">文件共享</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于有向无循环图实现文件共享（硬链接）"><span class="nav-number">1.1.</span> <span class="nav-text">基于有向无循环图实现文件共享（硬链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向无循环图DAG-Directed-Acyclic-Graph"><span class="nav-number">1.1.1.</span> <span class="nav-text">有向无循环图DAG(Directed Acyclic Graph)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用索引结点"><span class="nav-number">1.1.2.</span> <span class="nav-text">利用索引结点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于符号链的共享方式（软链接）"><span class="nav-number">1.2.</span> <span class="nav-text">基于符号链的共享方式（软链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接基本思想"><span class="nav-number">1.2.1.</span> <span class="nav-text">符号链接基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接实现共享的优点"><span class="nav-number">1.2.2.</span> <span class="nav-text">符号链接实现共享的优点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统的安全性"><span class="nav-number">2.</span> <span class="nav-text">文件系统的安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性两个方面"><span class="nav-number">2.1.</span> <span class="nav-text">安全性两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的保护机制"><span class="nav-number">2.2.</span> <span class="nav-text">文件的保护机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一级-磁盘容错技术SFT-1"><span class="nav-number">2.3.</span> <span class="nav-text">第一级 磁盘容错技术SFT-1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#双份目录和双份文件分配表"><span class="nav-number">2.3.1.</span> <span class="nav-text">双份目录和双份文件分配表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#热修复重定向和写后读校验"><span class="nav-number">2.3.2.</span> <span class="nav-text">热修复重定向和写后读校验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二级磁盘容错技术SFT-2"><span class="nav-number">2.4.</span> <span class="nav-text">第二级磁盘容错技术SFT-2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘镜像-两个磁盘驱动器互为备份"><span class="nav-number">2.4.1.</span> <span class="nav-text">磁盘镜像-两个磁盘驱动器互为备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘双工-Disk-Duplexing"><span class="nav-number">2.4.2.</span> <span class="nav-text">磁盘双工(Disk Duplexing)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统的数据一致性控制"><span class="nav-number">2.5.</span> <span class="nav-text">文件系统的数据一致性控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务定义"><span class="nav-number">2.5.1.</span> <span class="nav-text">事务定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务记录"><span class="nav-number">2.5.2.</span> <span class="nav-text">事务记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#恢复算法"><span class="nav-number">2.5.3.</span> <span class="nav-text">恢复算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查点"><span class="nav-number">2.5.4.</span> <span class="nav-text">检查点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检查点的作用"><span class="nav-number">2.5.4.1.</span> <span class="nav-text">检查点的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新的恢复算法"><span class="nav-number">2.5.4.2.</span> <span class="nav-text">新的恢复算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发控制"><span class="nav-number">2.5.5.</span> <span class="nav-text">并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用互斥锁实现顺序性"><span class="nav-number">2.5.5.1.</span> <span class="nav-text">利用互斥锁实现顺序性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重复数据的一致性问题"><span class="nav-number">2.6.</span> <span class="nav-text">重复数据的一致性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重复文件的一致性"><span class="nav-number">2.6.1.</span> <span class="nav-text">重复文件的一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#盘块号一致性的检查"><span class="nav-number">2.6.2.</span> <span class="nav-text">盘块号一致性的检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链结数一致性的检查"><span class="nav-number">2.6.3.</span> <span class="nav-text">链结数一致性的检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.6.4.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1197,7 +1204,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1209,7 +1216,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">200k</span>
   
 
   
@@ -1218,7 +1225,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">2:48</span>
+    <span title="站点阅读时长">3:02</span>
   
 </div>
 
@@ -1229,8 +1236,7 @@
 
 
 
-<span id="timeDate">站点运行天数</span>
-<span id="times">运行的时分秒</span>
+
 <script>
     var now = new Date(); 
     function createtime() { 
@@ -1322,7 +1328,7 @@ setInterval("createtime()",250);
   </script>
 
 <script>
-  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
 </script>
 
       </div>
@@ -1376,7 +1382,7 @@ setInterval("createtime()",250);
   <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-reading-progress@1/reading_progress.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
 
 
   
