@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。 Loop设备/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。例如，">
+<meta name="keywords" content="Spring，Java，物联网，Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于DirectIO对Loop设备工作原理的分析">
+<meta property="og:url" content="https://szp2016.github.io/uncategorized/基于DirectIO对Loop设备工作原理的分析/index.html">
+<meta property="og:site_name" content="桃花猿记">
+<meta property="og:description" content="前言本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。 Loop设备/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。例如，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://szp2016.github.io/image/lora.jpg">
+<meta property="og:updated_time" content="2022-06-25T16:03:22.090Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于DirectIO对Loop设备工作原理的分析">
+<meta name="twitter:description" content="前言本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。 Loop设备/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。例如，">
+<meta name="twitter:image" content="https://szp2016.github.io/image/lora.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/uncategorized/基于DirectIO对Loop设备工作原理的分析/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>基于DirectIO对Loop设备工作原理的分析 | 桃花猿记</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">桃花猿记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/基于DirectIO对Loop设备工作原理的分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="桃花猿记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">基于DirectIO对Loop设备工作原理的分析
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-06-25 17:57:51" itemprop="dateCreated datePublished" datetime="2022-06-25T17:57:51+08:00">2022-06-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-06-26 00:03:22" itemprop="dateModified" datetime="2022-06-26T00:03:22+08:00">2022-06-26</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">3.2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">3 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+        <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+          
+          
+            <div class="post-gallery-row">
+              <img src="/image/lora.jpg" itemprop="contentUrl">
+            
+          
+
+          
+          </div>
+        </div>
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。</p>
+<h2 id="Loop设备"><a href="#Loop设备" class="headerlink" title="Loop设备"></a>Loop设备</h2><p>/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。<br>Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。<br>例如，查看当前系统空闲的Loop设备：</p>
+<blockquote>
+<p>losetup -f</p>
+</blockquote>
+<p>关联空闲设备loop1到一个现有文件test.img，格式化为ext4文件系统并挂载到./mnt目录下。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">losetup /dev/loop1 test.img</span><br><span class="line"></span><br><span class="line">mount /dev/loop1 ./mnt/</span><br><span class="line"></span><br><span class="line">mkfs.ext4 /dev/loop1</span><br></pre></td></tr></table></figure>
+
+<h2 id="DirectIO"><a href="#DirectIO" class="headerlink" title="DirectIO"></a>DirectIO</h2><p>直接IO是一种无缓冲的IO，对文件的读写操作不会经过操作系统内核中的文件缓存。内核文件缓存中提供的预读取、延迟写入等机制不一定适合所有应用场景，例如数据库通常有一套自身的缓存机制和落盘机制，如果没有能够绕过内核文件缓存的机制，就会存在双重缓存。DirectIO就提供了绕过内核文件缓存的方法。</p>
+<p>在open文件的时候设置 O_DIRECT 标识就可以使用DirectIO。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">fd = open(argv[<span class="number">1</span>], O_RDONLY | O_DIRECT);</span><br></pre></td></tr></table></figure>
+
+<h1 id="DirectIO吞吐量对比"><a href="#DirectIO吞吐量对比" class="headerlink" title="DirectIO吞吐量对比"></a>DirectIO吞吐量对比</h1><p>分别对真实设备和Loop设备进行吞吐量测试。<br>实验猜想：<br>真实设备的吞吐量会明显高于Loop设备。因为采用DirectIO都绕过内核缓存去设备中读取数据的情况下，Loop设备因为是关联的一个已存在的文件，会转化为对原镜像文件test.img的读取，在经过两层IO栈的情况下，吞吐量会低于直接读取真实设备。</p>
+<p>吞吐量测试程序如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">fd = open(argv[<span class="number">1</span>], O_RDONLY | O_DIRECT);</span><br><span class="line"><span class="keyword">if</span> (fd == <span class="number">-1</span>)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"open\n"</span>);</span><br><span class="line"></span><br><span class="line">gettimeofday(&amp;start, <span class="literal">NULL</span>);</span><br><span class="line"><span class="keyword">while</span> (numRead != <span class="number">0</span>) &#123;</span><br><span class="line">        numRead = read(fd, buf, size);</span><br><span class="line">        totalnumRead += numRead;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (numRead == <span class="number">-1</span>) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"Error\n"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">gettimeofday(&amp;end, <span class="literal">NULL</span>);</span><br><span class="line"><span class="keyword">double</span> elapsed_time = ((<span class="keyword">double</span>)t)/CLOCKS_PER_SEC;</span><br><span class="line">secs_used=(end.tv_sec - start.tv_sec);</span><br><span class="line">micros_used = secs_used*<span class="number">1000000</span> + end.tv_usec - start.tv_usec;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"Throughput = %f\n"</span>, (<span class="keyword">double</span>)totalnumRead/micros_used);</span><br></pre></td></tr></table></figure>
+
+<p>使用该程序分别读取Loop设备中的文件./mnt/loop_file，真实设备中的文件./device_file。</p>
+<p>真实设备吞吐量如下图所示，在120左右：</p>
+<p><img src="https://img-blog.csdnimg.cn/06cf3fa3f63b43ba8d91137d3da86159.png" alt="在这里插入图片描述"></p>
+<p>Loop设备吞吐量如下图所示，在700左右：</p>
+<p><img src="https://img-blog.csdnimg.cn/799982167ec14ceb8c18a0f01c1f3b98.png" alt="在这里插入图片描述"></p>
+<p>实验结果与猜想正好相反，Loop设备的吞吐量远大于真实设备。是什么原因造成了这种结果呢？</p>
+<h2 id="实验现象分析"><a href="#实验现象分析" class="headerlink" title="实验现象分析"></a>实验现象分析</h2><p>Loop设备的吞吐量如此高，猜想它在设置O_DIRECT标识的情况下，还是使用了内核中的文件缓存，才会比真实设备快。通过如下两步进行验证：</p>
+<ol>
+<li>查看测试程序执行前后，系统中cache大小的变化情况。</li>
+<li>通过trace工具根据内核中函数调用栈，判断测试程序是走的buff IO分支还是direct IO分支。</li>
+</ol>
+<h2 id="cache大小分析"><a href="#cache大小分析" class="headerlink" title="cache大小分析"></a>cache大小分析</h2><p>首先清空系统中的文件cache，清空后的buff/cache大小为213816KB。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">free</span><br><span class="line">sync; sudo <span class="built_in">echo</span> 3 &gt; /proc/sys/vm/drop_caches</span><br><span class="line">free</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/e259dfc9dfde41b5881aed495c10c69e.png" alt="在这里插入图片描述"></p>
+<p>执行Loop设备下的吞吐量测试程序，可以看到清空缓存后，第一次执行，吞吐量变低了，后续执行结果，又回到了高吞吐量。说明后续读取内容都命中了缓存，吞吐量变高。</p>
+<p><img src="https://img-blog.csdnimg.cn/a6f14ad9add74eb8851c8fcc76c6c330.png" alt="在这里插入图片描述"></p>
+<p>继续查看现在系统中的cache大小，变成了267688KB，增加了50M的大小。而我们读写的文件大小为40M，也很接近。</p>
+<p><img src="https://img-blog.csdnimg.cn/36d5451179424060a71c59adb445bf6c.png" alt="在这里插入图片描述"></p>
+<p>所以，在设置O_DIRECT标识的情况下对Loop设备中的文件进行读取，Loop设备还是使用了内核中的文件缓存。那么Loop设备具体是在哪里使用了缓存呢？</p>
+<h2 id="Loop设备读操作内核栈跟踪"><a href="#Loop设备读操作内核栈跟踪" class="headerlink" title="Loop设备读操作内核栈跟踪"></a>Loop设备读操作内核栈跟踪</h2><p>猜想Loop设备的调用栈如下图所示，在这个调用栈里面如果Loop设备使用缓存，最可能就是在下图中两个橙色的文件缓存处。接下来我们对这个假设进行验证。</p>
+<p><img src="https://img-blog.csdnimg.cn/035831abdf804d63939d6ffce26bf50e.png" alt="在这里插入图片描述"></p>
+<p>我们需要捕获到读取loop设备中文件的内核调用栈，才能验证上图是正确的。上图中经过了两次ext4文件系统，所以我们先跟踪一下ext4_file_read_iter函数，看一次read是否调用了两次该函数。</p>
+<p>借助bcc，成功捕获到了两次ext4读取操作。如下图所示，第一次由read发起，第二次由loop1发起，而且第二次执行是由内核线程kthread执行的kthread work，很明显loop_queue_work是loop驱动设置的work回调函数。</p>
+<p><img src="https://img-blog.csdnimg.cn/703d12073d9148c78f475c0cd88c0b02.png" alt="在这里插入图片描述"></p>
+<p>loop_queue_work由loop设备驱动初始化时设置的多请求队列函数操作集中的loop_init_request函数设置，过程如下图所示。当块层的请求队列进行请求派发时，就会唤醒worker，执行该函数。（/drivers/block/loop.c）</p>
+<p><img src="https://img-blog.csdnimg.cn/15025903b8734bc48f3d388c5576fbb5.png" alt="在这里插入图片描述"></p>
+<p>下面我们需要跟踪执行loop_queue_work的函数调用栈，查看第一段读操作的IO栈完整路径。<br>这次我们挂载loop驱动中负责处理块层多请求队列派发的request函数，即上图中的loop_queue_rq，调用栈如下图所示（自下向上）。</p>
+<p><img src="https://img-blog.csdnimg.cn/d35f1c29cac04ccda1d6229b59bbcab8.png" alt="在这里插入图片描述"></p>
+<p>可以看到第一段IO栈由于设置了O_DIRECT标识的原因，确实没有使用内核文件缓存，执行了ext4_direct_IO分支。</p>
+<p>块层一些函数的主要功能如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">blk_finish_plug : IO请求泄流(进程)</span><br><span class="line">blk_flush_plug_list ： 发起泄流</span><br><span class="line">blk_mq_flush_plug_list ： 多请求队列泄流</span><br><span class="line">blk_mq_sched_insert_requests ： 如果定义了调度算法则插入调度器。</span><br><span class="line">blk_mq_run_hw_queue ： 启动硬件队列，派发request到块设备驱动</span><br><span class="line">__blk_mq_delay_run_hw_queue ：派发hctx-&gt;dispatch链表</span><br><span class="line">blk_mq_sched_dispatch_requests ： 执行各种派发（直接派发、软件队列派发、调度队列派发）</span><br><span class="line">blk_mq_do_dispatch_sched ： 派发调度器的请求队列</span><br><span class="line">loop_queue_rq ：即queue_rq，是一个钩子函数，由具体的设备驱动定义用来处理request，loop_queue_rq是loop设备定义的处理函数，在驱动初始化时注入。</span><br></pre></td></tr></table></figure>
+
+<p>loop_queue_rq最终会将work插入到worker队列中，并唤醒睡眠的 worker-&gt;task，此刻 worker 上 work 的 work-&gt;func 得以执行，此处就是执行loop_queue_work。</p>
+<p><img src="https://img-blog.csdnimg.cn/7409d168da3d4ebd91c5c63948d1d84b.png" alt="在这里插入图片描述"></p>
+<h2 id="loop驱动如何处理请求"><a href="#loop驱动如何处理请求" class="headerlink" title="loop驱动如何处理请求"></a>loop驱动如何处理请求</h2><p>从下图loop1发起的第二次IO调用栈可以看到，loop驱动又将请求转发到了虚拟文件系统层，即函数vfs_iter_read。此时就是对loop设备所关联的镜像文件进行IO操作了。接下来我们验证一下，第二段IO操作是否使用了文件缓存。</p>
+<p><img src="https://img-blog.csdnimg.cn/703d12073d9148c78f475c0cd88c0b02.png" alt="在这里插入图片描述"></p>
+<p>我们挑选缓存读中的负责预读窗口初始化的函数ondemand_readahead进行跟踪，结果如下图所示。<br>结果显示了generic_file_buffered_read函数，第二段对镜像文件test.img的读取采用了buff IO。</p>
+<p><img src="https://img-blog.csdnimg.cn/d4c77ce60bbc4361a958fca50e32e8e8.png" alt="在这里插入图片描述"></p>
+<p>至此，已经能够解释为什么在设置了O_DIRECT标识的情况下，loop设备的吞吐量的比真实设备高那么多。loop设备在驱动层又将请求转发到了vfs层，进行对其关联镜像文件的第二段读取，在第二段读取的时候依然采用了buff IO。</p>
+<p>读取loop设备的整体IO栈如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/f8c112e93c1849ad996e65d8ea5a133d.png" alt="在这里插入图片描述"></p>
+<h1 id="后续工作"><a href="#后续工作" class="headerlink" title="后续工作"></a>后续工作</h1><p>接下来分析一下，为什么第二段IO不能延续第一段IO的O_DIRECT标识。从loop_queue_work函数开始看loop驱动如何将第一次的请求转化为第二次的请求。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">loop_queue_work</span><br><span class="line">    loop_handle_cmd</span><br><span class="line">        do_req_filebacked</span><br></pre></td></tr></table></figure>
+
+<p>do_req_filebacked函数中对读写和不同的读写类型进行了处理，direct IO是通过非阻塞I/O来进行io的转发。可以看出，loop设备关联的镜像文件是单独进行读写方式设置的，与第一段IO读写的方式是不相干的。那么cmd-&gt;use_aio是在何时进行设置的？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">do_req_filebacked</span><span class="params">(struct loop_device *lo, struct request *rq)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">loop_cmd</span> *<span class="title">cmd</span> = <span class="title">blk_mq_rq_to_pdu</span>(<span class="title">rq</span>);</span></span><br><span class="line">	<span class="keyword">loff_t</span> pos = ((<span class="keyword">loff_t</span>) blk_rq_pos(rq) &lt;&lt; <span class="number">9</span>) + lo-&gt;lo_offset;</span><br><span class="line">	<span class="keyword">switch</span> (req_op(rq)) &#123;<span class="comment">//跟据request的flag对文件进行不同的操作</span></span><br><span class="line">	<span class="keyword">case</span> REQ_OP_FLUSH:<span class="comment">//flush操作</span></span><br><span class="line">		<span class="keyword">return</span> lo_req_flush(lo, rq);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_WRITE_ZEROES:<span class="comment">//discard操作</span></span><br><span class="line">		<span class="keyword">return</span> lo_fallocate(lo, rq, pos,</span><br><span class="line">			(rq-&gt;cmd_flags &amp; REQ_NOUNMAP) ?</span><br><span class="line">				FALLOC_FL_ZERO_RANGE :</span><br><span class="line">				FALLOC_FL_PUNCH_HOLE);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_DISCARD:<span class="comment">//discard操作</span></span><br><span class="line">		<span class="keyword">return</span> lo_fallocate(lo, rq, pos, FALLOC_FL_PUNCH_HOLE);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_WRITE:<span class="comment">//写操作</span></span><br><span class="line">		<span class="keyword">if</span> (lo-&gt;transfer)<span class="comment">//配置了加密算法</span></span><br><span class="line">			<span class="keyword">return</span> lo_write_transfer(lo, rq, pos);</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (cmd-&gt;use_aio)<span class="comment">//关联的镜像文件设置了direct I/O</span></span><br><span class="line">			<span class="keyword">return</span> lo_rw_aio(lo, cmd, pos, WRITE);</span><br><span class="line">		<span class="keyword">else</span><span class="comment">//buff IO</span></span><br><span class="line">			<span class="keyword">return</span> lo_write_simple(lo, rq, pos);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_READ:<span class="comment">//读操作</span></span><br><span class="line">		<span class="keyword">if</span> (lo-&gt;transfer)</span><br><span class="line">			<span class="keyword">return</span> lo_read_transfer(lo, rq, pos);</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (cmd-&gt;use_aio)<span class="comment">//关联的镜像文件设置了direct I/O</span></span><br><span class="line">			<span class="keyword">return</span> lo_rw_aio(lo, cmd, pos, READ);</span><br><span class="line">		<span class="keyword">else</span><span class="comment">//buff IO</span></span><br><span class="line">			<span class="keyword">return</span> lo_read_simple(lo, rq, pos);</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		WARN_ON_ONCE(<span class="number">1</span>);</span><br><span class="line">		<span class="keyword">return</span> -EIO;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从man手册中loop下面可以看到，可以通过ioctl来设置backing file为direct IO模式。<br><img src="https://img-blog.csdnimg.cn/a4ffc4a22e834aa2a3b7a6117f427122.png" alt="在这里插入图片描述"></p>
+<p>查看loop驱动中的ioctl处理函数，loop_set_dio函数对该ioctl命令进行处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//drivers/block/loop.c</span><br><span class="line">static int lo_ioctl(struct block_device *bdev, fmode_t mode,</span><br><span class="line">	unsigned int cmd, unsigned long arg)</span><br><span class="line">&#123;</span><br><span class="line">	struct loop_device *lo = bdev-&gt;bd_disk-&gt;private_data;</span><br><span class="line">	int err;</span><br><span class="line"></span><br><span class="line">	mutex_lock_nested(&amp;lo-&gt;lo_ctl_mutex, 1);</span><br><span class="line">	switch (cmd) &#123;</span><br><span class="line">	case LOOP_SET_FD:</span><br><span class="line">		err = loop_set_fd(lo, mode, bdev, arg);</span><br><span class="line">		break;</span><br><span class="line">        ......</span><br><span class="line">	case LOOP_SET_DIRECT_IO://处理direct IO设置</span><br><span class="line">		err = -EPERM;</span><br><span class="line">		if ((mode &amp; FMODE_WRITE) || capable(CAP_SYS_ADMIN))</span><br><span class="line">			err = loop_set_dio(lo, arg);</span><br><span class="line">		break;</span><br><span class="line">	.......</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>__loop_update_dio会对lo-&gt;use_dio进行判断和配置。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">loop_set_dio</span><span class="params">(struct loop_device *lo, <span class="keyword">unsigned</span> <span class="keyword">long</span> arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> error = -ENXIO;</span><br><span class="line">	<span class="keyword">if</span> (lo-&gt;lo_state != Lo_bound)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line">	__loop_update_dio(lo, !!arg);</span><br><span class="line">	<span class="keyword">if</span> (lo-&gt;use_dio == !!arg)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	error = -EINVAL;</span><br><span class="line"> out:</span><br><span class="line">	<span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是我们在驱动处理请求时判断diretIO是使用的cmd-&gt;use_aio，这个变量是何时和lo-&gt;use_dio关联起来的呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> blk_status_t <span class="title">loop_queue_rq</span><span class="params">(struct blk_mq_hw_ctx *hctx,</span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">const</span> struct blk_mq_queue_data *bd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">switch</span> (req_op(cmd-&gt;rq)) &#123;</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_FLUSH:</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_DISCARD:</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_WRITE_ZEROES:</span><br><span class="line">		cmd-&gt;use_aio = <span class="literal">false</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:<span class="comment">//设置backing file的读写方式</span></span><br><span class="line">		cmd-&gt;use_aio = lo-&gt;use_dio;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	kthread_queue_work(&amp;lo-&gt;worker, &amp;cmd-&gt;work);</span><br><span class="line">	<span class="keyword">return</span> BLK_STS_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>loop_queue_rq中对cmd-&gt;use_aio进行了赋值。最后，lo-&gt;use_dio的默认值在何时设置的？<br>loop_set_fd函数负责将loop设备和某个文件进行关联，在其中初始化了lo-&gt;use_dio为false。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">loop_set_fd</span><span class="params">(struct loop_device *lo, <span class="keyword">fmode_t</span> mode,</span></span></span><br><span class="line"><span class="function"><span class="params">		       struct block_device *bdev, <span class="keyword">unsigned</span> <span class="keyword">int</span> arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span>	*<span class="title">file</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span>	*<span class="title">inode</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span>;</span></span><br><span class="line">	<span class="keyword">int</span>		lo_flags = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span>		error;</span><br><span class="line">	<span class="keyword">loff_t</span>		size;</span><br><span class="line">    ......</span><br><span class="line">	lo-&gt;use_dio = <span class="literal">false</span>;<span class="comment">//默认不采用directIO</span></span><br><span class="line">	lo-&gt;lo_device = bdev;</span><br><span class="line">	lo-&gt;lo_flags = lo_flags;</span><br><span class="line">	lo-&gt;lo_backing_file = file;</span><br><span class="line">	lo-&gt;transfer = <span class="literal">NULL</span>;</span><br><span class="line">	lo-&gt;ioctl = <span class="literal">NULL</span>;</span><br><span class="line">	lo-&gt;lo_sizelimit = <span class="number">0</span>;</span><br><span class="line">    ......</span><br><span class="line">	<span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>至此，我们已经弄清了为什么loop设备在direct IO读写设置下，还是能够使用内核文件缓存。总结如下：</p>
+<ol>
+<li>loop设备关联的backing file ，其读写方式需要单独进行设置。</li>
+<li>loop设备关联文件的读写方式默认为buff IO。</li>
+<li>系统通过ioctl系统调用，设置backing file的读写方式，对应的cmd为LOOP_SET_DIRECT_IO。</li>
+</ol>
+
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    基于DirectIO对Loop设备工作原理的分析
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2022年06月25日 - 17:57:51
+  </li>
+    <strong>最后更新：</strong>
+    2022年06月26日 - 00:03:22
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/uncategorized/基于DirectIO对Loop设备工作原理的分析/" title="基于DirectIO对Loop设备工作原理的分析">https://szp2016.github.io/uncategorized/基于DirectIO对Loop设备工作原理的分析/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/uncategorized/进程基础/" rel="next" title="进程基础">
+                <i class="fa fa-chevron-left"></i> 进程基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Loop设备"><span class="nav-number">1.1.</span> <span class="nav-text">Loop设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DirectIO"><span class="nav-number">1.2.</span> <span class="nav-text">DirectIO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DirectIO吞吐量对比"><span class="nav-number">2.</span> <span class="nav-text">DirectIO吞吐量对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实验现象分析"><span class="nav-number">2.1.</span> <span class="nav-text">实验现象分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cache大小分析"><span class="nav-number">2.2.</span> <span class="nav-text">cache大小分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Loop设备读操作内核栈跟踪"><span class="nav-number">2.3.</span> <span class="nav-text">Loop设备读操作内核栈跟踪</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loop驱动如何处理请求"><span class="nav-number">2.4.</span> <span class="nav-text">loop驱动如何处理请求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后续工作"><span class="nav-number">3.</span> <span class="nav-text">后续工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'uncategorized/基于DirectIO对Loop设备工作原理的分析/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

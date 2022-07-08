@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="为了加深对Linux操作系统中文件系统的理解，本篇文章将详细介绍编写一个简单文件系统的第一步，如何实现磁盘的格式化。作者能力有限，仅作零基础入门学习的实验，所以相关概念也会尽量解释到详细。好了，那就从准备工作开始吧 准备工作准备工作主要对文件系统的概念，格式化的概念，磁盘的准备，文件系统逻辑结构设计，重要数据结构进行介绍。 文件系统的概念文件系统是操作系统向用户提供一套存取数据的抽象数据结构，方便">
+<meta name="keywords" content="文件系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编写文件系统之格式化磁盘">
+<meta property="og:url" content="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/index.html">
+<meta property="og:site_name" content="桃花猿记">
+<meta property="og:description" content="为了加深对Linux操作系统中文件系统的理解，本篇文章将详细介绍编写一个简单文件系统的第一步，如何实现磁盘的格式化。作者能力有限，仅作零基础入门学习的实验，所以相关概念也会尽量解释到详细。好了，那就从准备工作开始吧 准备工作准备工作主要对文件系统的概念，格式化的概念，磁盘的准备，文件系统逻辑结构设计，重要数据结构进行介绍。 文件系统的概念文件系统是操作系统向用户提供一套存取数据的抽象数据结构，方便">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-07-37-49.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-08-10-44.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-08-44-10.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-11-41-09.png">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
+<meta property="og:updated_time" content="2022-04-16T01:47:17.895Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编写文件系统之格式化磁盘">
+<meta name="twitter:description" content="为了加深对Linux操作系统中文件系统的理解，本篇文章将详细介绍编写一个简单文件系统的第一步，如何实现磁盘的格式化。作者能力有限，仅作零基础入门学习的实验，所以相关概念也会尽量解释到详细。好了，那就从准备工作开始吧 准备工作准备工作主要对文件系统的概念，格式化的概念，磁盘的准备，文件系统逻辑结构设计，重要数据结构进行介绍。 文件系统的概念文件系统是操作系统向用户提供一套存取数据的抽象数据结构，方便">
+<meta name="twitter:image" content="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-07-37-49.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>编写文件系统之格式化磁盘 | 桃花猿记</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">桃花猿记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="桃花猿记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">编写文件系统之格式化磁盘
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-08-20 07:10:45" itemprop="dateCreated datePublished" datetime="2020-08-20T07:10:45+08:00">2020-08-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-04-16 09:47:17" itemprop="dateModified" datetime="2022-04-16T09:47:17+08:00">2022-04-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">5.9k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">5 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>为了加深对Linux操作系统中文件系统的理解，本篇文章将详细介绍编写一个简单文件系统的第一步，如何实现磁盘的格式化。作者能力有限，仅作零基础入门学习的实验，所以相关概念也会尽量解释到详细。好了，那就从准备工作开始吧</p>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>准备工作主要对文件系统的概念，格式化的概念，磁盘的准备，文件系统逻辑结构设计，重要数据结构进行介绍。</p>
+<h2 id="文件系统的概念"><a href="#文件系统的概念" class="headerlink" title="文件系统的概念"></a>文件系统的概念</h2><p>文件系统是操作系统向用户提供一套存取数据的抽象数据结构，方便用户管理一组数据。文件系统在Linux操作系统中的位置在下图红框中标出，如Ext2、Ext4等。而在windows中现在常用的文件系统为NTFS、exFAT等，想必大家在格式化U盘、硬盘的时候就经常见到了。</p>
+<p><img src="//szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-07-37-49.png" alt></p>
+<p>为什么要用文件系统来存取数据呢？是为了图个方便。试想如果没有文件系统，放置在存储介质（硬盘）中的数据将是一个庞大的数据主体，无法分辨一个数据从哪里停止，下一个数据又从哪里开始。我们在田地里面种菜，还需要划分出几畦几垄。放到磁盘上也是一样的，通过将数据分为一块一块的，并为每一块都赋予一个名字，数据将会很容易隔离和确定。当然这都是在逻辑上去划分，并不是像对土地那样，去把磁盘切开，聚拢成堆。既然是在逻辑上划分，那总得有个依据，将划分的结果落实下来，不能凭空的，今天我这样划分，明儿个他那样划分，就乱套了。这时候我们就需要创建一系列的数据结构（包含数据和对此数据的一系列操作），来表示我们划分的逻辑。</p>
+<h2 id="格式化的概念"><a href="#格式化的概念" class="headerlink" title="格式化的概念"></a>格式化的概念</h2><p>如果还是很模糊，我们就离了菜地，再来换个例子。如果将硬盘比作一张空白A4纸，那么将其格式化为某种文件系统（如下图所示，格式化的时候会让我们选择一个文件系统），就类似在纸上面印上田字格，页码，为其加上目录，用来练习书法；有的人想练习英文，那就印上四线三格。这样一张纸根据不同的用途，就有了不同的结构划分。言而总之，通过定义一系列数据结构，用于划分硬盘存储的结构和管理数据，就是文件系统。</p>
+<p><img src="//szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-08-10-44.png" alt>。</p>
+<p>我们顺便把格式化也给说完了，如果还不清楚，后面还会有介绍。</p>
+<h1 id="磁盘的准备"><a href="#磁盘的准备" class="headerlink" title="磁盘的准备"></a>磁盘的准备</h1><p>因为我们是实验是编写简单文件系统，为了方便和简化，我们将创建一个名字为image的文件，来代替真正的物理磁盘。我们对该文件进行格式化，查看文件的内容，来检验我们的成果。<br>下面我们将使用linux中dd命令来创建一个指定块大小的文件。我们的image包含100个块，并且每个块的大小为4096字节，全部用0填充。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd bs=4096 count=100 if=/dev/zero of=image</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>dd命令：用指定大小的块拷贝一个文件，并在拷贝的同时进行指定的转换。</p>
+<p>if=文件名：输入文件名，缺省为标准输入。即指定源文件。</p>
+<p>of=文件名：输出文件名，缺省为标准输出。</p>
+<p>count=blocks：只拷贝blocks个块，即拷贝块的个数。</p>
+<p>bs=bytes：同时设置读入/输出的块大小为bytes个字节。</p>
+<p>/dev/zero 是类 Unix 系统中一个特殊的文件，当读取该文件时，它会提供无限的空字符 null或者0。</p>
+</blockquote>
+<p>可以使用hexdump命令，查看image里面的数据全都为0。这就是一个未格式化磁盘的样子。它的地址从0x00000000-0x00064000(409600)，也就是文件大小为409600 byte。</p>
+<pre><font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~/code/myfs</b></font>$ dd bs=4096 count=100 if=/dev/zero of=image
+记录了100+0 的读入
+记录了100+0 的写出
+409600 bytes (410 kB, 400 KiB) copied, 0.00192153 s, 213 MB/s
+<font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~/code/myfs</b></font>$ hexdump -C image
+00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+00064000
+</pre>
+
+<h2 id="文件系统逻辑结构设计"><a href="#文件系统逻辑结构设计" class="headerlink" title="文件系统逻辑结构设计"></a>文件系统逻辑结构设计</h2><p>磁盘准备好了，下面就应该考虑如何进行逻辑上的划分了。磁盘都是以块为单位，我们上面创建的磁盘一共包含100块，每一块的大小为4k。参考现有的文件系统，一个文件系统必须包含以下逻辑结构划分。</p>
+<p><img src="//szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-08-44-10.png" alt></p>
+<p>将100块，分为6大部分，现做简要介绍。</p>
+<ul>
+<li><p>0-1块：引导块，用于引导操作系统启动，必须保留。</p>
+</li>
+<li><p>1-2块：Super Block(超级块)，包含了文件系统布局的重要信息，一旦破坏，将导致磁盘不可读。包括inode节点的个数、磁盘块数以及空闲块链表的起始位置。</p>
+</li>
+<li><p>2-3块：block map(块位图)，记录磁盘中所有块的使用情况，即这100个块哪个是被使用了，哪个没有被使用。</p>
+</li>
+<li><p>3-4块：inode map(inode位图)，与块位图同理，存储的是inode节点的占用情况。</p>
+</li>
+<li><p>4-10块：inode table（inode节点），每个inode节点表示一个确切的文件。</p>
+</li>
+<li><p>10-99块：data block(数据块)，存放文件具体内容的块。</p>
+</li>
+</ul>
+<p>inode用于描述一个具体的文件的元信息，例如该文件的创建时间，是目录还是具体文件等等。需要注意的是它并不存储文件内部具体的数据，文件中具体数据是存放在数据块（data block）中的，那我们怎么知道当前inode对应那几个数据块呢，毕竟我们这里数据块就有89个。inode中设置一个block数组，block数组存储着每个块的索引，用于定位文件。</p>
+<p>位图或位向量（块位图和inode位图）是一系列位或位的集合，其中每个位对应一个磁盘块，该位可以采用两个值: 0和1, 1表<br>示已分配该块，而0表示一个空闲块。如1111 0000表示前四块已分配，后四块空闲。</p>
+<blockquote>
+<p>uint64_t block[MISER_N_BLOCKS];</p>
+</blockquote>
+<p>MISER_N_BLOCKS设置为10，也就是一个文件最大也就能用10个块来存储，因为一个块的大小为4k，那么一个文件最大也就40k。这也太小了，真正的文件系统中inode会有多级索引，可以支持更多的块索引，我们这里只用10个一级索引，所以小了一些。</p>
+<h2 id="重要数据结构"><a href="#重要数据结构" class="headerlink" title="重要数据结构"></a>重要数据结构</h2><p>磁盘逻辑结构既然划分好了，就要定义一系列数据结构来进行表示、存储和操作。</p>
+<h3 id="super-block"><a href="#super-block" class="headerlink" title="super block"></a>super block</h3><p>超级块代表了整个文件系统，超级块是文件系统的控制块，有整个文件系统信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MISER_fs_super_block</span> &#123;</span></span><br><span class="line">	<span class="comment">//版本</span></span><br><span class="line">	<span class="keyword">uint64_t</span> version;</span><br><span class="line">	<span class="comment">//区别于其他文件系统的标识</span></span><br><span class="line">	<span class="keyword">uint64_t</span> magic;</span><br><span class="line">	<span class="comment">//块大小</span></span><br><span class="line">	<span class="keyword">uint64_t</span> block_size;</span><br><span class="line">	<span class="comment">//inode节点总数</span></span><br><span class="line">	<span class="keyword">uint64_t</span> inodes_count;</span><br><span class="line">	<span class="comment">//空闲块数</span></span><br><span class="line">	<span class="keyword">uint64_t</span> free_blocks;</span><br><span class="line">	<span class="comment">//总块数</span></span><br><span class="line">	<span class="keyword">uint64_t</span> blocks_count;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//bmap开始的块索引</span></span><br><span class="line">	<span class="keyword">uint64_t</span> bmap_block;</span><br><span class="line">	<span class="comment">//imap开始的块索引</span></span><br><span class="line">	<span class="keyword">uint64_t</span> imap_block;</span><br><span class="line">	<span class="comment">//inode开始的块索引</span></span><br><span class="line">	<span class="keyword">uint64_t</span> inode_table_block;</span><br><span class="line">	<span class="comment">//data block开始的块索引</span></span><br><span class="line">	<span class="keyword">uint64_t</span> data_block_number;</span><br><span class="line">	<span class="comment">//填充，让super block结构体大小正好占满一个块（4096 byte），方便计算</span></span><br><span class="line">	<span class="keyword">char</span> padding[<span class="number">4016</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>超级块中的char padding[4016]，是为了使超级块的大小为4096bytes，以简化计算；</li>
+<li>magic为1314522，用以区别其他文件系统；</li>
+<li>inodes_count记录文件系统所支持的inode个数，在格式化的时候写入。</li>
+<li>bmap_block记录着bmap开始的块索引，我们这里根据上面的逻辑划分，取值为2。</li>
+<li>imap_block记录imap开始的块索引，取值为3。</li>
+<li>inode_table_block记录inode开始的块索引，取值为4。</li>
+<li>data_block_number记录数据部分开始的块索引，这里为10，记录索引是为了简化文件块的定位操作。</li>
+</ul>
+<h3 id="MISER-inode"><a href="#MISER-inode" class="headerlink" title="MISER_inode"></a>MISER_inode</h3><p>MISER_inode对应磁盘中的inode。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MISER_inode</span> &#123;</span></span><br><span class="line">	<span class="keyword">mode_t</span> mode;<span class="comment">//4byte</span></span><br><span class="line">	<span class="keyword">uint64_t</span> inode_no;</span><br><span class="line">	<span class="keyword">uint64_t</span> blocks;</span><br><span class="line">	<span class="keyword">uint64_t</span> block[MISER_N_BLOCKS];</span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">uint64_t</span> file_size;</span><br><span class="line">		<span class="keyword">uint64_t</span> dir_children_count;</span><br><span class="line">	&#125;;</span><br><span class="line">    <span class="keyword">int32_t</span> i_uid; </span><br><span class="line">    <span class="keyword">int32_t</span> i_gid; </span><br><span class="line">    <span class="keyword">int32_t</span> i_nlink;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int64_t</span> i_atime;</span><br><span class="line">    <span class="keyword">int64_t</span> i_mtime;</span><br><span class="line">    <span class="keyword">int64_t</span> i_ctime;</span><br><span class="line">    <span class="keyword">char</span> padding[<span class="number">112</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>mode表示当前文件是目录（目录也是文件）还是一个常规文件</li>
+<li>inode_no表示节点号码</li>
+<li>blocks表示该inode自身所占块的数目</li>
+<li>block[MISER_N_BLOCKS]表示文件中数据存储位置的数据块索引</li>
+<li>file_size如果该inode是常规文件，表示文件大小</li>
+<li>dir_children_count如果该inode是目录，表示子目录数</li>
+<li>i_uid、i_gid表示用户id，组id</li>
+</ul>
+<h3 id="目录项"><a href="#目录项" class="headerlink" title="目录项"></a>目录项</h3><p>文件只有打开后才能够被读取。在文件打开后，操作系统会使用用户提供的路径名来定位磁盘中的目录。目录项提供了查找文件磁盘块所需要的信息。<br>如果使用相对路径，则从当前进程的当前目录开始查找，否则就从根目录开始。<br>在以上两种情况中，第一个目录的i节点很容易定位:在进程描述符中有指向它的指针，或者在使用根目录的情况下，它存储在磁盘上预定的块上。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MISER_dir_record</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">char</span> filename[MISER_FILENAME_MAX_LEN];</span><br><span class="line">	<span class="keyword">uint64_t</span> inode_no;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>filename字符数组，存储文件的名称，MISER_FILENAME_MAX_LEN是256，文件名称最长为256</li>
+<li>inode_no存储对应的inode节点号码</li>
+</ul>
+<h1 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h1><p>为了实现我们设计的文件系统，我们需要创建一个mkfs格式化程序，使用该程序，将image磁盘改写成我们划分好的结构。<br>mkfs程序依次向image写入超级块（引导块保留）、block map、inode map、inode，在data block创建一个根目录，根目录中创建一个测试文件。</p>
+<p>我们将按照如下顺序依次写入文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//初始化superblock</span></span><br><span class="line">   init_disk(fd, argv[<span class="number">1</span>]);</span><br><span class="line">   <span class="comment">//写入引导块</span></span><br><span class="line">write_dummy(fd);</span><br><span class="line">   <span class="comment">//写入超级块</span></span><br><span class="line">write_sb(fd);</span><br><span class="line">   <span class="comment">//写入块位图</span></span><br><span class="line">write_bmap(fd);</span><br><span class="line"><span class="comment">//写入inode位图</span></span><br><span class="line">write_imap(fd);</span><br><span class="line"><span class="comment">//创建根目录，测试文件</span></span><br><span class="line">write_itable(fd);</span><br></pre></td></tr></table></figure>
+
+<h2 id="初始化超级块和块位图"><a href="#初始化超级块和块位图" class="headerlink" title="初始化超级块和块位图"></a>初始化超级块和块位图</h2><p>超级块包含了文件系统的基本信息，其信息在上文中有详细描述。写入超级块信息，需要计算整个磁盘的大小，然后计算imap，bmap以及inode table的大小，这样才能确定各个区域在磁盘中的位置。这些工作都是在init_disk这个函数中完成的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init_disk</span><span class="params">(<span class="keyword">int</span> fd, <span class="keyword">const</span> <span class="keyword">char</span>* path)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	disk_size = get_file_size(path);</span><br><span class="line">	<span class="keyword">if</span> (disk_size == <span class="number">-1</span>) &#123;</span><br><span class="line">		perror(<span class="string">"Error: can not get disk size!\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Disk size id %lu\n"</span>, disk_size);</span><br><span class="line">	super_block.version = <span class="number">1</span>;</span><br><span class="line">	super_block.block_size = MISER_BLOCKSIZE;</span><br><span class="line">	super_block.magic = MAGIC_NUM;</span><br><span class="line">	super_block.blocks_count = disk_size/MISER_BLOCKSIZE;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"blocks count is %llu\n"</span>, super_block.blocks_count);</span><br><span class="line">	super_block.inodes_count = super_block.blocks_count;</span><br><span class="line">	super_block.free_blocks = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">//计算bmap，8*MISER_BLOCKSIZE表示1B=8位，4kb=4096*8=32768位二进制，因为是位图，用一位表示一个数据块，一个4k的块存储位图，共可以表示32768个数据块。</span></span><br><span class="line">	<span class="comment">//super_block.blocks_count/(8*MISER_BLOCKSIZE)表示，该磁盘总的块数整除用一个块存储该磁盘位图可以表示的磁盘块数，就可以得到该磁盘应该用多少个块来存放块位图，</span></span><br><span class="line">	<span class="comment">//这里bmap_size等于0，表示存储磁盘块位图，一块磁盘都用不了，因为我们的磁盘一共100块，而用一个4k的块来存储位图就可以表示32768块，所以表示100块绰绰有余。</span></span><br><span class="line">	bmap_size = super_block.blocks_count/(<span class="number">8</span>*MISER_BLOCKSIZE);</span><br><span class="line">	super_block.bmap_block = RESERVE_BLOCKS;</span><br><span class="line"></span><br><span class="line"><span class="comment">//当计算出存储位图的块数不是整数时，要对块位图块数做+1操作，以免不够用。</span></span><br><span class="line">	<span class="keyword">if</span> (super_block.blocks_count%(<span class="number">8</span>*MISER_BLOCKSIZE) != <span class="number">0</span>) &#123;</span><br><span class="line">		bmap_size += <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	bmap = (<span class="keyword">uint8_t</span> *)<span class="built_in">malloc</span>(bmap_size*MISER_BLOCKSIZE);</span><br><span class="line">	<span class="comment">//将申请的4k大小的bmap初始化为0</span></span><br><span class="line">	<span class="built_in">memset</span>(bmap,<span class="number">0</span>,bmap_size*MISER_BLOCKSIZE);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//计算imap</span></span><br><span class="line">	imap_size = super_block.inodes_count/(<span class="number">8</span>*MISER_BLOCKSIZE);</span><br><span class="line">	super_block.imap_block = super_block.bmap_block + bmap_size;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(super_block.inodes_count%(<span class="number">8</span>*MISER_BLOCKSIZE) != <span class="number">0</span>) &#123;</span><br><span class="line">		imap_size += <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	imap = (<span class="keyword">uint8_t</span> *)<span class="built_in">malloc</span>(imap_size*MISER_BLOCKSIZE);</span><br><span class="line">	<span class="built_in">memset</span>(imap,<span class="number">0</span>,imap_size*MISER_BLOCKSIZE);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//计算inode_table，表示需要多少个数据块来存储,(MISER_BLOCKSIZE/MISER_INODE_SIZE)代表一个块能够存放几个inode,inodes_count代表inode总数</span></span><br><span class="line">	inode_table_size = super_block.inodes_count/(MISER_BLOCKSIZE/MISER_INODE_SIZE);</span><br><span class="line">	<span class="comment">//计算inode_table的数据块索引</span></span><br><span class="line">	super_block.inode_table_block = super_block.imap_block + imap_size;</span><br><span class="line">	<span class="comment">//计算数据块的块索引</span></span><br><span class="line">	super_block.data_block_number = RESERVE_BLOCKS + bmap_size + imap_size + inode_table_size;</span><br><span class="line">	<span class="comment">//计算空闲块数</span></span><br><span class="line">	super_block.free_blocks = super_block.blocks_count - super_block.data_block_number - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//设置bmap</span></span><br><span class="line">	<span class="keyword">int</span> idx;</span><br><span class="line">	<span class="comment">// plus one becase of the root dir</span></span><br><span class="line">	<span class="keyword">for</span> (idx = <span class="number">0</span>; idx &lt; super_block.data_block_number + <span class="number">1</span>; ++idx) &#123;</span><br><span class="line">		<span class="keyword">if</span> (set_bmap(idx, <span class="number">1</span>)) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要流程为，获取磁盘大小（image文件），计算bmap，imap的大小，需要用几个块存储；计算inode总共占用几个块，分别计算出6个部分逻辑划分的起始块索引。计算出了磁盘元数据占用的块数，就可以使用set_bmap修改bmap了。根据逻辑划分可以知道，引导块，超级块，bmap，imap,inode总共使用了10个块，然后我们还需要创建一个根目录和一个文件，会占用一个data block。因此image中前11个块都会被占用。set_bmap函数执行完成后，使用gdb单步调试可以看到bmap数组前11位被置为1。该数组会在后面直接写入到文件。</p>
+<p><img src="//szp2016.github.io/linux/编写文件系统之格式化磁盘/2020-08-20-11-41-09.png" alt></p>
+<p>设置bmap函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">set_bmap</span><span class="params">(<span class="keyword">uint64_t</span> idx, <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(!bmap) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//sizeof(char)的值为1，bmap数组中的元素类型为8位无符号整型，因为磁盘的前11块已经被使用，所以这里将数组的前11位置为1</span></span><br><span class="line">	<span class="comment">//因为数组把每八位二进制作为一个元素，这里对8整除得到数组元素的索引</span></span><br><span class="line">	<span class="keyword">uint64_t</span> array_idx = idx/(<span class="keyword">sizeof</span>(<span class="keyword">char</span>)*<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//对8取余，得到在对应数组元素中的偏移量</span></span><br><span class="line">	<span class="keyword">uint64_t</span> off = idx%(<span class="keyword">sizeof</span>(<span class="keyword">char</span>)*<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//数组下标超过了位图的数据大小</span></span><br><span class="line">	<span class="keyword">if</span>(array_idx &gt; bmap_size*MISER_BLOCKSIZE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"Set bmap error and idx is %llu\n"</span>, idx);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(value)<span class="comment">//对应块位图置1</span></span><br><span class="line">		bmap[array_idx] |= (<span class="number">1</span>&lt;&lt;off);</span><br><span class="line">	<span class="keyword">else</span><span class="comment">//对应块位图置0</span></span><br><span class="line">		bmap[array_idx] &amp;= ~(<span class="number">1</span>&lt;&lt;off);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="写入引导块"><a href="#写入引导块" class="headerlink" title="写入引导块"></a>写入引导块</h2><p>初始化超级块（struct MISER_fs_super_block super_block）和块位图(uint8_t* bmap)以后，首先写入第一个块，也就是引导块的数据。引导块全部置0。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write_dummy</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> dummy[MISER_BLOCKSIZE] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="keyword">ssize_t</span> res = write(fd, dummy, MISER_BLOCKSIZE);</span><br><span class="line">	<span class="keyword">if</span> (res != MISER_BLOCKSIZE) &#123;</span><br><span class="line">		perror(<span class="string">"write_dummy error!"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用hexdump命令查看写入的情况，是否正确。<br>第0块，0x00000000-0x00001000，其中的数据全部为0，*省略了重复的内容。</p>
+<pre><font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~/code/myfs</b></font>$ hexdump -C image 
+00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+00001000  01 00 00 00 00 00 00 00  da 0e 14 00 00 00 00 00  |................|
+</pre>
+
+<h2 id="写入超级块"><a href="#写入超级块" class="headerlink" title="写入超级块"></a>写入超级块</h2><p>紧接着在引导块之后，写入刚才初始化好的超级块。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write_sb</span><span class="params">(<span class="keyword">int</span> fd)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">ssize_t</span> ret;</span><br><span class="line">	ret = write(fd, &amp;super_block, <span class="keyword">sizeof</span>(super_block));</span><br><span class="line">	<span class="keyword">if</span>(ret != MISER_BLOCKSIZE) &#123;</span><br><span class="line">		perror(<span class="string">"Write super block error!\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Super block written succesfully!\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第1块，0x00001000-0x00002000，可以看到版本号占8个字节为值为01，0x140eda代表magic，转换为十进制值为1314522，往下依次类推，都符合我们的设置。</p>
+<pre>00001000  01 00 00 00 00 00 00 00  da 0e 14 00 00 00 00 00  |................|
+00001010  00 10 00 00 00 00 00 00  64 00 00 00 00 00 00 00  |........d.......|
+00001020  59 00 00 00 00 00 00 00  64 00 00 00 00 00 00 00  |Y.......d.......|
+00001030  02 00 00 00 00 00 00 00  03 00 00 00 00 00 00 00  |................|
+00001040  04 00 00 00 00 00 00 00  0a 00 00 00 00 00 00 00  |................|
+00001050  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+00002000  ff 07 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+</pre>
+
+
+
+<h2 id="写入块位图"><a href="#写入块位图" class="headerlink" title="写入块位图"></a>写入块位图</h2><p>块位图即上面我们构建好的bmap数据，依次写入。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write_bmap</span><span class="params">(<span class="keyword">int</span> fd)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">ssize_t</span> ret = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">	ret = write(fd, bmap, bmap_size*MISER_BLOCKSIZE);</span><br><span class="line">	<span class="keyword">if</span> (ret != bmap_size*MISER_BLOCKSIZE) &#123;</span><br><span class="line">		perror(<span class="string">"Write_bmap() error!\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>写入后的数据为0xff07，二进制为11111111 111，与bmap数组中的数据相同。</p>
+<pre>00002000  ff 07 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002010  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+</pre>
+
+<h2 id="写入inode位图"><a href="#写入inode位图" class="headerlink" title="写入inode位图"></a>写入inode位图</h2><p>根目录需要三个目录项，一个是代表当前目录的‘.’，一个是代表父目录的‘..’，还有一个是我们创建的测试文件。所以需要使用三个inode，在inode位图上对应位，设置前三个位为占用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write_imap</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">memset</span>(imap, <span class="number">0</span>, imap_size*MISER_BLOCKSIZE);</span><br><span class="line">	<span class="comment">//根目录需要一个inode,测试文件需要一个inode，所以写入两个inode被占用。</span></span><br><span class="line">	imap[<span class="number">0</span>] |= <span class="number">0x3</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">ssize_t</span> res = write(fd, imap, imap_size*MISER_BLOCKSIZE);</span><br><span class="line">	<span class="keyword">if</span> (res != imap_size*MISER_BLOCKSIZE) &#123;</span><br><span class="line">		perror(<span class="string">"write_imap() erroe!"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如下图0x03，二进制为11，表示inode table中前两个inode已被使用。</p>
+<pre>00003000  03 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00003010  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+</pre>
+
+<h2 id="创建根目录"><a href="#创建根目录" class="headerlink" title="创建根目录"></a>创建根目录</h2><p>创建两个inode，一个表示根目录文件，一个表示测试文件。依次写入到inode table中。然后在data block中写入三个目录项。并与前面创建的两个inode，通过其中的block数组进行关联。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write_itable</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">uint32_t</span> _uid = getuid();</span><br><span class="line">    <span class="keyword">uint32_t</span> _gid = getgid();</span><br><span class="line">    <span class="comment">//初始化根目录的inode</span></span><br><span class="line">	<span class="keyword">ssize_t</span> ret;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">MISER_inode</span> <span class="title">root_dir_inode</span>;</span></span><br><span class="line">	<span class="comment">//设置该inode是目录还是文件</span></span><br><span class="line">	root_dir_inode.mode = S_IFDIR;</span><br><span class="line">	<span class="comment">//节点号</span></span><br><span class="line">	root_dir_inode.inode_no = MISER_ROOT_INODE_NUM;</span><br><span class="line">	<span class="comment">//inode所占块数</span></span><br><span class="line">	root_dir_inode.blocks = <span class="number">1</span>;</span><br><span class="line">	<span class="comment">//block数组存储着每个块的索引，用于定位文件数据块。最大10个块，所以单个文件最大为40KB</span></span><br><span class="line">	root_dir_inode.block[<span class="number">0</span>] = super_block.data_block_number;</span><br><span class="line">	<span class="comment">//三个子文件或目录</span></span><br><span class="line">	root_dir_inode.dir_children_count = <span class="number">3</span>;</span><br><span class="line">    root_dir_inode.i_gid = _gid;</span><br><span class="line">    root_dir_inode.i_uid = _uid;</span><br><span class="line">    root_dir_inode.i_nlink = <span class="number">2</span>; </span><br><span class="line">    root_dir_inode.i_atime = root_dir_inode.i_mtime = root_dir_inode.i_ctime = ((<span class="keyword">int64_t</span>)time(<span class="literal">NULL</span>));</span><br><span class="line">    </span><br><span class="line">	ret = write(fd, &amp;root_dir_inode, <span class="keyword">sizeof</span>(root_dir_inode));</span><br><span class="line">	<span class="keyword">if</span> (ret != <span class="keyword">sizeof</span>(root_dir_inode)) &#123;</span><br><span class="line">		perror(<span class="string">"write_itable error!\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//创建根目录下file测试文件的inode节点</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">MISER_inode</span> <span class="title">onefile_inode</span>;</span></span><br><span class="line">	onefile_inode.mode = S_IFREG;</span><br><span class="line">	onefile_inode.inode_no = <span class="number">1</span>;</span><br><span class="line">	onefile_inode.blocks = <span class="number">0</span>;</span><br><span class="line">	onefile_inode.block[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">	onefile_inode.file_size = <span class="number">0</span>;</span><br><span class="line">    onefile_inode.i_gid = _gid;</span><br><span class="line">    onefile_inode.i_uid = _uid;</span><br><span class="line">    onefile_inode.i_nlink = <span class="number">1</span>; </span><br><span class="line">    onefile_inode.i_atime = onefile_inode.i_mtime = onefile_inode.i_ctime = ((<span class="keyword">int64_t</span>)time(<span class="literal">NULL</span>));</span><br><span class="line"></span><br><span class="line">	ret = write(fd, &amp;onefile_inode, <span class="keyword">sizeof</span>(onefile_inode));</span><br><span class="line">	<span class="keyword">if</span> (ret != <span class="keyword">sizeof</span>(onefile_inode)) &#123;</span><br><span class="line">		perror(<span class="string">"write_itable error!\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建当前目录项</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">MISER_dir_record</span> <span class="title">root_dir_c</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span>* cur_dir = <span class="string">"."</span>;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span>* parent_dir = <span class="string">".."</span>;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">memcpy</span>(root_dir_c.filename, cur_dir, <span class="built_in">strlen</span>(cur_dir) + <span class="number">1</span>);</span><br><span class="line">	root_dir_c.inode_no = MISER_ROOT_INODE_NUM;</span><br><span class="line">	<span class="comment">//创建父目录项</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">MISER_dir_record</span> <span class="title">root_dir_p</span>;</span></span><br><span class="line">	<span class="built_in">memcpy</span>(root_dir_p.filename, parent_dir, <span class="built_in">strlen</span>(parent_dir) + <span class="number">1</span>);</span><br><span class="line">	root_dir_p.inode_no = MISER_ROOT_INODE_NUM;</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建file文件目录项</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">MISER_dir_record</span> <span class="title">file_record</span>;</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span>* onefile = <span class="string">"file"</span>;</span><br><span class="line">	<span class="built_in">memcpy</span>(file_record.filename, onefile, <span class="built_in">strlen</span>(onefile) + <span class="number">1</span>);</span><br><span class="line">	file_record.inode_no = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//从当前文件读写位置增加0个偏移量</span></span><br><span class="line">	<span class="keyword">off_t</span> current_off = lseek(fd, <span class="number">0L</span>, SEEK_CUR);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Current seek is %lu and rootdir at %lu\n"</span>, current_off</span><br><span class="line">			, super_block.data_block_number*MISER_BLOCKSIZE);</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置新的读写位置为super_block.data_block_number*MISER_BLOCKSIZE，即10*4096byte</span></span><br><span class="line">	<span class="keyword">if</span>(<span class="number">-1</span> == lseek(fd, super_block.data_block_number*MISER_BLOCKSIZE, SEEK_SET)) &#123;</span><br><span class="line">		perror(<span class="string">"lseek error\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	ret = write(fd, &amp;root_dir_c, <span class="keyword">sizeof</span>(root_dir_c));</span><br><span class="line">	ret = write(fd, &amp;root_dir_p, <span class="keyword">sizeof</span>(root_dir_p));</span><br><span class="line">	ret = write(fd, &amp;file_record, <span class="keyword">sizeof</span>(file_record));</span><br><span class="line">	<span class="keyword">if</span> (ret != <span class="keyword">sizeof</span>(root_dir_c)) &#123;</span><br><span class="line">		perror(<span class="string">"Write error!\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Create root dir successfully!\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于根目录来讲，写入的数据为三个目录项，目录项的内容为文件（目录）名以及对应的inode编号。第一个目录项为当前目录和对应的inode编号0，第二个目录项为上一级目录和对应的inode编号0，第三个目录项为欢迎文件，内容为文件名“file”和对应的inode编号1。</p>
+<h1 id="编译执行"><a href="#编译执行" class="headerlink" title="编译执行"></a>编译执行</h1><p>编写完成后，就可以进行编译执行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc mkfs.c -o mkfs</span><br><span class="line"></span><br><span class="line">./mkfs ./image</span><br></pre></td></tr></table></figure>
+
+<p>至此，磁盘image中就格式化了我们设计的文件系统，接下来就该实现文件系统的挂载与卸载。</p>
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    编写文件系统之格式化磁盘
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2020年08月20日 - 07:10:45
+  </li>
+    <strong>最后更新：</strong>
+    2022年04月16日 - 09:47:17
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/linux/编写文件系统之格式化磁盘/" title="编写文件系统之格式化磁盘">https://szp2016.github.io/linux/编写文件系统之格式化磁盘/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/文件系统/" rel="tag"><i class="fa fa-tag"></i> 文件系统</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/os/IO模型/" rel="next" title="IO模型">
+                <i class="fa fa-chevron-left"></i> IO模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/linux/编写文件系统之装载与卸载/" rel="prev" title="编写文件系统之装载与卸载">
+                编写文件系统之装载与卸载 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统的概念"><span class="nav-number">1.1.</span> <span class="nav-text">文件系统的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#格式化的概念"><span class="nav-number">1.2.</span> <span class="nav-text">格式化的概念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#磁盘的准备"><span class="nav-number">2.</span> <span class="nav-text">磁盘的准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统逻辑结构设计"><span class="nav-number">2.1.</span> <span class="nav-text">文件系统逻辑结构设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要数据结构"><span class="nav-number">2.2.</span> <span class="nav-text">重要数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#super-block"><span class="nav-number">2.2.1.</span> <span class="nav-text">super block</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MISER-inode"><span class="nav-number">2.2.2.</span> <span class="nav-text">MISER_inode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录项"><span class="nav-number">2.2.3.</span> <span class="nav-text">目录项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能实现"><span class="nav-number">3.</span> <span class="nav-text">功能实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化超级块和块位图"><span class="nav-number">3.1.</span> <span class="nav-text">初始化超级块和块位图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入引导块"><span class="nav-number">3.2.</span> <span class="nav-text">写入引导块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入超级块"><span class="nav-number">3.3.</span> <span class="nav-text">写入超级块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入块位图"><span class="nav-number">3.4.</span> <span class="nav-text">写入块位图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入inode位图"><span class="nav-number">3.5.</span> <span class="nav-text">写入inode位图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建根目录"><span class="nav-number">3.6.</span> <span class="nav-text">创建根目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译执行"><span class="nav-number">4.</span> <span class="nav-text">编译执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.0.1.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'linux/编写文件系统之格式化磁盘/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

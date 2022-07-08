@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
+<meta name="keywords" content="文件系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件共享与保护">
+<meta property="og:url" content="https://szp2016.github.io/linux/文件共享与保护/index.html">
+<meta property="og:site_name" content="桃花猿记">
+<meta property="og:description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-14-14-17-59.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-14-14-24-27.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-14-14-30-39.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-14-08-53-01.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-12-48-15.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-14-08-57-33.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-14-01-26.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-43-52.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-46-13.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-56-37.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-58-35.png">
+<meta property="og:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-13-13-59-18.png">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
+<meta property="og:updated_time" content="2022-03-21T03:30:14.101Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="文件共享与保护">
+<meta name="twitter:description" content="文件共享在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。  随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全">
+<meta name="twitter:image" content="https://szp2016.github.io/linux/文件共享与保护/2020-07-14-14-17-59.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/linux/文件共享与保护/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>文件共享与保护 | 桃花猿记</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">桃花猿记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/文件共享与保护/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="桃花猿记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">文件共享与保护
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-07-13 08:44:04" itemprop="dateCreated datePublished" datetime="2020-07-13T08:44:04+08:00">2020-07-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-03-21 11:30:14" itemprop="dateModified" datetime="2022-03-21T11:30:14+08:00">2022-03-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">6.1k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">6 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="文件共享"><a href="#文件共享" class="headerlink" title="文件共享"></a>文件共享</h1><p>在现代计算机系统中，必须提供文件共享手段，即指系统应允许多个用户(进程)共享同一份文件。这样，在系统中只需保留该共享文件的一份副本。如果系统不能提供文件共享功能，就意味着凡是需要该文件的用户，都须各自备有此文件的副本，显然这会造成对存储空间的极大浪费。 </p>
+<p>随着计算机技术的发展，文件共享的范围也在不断扩大，从单机系统中的共享，扩展为多机系统的共享，进而又扩展为计算机网络范围的共享，甚至实现全世界的文件共享。</p>
+<p>早在20世纪的60和70年代，已经出现了不少实现文件共享的方法，如绕弯路法、连访法，以及利用基本文件实现文件共享的方法;而现代的一些文件共享方法，也是在早期这些方法的基础上发展起来的。下面我们仅介绍当前常用的两种文件共享方法，它们是在树形结构目录的基础上经适当修改形成的。</p>
+<h2 id="基于有向无循环图实现文件共享（硬链接）"><a href="#基于有向无循环图实现文件共享（硬链接）" class="headerlink" title="基于有向无循环图实现文件共享（硬链接）"></a>基于有向无循环图实现文件共享（硬链接）</h2><h3 id="有向无循环图DAG-Directed-Acyclic-Graph"><a href="#有向无循环图DAG-Directed-Acyclic-Graph" class="headerlink" title="有向无循环图DAG(Directed Acyclic Graph)"></a>有向无循环图DAG(Directed Acyclic Graph)</h3><p>在严格的树形结构目录中，每个文件只允许有一个父目录，父目录可以有效地拥有该文件，其它用户要想访问它，必须经过其属主目录来访问该文件。这就是说，对文件的共享是不对称的，或者说，树形结构目录是不适合文件共享的。如果允许一个文件可以有多个父目录，即有多个属于不同用户的多个目录，同时指向同一个文件，这样虽会破坏树的特性，但这些用户可用对称的方式实现文件共享，而不必再通过其属主目录来访问。</p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-14-17-59.png" alt></p>
+<p>上图展示出了一个有向无循环图，它允许每一个文件都可以有多个父目录。如图中的<br>文件F8有三个父目录，它们分别是D5、D6和D3,其中D5和D3还使用了相同的名字p,目录D6有两个父目录D2和D1。</p>
+<p>由上所述得知，当有多个用户要共享一个子目录或文件时，必须将共享文件或子目录链接到多个用户的父目录中，才能方便地找到该文件。现在的问题是，<strong>如何建立父目录D5<br>与共享文件F8之间的链接呢?</strong></p>
+<p>如果在文件目录中所包含的是文件的物理地址,即文件所在盘块的盘块号，则在链接时，必须将文件的物理地址拷贝到D5目录中去。但如果以后D5或D6还要继续向该文件中添加新内容，也必然要相应地再增加新的盘块，这些是由附加操作Append 来完成的。而这些新增加的盘块也只会出现在执行了操作的目录中。</p>
+<p><strong>可见, 这种变化对其他用户而言，是不可见的，因而新增加的这部分内容已不能被共享。</strong></p>
+<h3 id="利用索引结点"><a href="#利用索引结点" class="headerlink" title="利用索引结点"></a>利用索引结点</h3><p>为了解决这个问题，可以引用索引结点，即诸如文件的物理地址及其它的文件属性等信息，不再是放在目录项中，而是放在索引结点中。在文件目录中只设置文件名及指向相应索引结点的指针，如下图所示。 </p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-14-24-27.png" alt></p>
+<p>图中的用户Wang和Lee的文件目录中，都设置有指向共享文件的索引结点指针。此时，由任何用户对共享文件所进<br>行的Append操作或修改，都将引起其相应结点内容的改变(例如，增加了新的盘块号和文件长度等)，这些改变是其他用户可见的，从而也就能提供给其他用户来共享。</p>
+<p>在索引结点中还应有一个链接计数count,用于表示链接到本索引结点(亦即文件)上的用户目录项的数目。当count=3 时，表示有三个用户目录项连接到本文件上，或者说是有<br>三个用户共享此文件。</p>
+<p>当用户C创建一个新文件时，他便是该文件的所有者，此时将count置1。当有用户B要共享此文件时，在用户B的目录中增加一目录项,并设置一指针指向该文件的索引结点，<br>此时，文件主仍然是C,count=2。如果用户C不再需要此文件，是否能将此文件删除呢?回答是否定的。因为，若删除了该文件，也必然删除了该文件的索引结点，这样便会使B的指针悬空，而B则可能正在此文件上执行写操作，此时将因此半途而废。但如果C不删除此文件而等待B继续使用，这样，由于文件主是C,如果系统要记账收费，则C必须为B<br>使用此共享文件而付账，直至B不再需要。下图展示出了B链接到文件前后的情况。</p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-14-30-39.png" alt></p>
+<p>ln命令可以创建硬链接：</p>
+<blockquote>
+<p>ln 源文件 目标文件</p>
+</blockquote>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-08-53-01.png" alt></p>
+<p>这里顺便说一下目录文件的”链接数”。创建目录时，默认会生成两个目录项：”.”和”..”。前者的inode号码就是当前目录的inode号码，等同于当前目录的”硬链接”；后者的inode号码就是当前目录的父目录的inode号码，等同于父目录的”硬链接”。所以，任何一个目录的”硬链接”总数，总是等于2加上它的子目录总数（含隐藏目录）。</p>
+<h2 id="基于符号链的共享方式（软链接）"><a href="#基于符号链的共享方式（软链接）" class="headerlink" title="基于符号链的共享方式（软链接）"></a>基于符号链的共享方式（软链接）</h2><h3 id="符号链接基本思想"><a href="#符号链接基本思想" class="headerlink" title="符号链接基本思想"></a>符号链接基本思想</h3><p>利用符号链接实现文件共享的基本思想，是允许一个文件或子目录有多个父目录，但其中仅有一个作为主(属主)父目录，其它的几个父目录都是通过符号链接方式与之相链接的(简称链接父目录)。 </p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-12-48-15.png" alt></p>
+<p>当访问“c”时，操作系统判断文件“c”属于Link 类型文件，于是会根据其中记录的路径层层查找目录，最终找到目录表1中的“a”表项，于是就找到了文件1的索引结点。</p>
+<h3 id="符号链接实现共享的优点"><a href="#符号链接实现共享的优点" class="headerlink" title="符号链接实现共享的优点"></a>符号链接实现共享的优点</h3><p>在利用符号链方式实现文件共享时，只是文件主才拥有指向其索引结点的指针；而共享该文件的其他用户则只有该文件的路径名，并不拥有指向其索引结点的指针。这样，也就不会发生在文件主删除一共享文件后留下一悬空指针的情况。当文件的拥有者把一个共享文件删除后，如果其他用户又试图通过符号链去访问一个已被删除的共享文件，则会因系统找不到该文件而使访问失败，于是再将符号链删除，此时不会产生任何影响。</p>
+<p>值得一提的是，在计算机网络中，Web浏览器在进行浏览时所使用的文件是HTML类型的文件。在HTML文件中有着许多链接符，通过这些链接符能够链接(通过计算机网络)<br>世界上任何地方的机器中的文件。在利用符号链实现共享时，同样可以通过网络链接到分布在世界各地的计算机系统中的文件。</p>
+<blockquote>
+<p>&lt; a href=”url”&gt;链接文本&lt;/ a&gt;</p>
+</blockquote>
+<p>ln -s命令可以创建软链接：</p>
+<blockquote>
+<p>ln -s 源文文件或目录 目标文件或目录</p>
+</blockquote>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-14-08-57-33.png" alt></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-14-01-26.png" alt></p>
+<h1 id="文件系统的安全性"><a href="#文件系统的安全性" class="headerlink" title="文件系统的安全性"></a>文件系统的安全性</h1><h2 id="安全性两个方面"><a href="#安全性两个方面" class="headerlink" title="安全性两个方面"></a>安全性两个方面</h2><p>确保未经授权的用户不能存取某些文件。涉及到技术、管理、法律、道德和政治等问题。</p>
+<p>安全性的两个重要方面：</p>
+<ol>
+<li>数据丢失。<ul>
+<li>灾难</li>
+<li>硬件或软件故障</li>
+<li>人的失误。可通过磁盘容错技术和备份(存放在另一处)来解决。</li>
+</ul>
+</li>
+<li>入侵者。（积极的或消极的)<ul>
+<li>非技术人员的偶然窥视</li>
+<li>入侵者的窥视</li>
+<li>明确的偷窃企图</li>
+<li>商业或军事间谍活动</li>
+</ul>
+</li>
+</ol>
+<p>设计安全时要考虑是那一类入侵者.</p>
+<h2 id="文件的保护机制"><a href="#文件的保护机制" class="headerlink" title="文件的保护机制"></a>文件的保护机制</h2><p>(1) 文件保护<br>      用于提供安全性的特定的操作系统机制。<br>     (有权限的用户, 应让其进行相应操作, 否则, 应禁止)<br>     实现：用户验证、存取控制</p>
+<p>(2) 用户验证<br>用户登录, 检验其身份</p>
+<ul>
+<li><p>口令</p>
+</li>
+<li><p>物理鉴定</p>
+</li>
+</ul>
+<p>磁卡，指纹，签名分析，手指长度分析</p>
+<p>(3) 存取控制</p>
+<ul>
+<li><p>审查用户的权限</p>
+</li>
+<li><p>审查本次操作的合法性</p>
+</li>
+</ul>
+<p><strong>为了确保文件系统的安全性，可针对上述原因而采取以<br>下措施:</strong></p>
+<p>(1)通过存取控制机制来防止由人为因素所造成的文件<br>不安全性。</p>
+<p>(2)通过磁盘容错技术来防止由磁盘部分的故障所造成<br>的文件不安全性。</p>
+<p>(3)通过“后备系统”来防止由自然因素所造成的不安<br>全性。</p>
+<p><strong>接下来我们主要看一下第二方面磁盘容错技术。</strong></p>
+<h2 id="第一级-磁盘容错技术SFT-1"><a href="#第一级-磁盘容错技术SFT-1" class="headerlink" title="第一级 磁盘容错技术SFT-1"></a>第一级 磁盘容错技术SFT-1</h2><p>第一级容错技术(SFT- I )是最基本的一种磁盘容错技术,主要用于防止因磁盘表面缺陷所造成的数据丢失。它包含双份目录、双份文件分配表及写后读校验等措施。</p>
+<h3 id="双份目录和双份文件分配表"><a href="#双份目录和双份文件分配表" class="headerlink" title="双份目录和双份文件分配表"></a>双份目录和双份文件分配表</h3><p>在磁盘上存放的文件目录和文件分配表FAT，是文件管<br>理所用的重要数据结构。</p>
+<p>为了防止这些表格被破坏，可在不<br>同的磁盘上或在磁盘的不同区域中，分别建立(双份)目录表<br>和FAT。</p>
+<p>其中一份为主目录及主FAT;另一份为备份目录及备<br>份FAT。一但由于磁盘表面缺陷而造成主文件目录或主FAT的<br>损坏时，系统便自动启用备份文件目录及备份FAT，从而可<br>以保证磁盘上的数据仍是可访问的。</p>
+<h3 id="热修复重定向和写后读校验"><a href="#热修复重定向和写后读校验" class="headerlink" title="热修复重定向和写后读校验"></a>热修复重定向和写后读校验</h3><p>由于磁盘价格昂贵，当磁盘表面有少量缺陷时，则可采取某种补救措施后继续使用磁盘。一般主要采取以下两个补救措施:</p>
+<ol>
+<li><p>热修复重定向:系统将磁盘容量的一部分(例如<br>2%~ 3%)作为热修复重定向区，用于存放当发现磁盘有缺<br>陷时的待写数据，并对写入该区的所有数据进行登记，以<br>便于以后对数据进行访问。</p>
+</li>
+<li><p>写后读校验方式。<br>为了保证所有写入磁盘的数据都能写入到完好的盘块中，应该在每次从内存缓冲区向磁盘中写入一个数据块后，又立即从磁盘上读出该数据块，并送至另缓冲区中，再将该缓冲区内容与内存缓冲区中在写后仍保留的数据进行比较。若两者一致，便认为此次写入成功, 可继续写下一一个盘块;否则，再重写。若重写后两者仍不一致,<br>则认为该盘块有缺陷，此时，便将应写入该盘块的数据，写<br>入到热修复重定向区中。</p>
+</li>
+</ol>
+<h2 id="第二级磁盘容错技术SFT-2"><a href="#第二级磁盘容错技术SFT-2" class="headerlink" title="第二级磁盘容错技术SFT-2"></a>第二级磁盘容错技术SFT-2</h2><h3 id="磁盘镜像-两个磁盘驱动器互为备份"><a href="#磁盘镜像-两个磁盘驱动器互为备份" class="headerlink" title="磁盘镜像-两个磁盘驱动器互为备份"></a>磁盘镜像-两个磁盘驱动器互为备份</h3><p>为了避免磁盘驱动器发生故障而丢失数据，便增设了磁盘镜像功能。为实现该功能，须在同一磁盘控制器下再增设一个完全相同的磁盘驱动器，如图所示。当采用磁盘镜像方式时，在每次向主磁盘写入数据后，都需要将数据再写到备份磁盘上，使两个磁盘上具有完全相同的位像图。</p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-43-52.png" alt></p>
+<p>把备份磁盘看作是主磁盘的一面镜子，当主磁盘驱动器发生故障<br>时，由于有备份磁盘的存在，在进行切换后，使主机仍能正常工作。磁盘镜像虽然实现了容错功能，但未能使服务器的磁盘I/O速度得到提高，却使磁盘的利用率降至仅为50%。</p>
+<h3 id="磁盘双工-Disk-Duplexing"><a href="#磁盘双工-Disk-Duplexing" class="headerlink" title="磁盘双工(Disk Duplexing)"></a>磁盘双工(Disk Duplexing)</h3><p>如果控制这两台磁盘驱动器的磁盘控制器发生故障，或主机到磁盘控制器之间的通道发生了故障，磁盘镜像功能便起不到数据保护的作用。</p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-46-13.png" alt></p>
+<p>因此，在第二级容错技术中，又增加了磁盘双工功能，即将两台磁盘驱动器分别接到两个磁盘控制器上，同样使这两台磁盘机镜像成对，如图所示。在磁盘双工时，文件服务器同时将数据写到两个处于不同控制器下的磁盘上，使两者有完全相同的位像图。如果某个通道或控制器发生故障时，另一个通道上的磁盘仍能正常工作，不会造成数据的丢失。在磁盘双工时，由于每一个磁盘都有自己的独立通道，故可同时(并行)地将数据写入磁盘,或读出数据。</p>
+<h2 id="文件系统的数据一致性控制"><a href="#文件系统的数据一致性控制" class="headerlink" title="文件系统的数据一致性控制"></a>文件系统的数据一致性控制</h2><p>同一数据存放在不同的文件中, 对它修改时应对不同的文件都统一修改, 才能保证数据的一致性。修改时数据的流向是, 磁盘块、内存、写回磁盘块。若在写回之前, 系统崩溃, 则文件系统数据出现不一致。</p>
+<p>系统应配置保证数据一致性的软件和相应的硬件，硬件采取冗余技术配置一个高度可靠的存储系统, 称为稳定存储器; 目前广泛采用磁盘双工方式来实现稳定存储器。设计保证数据一致性的实用程序, 当系统再次启动时, 运行该程序, 检查磁盘块和目录系统。</p>
+<h3 id="事务定义"><a href="#事务定义" class="headerlink" title="事务定义"></a>事务定义</h3><p>事务是用于访问和修改数据的一个程序单位, 由一系列相关的读写操作组成; 被访问的数据可以分散在不同位置, 只有一系列读写操作全部完成才能以托付操作(Commit Operation)终止操作; 而只要有一个操作失败就执行夭折操作(Abort Operation)。</p>
+<p>为了保证数据的一致性, 对于夭折事务所操作过的数据必须恢复原来的状态, 使该事务退回(rolled back),保证一个事务对一批数据修改操作,要么全部完成要么 一个也不修改, 这种特性称事务的原子性。</p>
+<h3 id="事务记录"><a href="#事务记录" class="headerlink" title="事务记录"></a>事务记录</h3><p>为了实现上述的原子修改，通常须借助于称为事务记录的数据结构来实现。这些数据结构被放在稳定存储器中，用来记录在事务运行时数据项修改的全部信息，故又称为运行记录(Log)。该记录中包括有下列字段:</p>
+<pre><code>事务名:用于标识该事务的惟一名字;
+
+数据项名:指被修改数据项的惟一名字;
+
+旧值:修改前数据项的值; 
+
+新值:修改后数据项将具有的值。</code></pre><h3 id="恢复算法"><a href="#恢复算法" class="headerlink" title="恢复算法"></a>恢复算法</h3><p>由于一组被事务Ti修改的数据以及它们被修改前和修改后的值都能在事务记录表中找到，因此，利用事务记录表， 系统能处理任何故障而不致使故障造成非易失性存储器中信 系统能处理任何故障而不致使故障造成非易失性存储器中信息的丢失。恢复算法可利用以下两个过程:</p>
+<ol>
+<li>undo〈Ti〉。</li>
+</ol>
+<p>该过程把所有被事务Ti修改过的数据 恢复为修改前的值。 恢复为修改前的值。 </p>
+<ol start="2">
+<li>redo〈Ti〉。</li>
+</ol>
+<p>该过程把所有被事务Ti修改过的数据设置为新值。</p>
+<h3 id="检查点"><a href="#检查点" class="headerlink" title="检查点"></a>检查点</h3><h4 id="检查点的作用"><a href="#检查点的作用" class="headerlink" title="检查点的作用"></a>检查点的作用</h4><p>使对为了对事务记录的清理工作经常化, 设置检查点记录; 每隔一定的时间做一次清理: </p>
+<p>将内存中的当前事务记录表的所有记录, 和所有已修改的数据,  输出到稳定存储器中; </p>
+<p>再将检查点记录输出到稳定存储器中; </p>
+<p>每当出现一个检查点记录便执行恢复操作。</p>
+<h4 id="新的恢复算法"><a href="#新的恢复算法" class="headerlink" title="新的恢复算法"></a>新的恢复算法</h4><p>发生故障后,恢复算法只需对最后一个检查点之后的事务记录进行处理。</p>
+<p>即从最后一个检查点之后的第一个事务记录开始,对所有的事务Tk , 在Log表中出现(Tk托付)记录则执行redo(Tk ), 未出现(Tk托付)记录则执行undo(Tk )。</p>
+<h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><p>由于事务具有的原子性, 使得一个事务执行完后才允许另一事务执行, 即事务对数据项的修改是互斥的,事务的这种特性称为顺序性,将实现顺序性的技术称为并发控制。可以用互斥信号量来保证事务处理的顺序性,但用的最广的是“锁”。</p>
+<h4 id="利用互斥锁实现顺序性"><a href="#利用互斥锁实现顺序性" class="headerlink" title="利用互斥锁实现顺序性"></a>利用互斥锁实现顺序性</h4><p>设置一种用于实现互斥的锁, 简称互斥锁,为每一个共享对象设一把互斥锁, 如果事务 Ti 需要对一批对象进行访问,则为了保证事务操作的原子性, 应先获得这批对象的互斥锁, 将他们全部锁住, 如果成功便可以对这批对象执行读写操作,然后全部开锁, 若某对象已被其它事务锁住, 则Ti 要将已锁住的对象全部开锁。</p>
+<h2 id="重复数据的一致性问题"><a href="#重复数据的一致性问题" class="headerlink" title="重复数据的一致性问题"></a>重复数据的一致性问题</h2><h3 id="重复文件的一致性"><a href="#重复文件的一致性" class="headerlink" title="重复文件的一致性"></a>重复文件的一致性</h3><p>以UNIX类型的文件系统为例,通常文件一个文件的目录项由一个文件名和一个索引结点号组成; 当有重复文件时, 一个文件的目录项由一个文件名和若干个索引结点号组成。保证重复文件的一致性用两种方法：</p>
+<p>(1) 当一个文件被修改后,可查目录, 从各i结点找到各拷贝的物理位置, 对这些拷贝做同样修改。</p>
+<p>(2) 为新修改的文件建立几个新拷贝取代原来的拷贝。</p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-56-37.png" alt></p>
+<h3 id="盘块号一致性的检查"><a href="#盘块号一致性的检查" class="headerlink" title="盘块号一致性的检查"></a>盘块号一致性的检查</h3><p>两张表，每块对应一个表中的计数器，初值为0，正常情况下空闲块计数表与数据块计数表对应项的值应该是互补关系。</p>
+<p>表一：记录了每块在空闲块表中出现的次数</p>
+<p>表二：记录了每块在文件中出现的次数</p>
+<p><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-58-35.png" alt><br><img src="//szp2016.github.io/linux/文件共享与保护/2020-07-13-13-59-18.png" alt></p>
+<h3 id="链结数一致性的检查"><a href="#链结数一致性的检查" class="headerlink" title="链结数一致性的检查"></a>链结数一致性的检查</h3><p>在UNIX的文件目录中,索引结点中有一个链接计数 count, 它用来表示共享文件计数, 它应该和目录中指向该索引结点的数目一致。否则出错。</p>
+<p>为检查不一致差错, 同样配置一张计数器表, 为每个文件建立一个表项, 检查时从根结点开始, 查找并计数,检查完后, 将计数器表的每个计数值与count 对比, 一致则正确, 否则发生链接数不一致差错。</p>
+<ul>
+<li><p>count值大于计数表的计数值则该文件永远不会被删除; </p>
+</li>
+<li><p>count值小于计数表的计数值则该文件会被误删除; </p>
+<p>这两种情况解决方法是将count值修改正确。</p>
+</li>
+</ul>
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    文件共享与保护
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2020年07月13日 - 08:44:04
+  </li>
+    <strong>最后更新：</strong>
+    2022年03月21日 - 11:30:14
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/linux/文件共享与保护/" title="文件共享与保护">https://szp2016.github.io/linux/文件共享与保护/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/文件系统/" rel="tag"><i class="fa fa-tag"></i> 文件系统</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/linux/Linux字符设备驱动程序/" rel="next" title="Linux字符设备驱动程序">
+                <i class="fa fa-chevron-left"></i> Linux字符设备驱动程序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/操作系统/系统调用机制/" rel="prev" title="系统调用机制">
+                系统调用机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件共享"><span class="nav-number">1.</span> <span class="nav-text">文件共享</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于有向无循环图实现文件共享（硬链接）"><span class="nav-number">1.1.</span> <span class="nav-text">基于有向无循环图实现文件共享（硬链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向无循环图DAG-Directed-Acyclic-Graph"><span class="nav-number">1.1.1.</span> <span class="nav-text">有向无循环图DAG(Directed Acyclic Graph)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用索引结点"><span class="nav-number">1.1.2.</span> <span class="nav-text">利用索引结点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于符号链的共享方式（软链接）"><span class="nav-number">1.2.</span> <span class="nav-text">基于符号链的共享方式（软链接）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接基本思想"><span class="nav-number">1.2.1.</span> <span class="nav-text">符号链接基本思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号链接实现共享的优点"><span class="nav-number">1.2.2.</span> <span class="nav-text">符号链接实现共享的优点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统的安全性"><span class="nav-number">2.</span> <span class="nav-text">文件系统的安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性两个方面"><span class="nav-number">2.1.</span> <span class="nav-text">安全性两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的保护机制"><span class="nav-number">2.2.</span> <span class="nav-text">文件的保护机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一级-磁盘容错技术SFT-1"><span class="nav-number">2.3.</span> <span class="nav-text">第一级 磁盘容错技术SFT-1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#双份目录和双份文件分配表"><span class="nav-number">2.3.1.</span> <span class="nav-text">双份目录和双份文件分配表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#热修复重定向和写后读校验"><span class="nav-number">2.3.2.</span> <span class="nav-text">热修复重定向和写后读校验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二级磁盘容错技术SFT-2"><span class="nav-number">2.4.</span> <span class="nav-text">第二级磁盘容错技术SFT-2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘镜像-两个磁盘驱动器互为备份"><span class="nav-number">2.4.1.</span> <span class="nav-text">磁盘镜像-两个磁盘驱动器互为备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘双工-Disk-Duplexing"><span class="nav-number">2.4.2.</span> <span class="nav-text">磁盘双工(Disk Duplexing)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件系统的数据一致性控制"><span class="nav-number">2.5.</span> <span class="nav-text">文件系统的数据一致性控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务定义"><span class="nav-number">2.5.1.</span> <span class="nav-text">事务定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务记录"><span class="nav-number">2.5.2.</span> <span class="nav-text">事务记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#恢复算法"><span class="nav-number">2.5.3.</span> <span class="nav-text">恢复算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查点"><span class="nav-number">2.5.4.</span> <span class="nav-text">检查点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检查点的作用"><span class="nav-number">2.5.4.1.</span> <span class="nav-text">检查点的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新的恢复算法"><span class="nav-number">2.5.4.2.</span> <span class="nav-text">新的恢复算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发控制"><span class="nav-number">2.5.5.</span> <span class="nav-text">并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用互斥锁实现顺序性"><span class="nav-number">2.5.5.1.</span> <span class="nav-text">利用互斥锁实现顺序性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重复数据的一致性问题"><span class="nav-number">2.6.</span> <span class="nav-text">重复数据的一致性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重复文件的一致性"><span class="nav-number">2.6.1.</span> <span class="nav-text">重复文件的一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#盘块号一致性的检查"><span class="nav-number">2.6.2.</span> <span class="nav-text">盘块号一致性的检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链结数一致性的检查"><span class="nav-number">2.6.3.</span> <span class="nav-text">链结数一致性的检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.6.4.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'linux/文件共享与保护/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
