@@ -118,16 +118,16 @@
 <meta name="keywords" content="进程调度">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux 2.6进程O(1)调度算法">
-<meta property="og:url" content="https://szp2016.github.io/linux/Linux进程调度算法/index.html">
+<meta property="og:url" content="https://szp2016.github.io/Linux/Linux进程调度算法/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1. 前言Linux 2.4中使用goodness()函数，给每个处于可运行状态的进程赋予一个权值（Weight）,使用这个权值衡量一个处于可运行状态的进程值得运行的程度。调度程序以这个权值作为选择进程的唯一依据。 虽然Linux2.4进程调度程序简单有效，但是也有其缺点。  单个就绪队列问题，时间片耗尽的进程依然会放进同一个就绪队列中，在不可被调度的情况下，还会参与调度。 多处理器问题，多个处理">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/linux/Linux进程调度算法/2020-10-03-23-44-25.png">
-<meta property="og:updated_time" content="2021-09-30T08:56:10.602Z">
+<meta property="og:image" content="https://szp2016.github.io/Linux/Linux进程调度算法/2020-10-03-23-44-25.png">
+<meta property="og:updated_time" content="2022-07-08T05:53:23.952Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux 2.6进程O(1)调度算法">
 <meta name="twitter:description" content="1. 前言Linux 2.4中使用goodness()函数，给每个处于可运行状态的进程赋予一个权值（Weight）,使用这个权值衡量一个处于可运行状态的进程值得运行的程度。调度程序以这个权值作为选择进程的唯一依据。 虽然Linux2.4进程调度程序简单有效，但是也有其缺点。  单个就绪队列问题，时间片耗尽的进程依然会放进同一个就绪队列中，在不可被调度的情况下，还会参与调度。 多处理器问题，多个处理">
-<meta name="twitter:image" content="https://szp2016.github.io/linux/Linux进程调度算法/2020-10-03-23-44-25.png">
+<meta name="twitter:image" content="https://szp2016.github.io/Linux/Linux进程调度算法/2020-10-03-23-44-25.png">
 
 
 
@@ -135,7 +135,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/linux/Linux进程调度算法/">
+  <link rel="canonical" href="https://szp2016.github.io/Linux/Linux进程调度算法/">
 
 
 
@@ -314,7 +314,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
 
   </li>
         
@@ -461,7 +461,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/Linux进程调度算法/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/Linux进程调度算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -521,7 +521,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-09-30 16:56:10" itemprop="dateModified" datetime="2021-09-30T16:56:10+08:00">2021-09-30</time>
+                <time title="修改时间：2022-07-08 13:53:23" itemprop="dateModified" datetime="2022-07-08T13:53:23+08:00">2022-07-08</time>
               
             
           </span>
@@ -538,7 +538,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
 
                 
                 
@@ -636,7 +636,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">int</span> idx;</span><br><span class="line">...</span><br><span class="line">preempt_disable();</span><br><span class="line">...</span><br><span class="line">idx = sched_find_first_bit( <span class="built_in">array</span> -&gt; bitmap);</span><br><span class="line"><span class="built_in">queue</span> = <span class="built_in">array</span> -&gt; <span class="built_in">queue</span> + idx;</span><br><span class="line">next = list_entry( <span class="built_in">queue</span> -&gt; next, <span class="keyword">task_t</span>, run_list);</span><br><span class="line">...</span><br><span class="line">prev = context_switch( rq, prev, next);</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其中,sched_find_first_bit()能快速定位优先级最高的非空就绪进程链表,运行时间和就绪队列中的进程数无关,是实现O(1)调度算法的一个关键所在。<br>schedule()的执行流程:<br>首先,调用 pre_empt_disable(),关闭内核抢占,因为此时要对内核的一些重要数据结构进行操作,所以必须将内核抢占关闭;其次,调用sched_find_first_bit()找到位图中的第1个置1的位，该位正好对应于就绪队列中的最高优先级进程链表;<br>再者,调用 context_switch()执行进程切换,选择在最高优先级链表中的第 1个进程投入运行;</p>
-<p><img src="//szp2016.github.io/linux/Linux进程调度算法/2020-10-03-23-44-25.png" alt></p>
+<p><img src="//szp2016.github.io/Linux/Linux进程调度算法/2020-10-03-23-44-25.png" alt></p>
 <p>图中的网格为 140 位优先级数组,queue[7]为优先级为 7 的就绪进程链表。此种算法保证了调度器运行的时间上限,加速了候选进程的定位过程。</p>
 <p>Linux2.4 调度系统在所有就绪进程的时间片都耗完以后在调度器中一次性重新计算,其中重算是用for循环相当耗时。</p>
 <p>Linux2.6 为每个 CPU 保留 active 和 expired 两个优先级数组, active 数组中包含了有剩余时间片的任务,expired 数组中包含了所有用完时间片的任务。</p>
@@ -727,13 +727,13 @@
     2020年10月03日 - 12:28:47
   </li>
     <strong>最后更新：</strong>
-    2021年09月30日 - 16:56:10
+    2022年07月08日 - 13:53:23
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/linux/Linux进程调度算法/" title="Linux 2.6进程O(1)调度算法">https://szp2016.github.io/linux/Linux进程调度算法/</a>
+    <a href="https://szp2016.github.io/Linux/Linux进程调度算法/" title="Linux 2.6进程O(1)调度算法">https://szp2016.github.io/Linux/Linux进程调度算法/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -784,7 +784,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/linux/linux哈希表/" rel="next" title="linux哈希表">
+              <a href="/Linux/linux哈希表/" rel="next" title="linux哈希表">
                 <i class="fa fa-chevron-left"></i> linux哈希表
               </a>
             
@@ -794,7 +794,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/linux/Ubuntu18搭建ebpf运行环境/" rel="prev" title="Ubuntu18搭建ebpf运行环境">
+              <a href="/Linux/Ubuntu18搭建ebpf运行环境/" rel="prev" title="Ubuntu18搭建ebpf运行环境">
                 Ubuntu18搭建ebpf运行环境 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -915,9 +915,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-count">13</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1312,7 +1310,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'linux/Linux进程调度算法/'
+    refer: 'Linux/Linux进程调度算法/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];

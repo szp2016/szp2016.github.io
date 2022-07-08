@@ -118,19 +118,19 @@
 <meta name="keywords" content="dd">
 <meta property="og:type" content="article">
 <meta property="og:title" content="dd命令测试磁盘">
-<meta property="og:url" content="https://szp2016.github.io/linux/dd命令测试磁盘/index.html">
+<meta property="og:url" content="https://szp2016.github.io/Linux/dd命令测试磁盘/index.html">
 <meta property="og:site_name" content="桃花猿记">
 <meta property="og:description" content="1. 测试工具1.1 Linux dd命令Linux dd命令用于读取、转换并输出数据。dd可从标准输入或文件中读取数据，根据指定的格式来转换数据，再输出到文件、设备或标准输出。  参数说明:   if=文件名：输入文件名，默认为标准输入。即指定源文件。 of=文件名：输出文件名，默认为标准输出。即指定目的文件。 ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。o">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-57-21.png">
-<meta property="og:image" content="https://szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-58-51.png">
-<meta property="og:image" content="https://szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-59-16.png">
-<meta property="og:image" content="https://szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-59-36.png">
-<meta property="og:updated_time" content="2021-09-30T08:55:54.415Z">
+<meta property="og:image" content="https://szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-57-21.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-58-51.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-59-16.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-59-36.png">
+<meta property="og:updated_time" content="2022-07-08T05:53:23.943Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="dd命令测试磁盘">
 <meta name="twitter:description" content="1. 测试工具1.1 Linux dd命令Linux dd命令用于读取、转换并输出数据。dd可从标准输入或文件中读取数据，根据指定的格式来转换数据，再输出到文件、设备或标准输出。  参数说明:   if=文件名：输入文件名，默认为标准输入。即指定源文件。 of=文件名：输出文件名，默认为标准输出。即指定目的文件。 ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。o">
-<meta name="twitter:image" content="https://szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-57-21.png">
+<meta name="twitter:image" content="https://szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-57-21.png">
 
 
 
@@ -138,7 +138,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/linux/dd命令测试磁盘/">
+  <link rel="canonical" href="https://szp2016.github.io/Linux/dd命令测试磁盘/">
 
 
 
@@ -317,7 +317,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
 
   </li>
         
@@ -464,7 +464,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/dd命令测试磁盘/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/dd命令测试磁盘/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -524,7 +524,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-09-30 16:55:54" itemprop="dateModified" datetime="2021-09-30T16:55:54+08:00">2021-09-30</time>
+                <time title="修改时间：2022-07-08 13:53:23" itemprop="dateModified" datetime="2022-07-08T13:53:23+08:00">2022-07-08</time>
               
             
           </span>
@@ -541,7 +541,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
 
                 
                 
@@ -647,22 +647,22 @@
 <p>该命令表示，每次从/dev/zero中读或者写8k，一共执行4k次，输出到test文件中。</p>
 <p>没有任何参数，dd默认的方式不包括“同步(sync)”命令（没加关于操作系统“写缓存”的参数，默认“写缓存”启作用），也就是说，dd命令完成前并没有让系统真正把文件写到磁盘上。dd先把数据写到操作系统“写缓存”，就完成了写操作。所以以上命令只是单纯地把数据读到内存缓冲当中（写缓存[write cache]）。通常称为update的系统守护进程会周期性地（一般每隔30秒）调用sync函数，把“写缓存”中的数据刷入磁盘。<br>因为“写缓存”起作用，会测试出一个超快的性能。因为dd给的只是读取速度，直到dd完成后系统才开始真正往磁盘上写数据，但这个速度是看不到了。</p>
 <p>dd命令执行结果如下，可以看到向test文件中成功写入了约34MB数据。</p>
-<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-57-21.png" alt></p>
+<p><img src="//szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-57-21.png" alt></p>
 <h2 id="2-2-一次同步"><a href="#2-2-一次同步" class="headerlink" title="2.2 一次同步"></a>2.2 一次同步</h2><h3 id="2-2-1同步包含文件元数据"><a href="#2-2-1同步包含文件元数据" class="headerlink" title="2.2.1同步包含文件元数据"></a>2.2.1同步包含文件元数据</h3><blockquote>
 <p>dd bs=8k count=4k if=/dev/zero of=test conv=fsync </p>
 </blockquote>
 <p>加入fsync 参数后，dd命令执行到最后会真正执行一次“同步(sync)”操作，，这样算出来的时间才是比较符合实际使用结果的。conv=fsync表示把文件的“数据”和“metadata”都写入磁盘（metadata包括size、访问时间st_atime &amp; st_mtime等等），因为文件的数据和metadata通常存在硬盘的不同地方，因此fsync至少需要两次IO写操作，fsync 与fdatasync相差不大。</p>
-<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-58-51.png" alt></p>
+<p><img src="//szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-58-51.png" alt></p>
 <h3 id="2-2-2-同步不含文件元数据"><a href="#2-2-2-同步不含文件元数据" class="headerlink" title="2.2.2 同步不含文件元数据"></a>2.2.2 同步不含文件元数据</h3><blockquote>
 <p>dd bs=8k count=4k if=/dev/zero of=test conv=fdatasync</p>
 </blockquote>
 <p>加入fdatasync参数后，dd命令执行到最后会真正执行一次“同步(sync)”操作，conv=fdatasync表示只把文件的“数据”写入磁盘，而不写入文件的元数据。</p>
-<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-59-16.png" alt></p>
+<p><img src="//szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-59-16.png" alt></p>
 <h2 id="2-3-每次同步"><a href="#2-3-每次同步" class="headerlink" title="2.3 每次同步"></a>2.3 每次同步</h2><blockquote>
 <p>dd bs=8k count=4k if=/dev/zero of=test oflag=dsync</p>
 </blockquote>
 <p>加入dsync参数后，dd在执行时每次都会进行同步写入操作。每次读取8k后就要先把这8k写入磁盘，然后再读取下面一个8k，一共重复4K次，生成一个34M文件。这是最慢的一种方式，基本上没有用到写缓存(write cache)。</p>
-<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-59-36.png" alt></p>
+<p><img src="//szp2016.github.io/Linux/dd命令测试磁盘/2020-09-08-17-59-36.png" alt></p>
 <p>conv=fdatasync与oflag=dsync的区别在于：fdatasync只是将所有修改过的块缓冲区排入写队列，然后就返回，它并不等待实际写磁盘操作结束。dsync函数只对由文件描述符filedes指定的单一文件起作用，并且等待写磁盘操作结束，然后返回。所以看到的fdatasync速度比dsync好。</p>
 
       
@@ -748,13 +748,13 @@
     2020年09月08日 - 17:13:09
   </li>
     <strong>最后更新：</strong>
-    2021年09月30日 - 16:55:54
+    2022年07月08日 - 13:53:23
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/linux/dd命令测试磁盘/" title="dd命令测试磁盘">https://szp2016.github.io/linux/dd命令测试磁盘/</a>
+    <a href="https://szp2016.github.io/Linux/dd命令测试磁盘/" title="dd命令测试磁盘">https://szp2016.github.io/Linux/dd命令测试磁盘/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -805,7 +805,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/linux/编写文件系统之装载与卸载/" rel="next" title="编写文件系统之装载与卸载">
+              <a href="/Linux/编写文件系统之装载与卸载/" rel="next" title="编写文件系统之装载与卸载">
                 <i class="fa fa-chevron-left"></i> 编写文件系统之装载与卸载
               </a>
             
@@ -815,7 +815,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/linux/编写块设备驱动程序/" rel="prev" title="编写块设备驱动程序">
+              <a href="/Linux/编写块设备驱动程序/" rel="prev" title="编写块设备驱动程序">
                 编写块设备驱动程序 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -936,9 +936,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-count">13</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1333,7 +1331,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'linux/dd命令测试磁盘/'
+    refer: 'Linux/dd命令测试磁盘/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];
