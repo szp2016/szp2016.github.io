@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1.前言PageCache又称页高速缓存，页高速缓存是由内存中的物理页面组成，对应的是磁盘上的物理块，可以动态扩大缩小。Linux支持的文件大小可以达到TB级别，访问较大文件时高速缓存中会存储属于该文件大量的页，因此采用struct address_space对页高速缓存进行管理，同时设计了基树结构来加速对缓存中页的查找。 早期的Linux内核版本中，同时存在PageCache和BufferCac">
+<meta name="keywords" content="内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pageCache和bufferCache">
+<meta property="og:url" content="https://szp2016.github.io/linux/pageCache和bufferCache/index.html">
+<meta property="og:site_name" content="桃花猿记">
+<meta property="og:description" content="1.前言PageCache又称页高速缓存，页高速缓存是由内存中的物理页面组成，对应的是磁盘上的物理块，可以动态扩大缩小。Linux支持的文件大小可以达到TB级别，访问较大文件时高速缓存中会存储属于该文件大量的页，因此采用struct address_space对页高速缓存进行管理，同时设计了基树结构来加速对缓存中页的查找。 早期的Linux内核版本中，同时存在PageCache和BufferCac">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210420153203499.png?x-oss-process=,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210420154619880.png?x-oss-process=,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210420155609397.png?x-oss-process,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210621194414741.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
+<meta property="og:updated_time" content="2022-03-21T03:30:40.931Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="pageCache和bufferCache">
+<meta name="twitter:description" content="1.前言PageCache又称页高速缓存，页高速缓存是由内存中的物理页面组成，对应的是磁盘上的物理块，可以动态扩大缩小。Linux支持的文件大小可以达到TB级别，访问较大文件时高速缓存中会存储属于该文件大量的页，因此采用struct address_space对页高速缓存进行管理，同时设计了基树结构来加速对缓存中页的查找。 早期的Linux内核版本中，同时存在PageCache和BufferCac">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210420153203499.png?x-oss-process=,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/linux/pageCache和bufferCache/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>pageCache和bufferCache | 桃花猿记</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">桃花猿记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/linux/pageCache和bufferCache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="桃花猿记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">pageCache和bufferCache
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-04-20 14:17:15" itemprop="dateCreated datePublished" datetime="2021-04-20T14:17:15+08:00">2021-04-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-03-21 11:30:40" itemprop="dateModified" datetime="2022-03-21T11:30:40+08:00">2022-03-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">8.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">8 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>PageCache又称页高速缓存，页高速缓存是由内存中的物理页面组成，对应的是磁盘上的物理块，可以动态扩大缩小。Linux支持的文件大小可以达到TB级别，访问较大文件时高速缓存中会存储属于该文件大量的页，因此采用struct address_space对页高速缓存进行管理，同时设计了基树结构来加速对缓存中页的查找。</p>
+<p>早期的Linux内核版本中，同时存在PageCache和BufferCache，前者用于缓存对文件操作的内容，后者用于缓存直接对块设备操作的内容。page cache按照文件的逻辑页进行缓冲，buffer cache按照文件的物理块进行缓冲。在有文件系统的情况下，对文件操作，那么数据会缓存到page cache，如果直接采用dd等工具对磁盘进行读写，那么数据会缓存到buffer cache。由于这两种缓存处于半独立的状态，缺乏集成导致整体性能下降和缺乏灵活性。在内核版本2.4之后，对Page Cache、Buffer Cache的实现进行了融合，融合后的Buffer Cache不再以独立的形式存在，Buffer Cache的内容，直接存在于Page Cache中，同时，保留了对Buffer Cache的描述符单元：buffer_head。</p>
+<h1 id="2-address-space结构体"><a href="#2-address-space结构体" class="headerlink" title="2. address_space结构体"></a>2. address_space结构体</h1><p>address_space负责管理页面高速缓存，索引节点（inode）的i_mapping字段总是指向索引节点的数据页所有者的address_space对象。<br>address_space对象的host字段指向其所有者的索引节点对象。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span>		*<span class="title">host</span>;</span>		<span class="comment">/* owner: inode, block_device  指向拥有该对象的索引节点的指针*/</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">radix_tree_root</span>	<span class="title">page_tree</span>;</span>	<span class="comment">/* radix tree of all pages  表示拥有者页的基数radix tree 的根*/</span></span><br><span class="line">	<span class="keyword">spinlock_t</span>		tree_lock;	<span class="comment">/* and lock protecting it 保护基树的自旋锁 */</span></span><br><span class="line">	<span class="keyword">atomic_t</span>		i_mmap_writable;<span class="comment">/* count VM_SHARED mappings 地址空间中共享内存映射的个数*/</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span>		<span class="title">i_mmap</span>;</span>		<span class="comment">/* tree of private and shared mappings   radix优先搜索树的根 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rw_semaphore</span>	<span class="title">i_mmap_rwsem</span>;</span>	<span class="comment">/* protect tree, count, list  */</span></span><br><span class="line">	<span class="comment">/* Protected by tree_lock together with the radix tree */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		nrpages;	<span class="comment">/* number of total pages */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		nrshadows;	<span class="comment">/* number of shadow entries */</span></span><br><span class="line">	<span class="keyword">pgoff_t</span>			writeback_index;<span class="comment">/* writeback starts here */</span></span><br><span class="line">	<span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">address_space_operations</span> *<span class="title">a_ops</span>;</span>	<span class="comment">/* methods */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span>		flags;		<span class="comment">/* error bits/gfp mask */</span></span><br><span class="line">	<span class="keyword">spinlock_t</span>		private_lock;	<span class="comment">/* for use by the address_space */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>	<span class="title">private_list</span>;</span>	<span class="comment">/* ditto */</span></span><br><span class="line">	<span class="keyword">void</span>			*private_data;	<span class="comment">/* ditto */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内核可以通过基树索引结构快速判断所需要的页是否在页高速缓存中。当查找所需要的页时，内核把页索引转换为基树的路径，并快速找到页描述符所在位置。如果找到，内核可以从基树获得页描述符，并且确定所找到的页是否是脏页，以及其数据是否正在使用。一个address_space代表一个基树，用page_tree来关联树根节点。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210420153203499.png?x-oss-process=,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>基树的叶子节点为page结构体，中间节点为代表基树节点的radix_tree_node。基树每个节点可以有多到64个指针指向其他节点或页描述符。每个节点由radix_tree_node数据结构表示， slots是包含64个指针的数组，count是记录节点中非空指针数量的计数器，tags是二维的标志数组。树根由radix_tree_root数据结构表示，gfp_mask指定新节点请求内存时所用的标志，rnode指向与树中第一层节点相应的数据结构radix_tree_node。</p>
+<p>若基树深度为1，则只能表示从0至63的索引，则页索引（上文提高的index字段）的低6位进行解析，从而对应成radix_tree_node结构中的slot下标，找到对应的页；若基树深度为2，则页索引的低12位分成0<del>5,6</del>11两个字段进行解析。分别找到第一层slot字段和第二层slot字段的值。</p>
+<h1 id="3-bufferCache"><a href="#3-bufferCache" class="headerlink" title="3. bufferCache"></a>3. bufferCache</h1><p>bufferCache存放在叫做“缓冲区页”的专门页中，并且使用称为bufferHead的缓冲区头部来描述一个页中的数据块在磁盘中的位置。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> &#123;</span></span><br><span class="line">	<span class="comment">//缓冲区状态标志</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> b_state;		<span class="comment">/* buffer state bitmap (see above) */</span></span><br><span class="line">	<span class="comment">//指向缓冲区页的链表中的下一个元素的指针</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">buffer_head</span> *<span class="title">b_this_page</span>;</span><span class="comment">/* circular list of page's buffers */</span></span><br><span class="line">	<span class="comment">//指向拥有该块的缓冲区页的指针。</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">b_page</span>;</span>		<span class="comment">/* the page this bh is mapped to */</span></span><br><span class="line">	<span class="comment">//与块设备相关的块号（逻辑块号）</span></span><br><span class="line">	<span class="keyword">sector_t</span> b_blocknr;		<span class="comment">/* start block number */</span></span><br><span class="line">	<span class="comment">//块大小</span></span><br><span class="line">	<span class="keyword">size_t</span> b_size;			<span class="comment">/* size of mapping */</span></span><br><span class="line">	<span class="comment">//块在缓冲区页内的位置</span></span><br><span class="line">	<span class="keyword">char</span> *b_data;			<span class="comment">/* pointer to data within the page */</span></span><br><span class="line">	<span class="comment">//指向块设备描述符的指针</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">block_device</span> *<span class="title">b_bdev</span>;</span></span><br><span class="line">	<span class="comment">//I/O完成方法</span></span><br><span class="line">	<span class="keyword">bh_end_io_t</span> *b_end_io;		<span class="comment">/* I/O completion */</span></span><br><span class="line"> 	<span class="keyword">void</span> *b_private;		<span class="comment">/* reserved for b_end_io */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">b_assoc_buffers</span>;</span> <span class="comment">/* associated with another mapping */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">b_assoc_map</span>;</span>	<span class="comment">/* mapping this buffer is</span></span><br><span class="line"><span class="comment">						   associated with */</span></span><br><span class="line">	<span class="keyword">atomic_t</span> b_count;		<span class="comment">/* users using this buffer_head */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>融合后的buffer和cache如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210420154619880.png?x-oss-process=,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>一个具体的文件在打开后，内核会在内存中为之建立一个struct inode结构（该inode结构也会在对应的file结构体中引用），其中的i_mapping域指向一个address_space结构。这样，一个文件就对应一个address_space结构，一个 address_space与一个偏移量能够确定一个page cache 或swap cache中的一个页面。</p>
+<p>因此，当要寻址某个数据时，很容易根据给定的文件及数据在文件内的偏移量而找到相应的页面。address_space_operations 就是用来操作该文件映射到内存的页面，比如把内存中的修改写回文件、从文件中读入数据到页面缓冲等。</p>
+<p>file结构体和inode结构体中都有一个address_space结构体指针，实际上，file-&gt;f_mapping是从对应inode-&gt;i_mapping而来,inode-&gt;i_mapping-&gt;a_ops是由对应的文件系统类型在生成这个inode时赋予的。</p>
+<p>address_space_operations 包含以下方法。</p>
+<p>writepage 写操作，从页写到所有者的磁盘映像</p>
+<p>readpage 读操作，从所有者的磁盘映像读到页</p>
+<p>sync_page 如果对所有者页进行的操作已准备好，则立刻开始I/O数据的传输</p>
+<p>writepages 把指定数量的所有者脏页写回磁盘。</p>
+<p>set_page_dirty 把所有者的页设置为脏页</p>
+<p>readpages 从磁盘中读所有者页的链表</p>
+<p>prepare_write 为写操作做准备（由磁盘文件系统使用）</p>
+<p>commit_write 完成写操作（由磁盘文件系统使用）</p>
+<p>bmap 从文件块索引中获取逻辑块号</p>
+<p>invalidatepage 是所有者的页无效（截断文件时使用）</p>
+<p>releasepage 由日志文件系统使用以准备释放页</p>
+<p>direct_IO 所有者页的直接I/O传输 （绕过了页高速缓存 page cache）</p>
+<p>操作普通文件和操作设备文件过程如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210420155609397.png?x-oss-process,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="4-Cache-预读"><a href="#4-Cache-预读" class="headerlink" title="4. Cache 预读"></a>4. Cache 预读</h1><p>文件Cache可以看做是内存管理系统与文件系统之间的联系纽带。因此，文件Cache管理是操作系统的一个重要组成部分，它的性能直接影响着文件系统和内存管理系统的性能。<br>大多数磁盘I/O读写都是顺序的，且普通文件在磁盘上的存储都是占用连续的扇区。这样读写文件时，就可以减少磁头的移动次数，提升读写性能。当程序读一个文件时，它通常从第一字节到最后一个字节顺序访问。因此，同一个文件中磁盘上多个相邻的扇区通常会被读进程都访问。</p>
+<p>预读（read ahead）就是在数据真正被访问之前，从普通文件或块设备文件中读取多个连续的文件页面到内存中。多数情况下，内核的预读机制可以明显提高磁盘性能，因为减少了磁盘控制器处理的命令数，每个命令读取多个相邻扇区。此外，预读机制还提高了系统响应时间。</p>
+<p>当然，在进程大多数的访问是随机读时，预读是对系统有害的，因为它浪费了内核Cache 空间。当内核确定最近常用的I/O访问不是顺序的时，就会减少或关闭预读。</p>
+<p>预读(read-ahead)算法预测即将访问的页面，并提前把它们批量的读入缓存。</p>
+<p>它的主要功能和任务包括:</p>
+<ul>
+<li>批量：把小I/O聚集为大I/O，以改善磁盘的利用率，提升系统的吞吐量。</li>
+</ul>
+<ul>
+<li><p>提前：对应用程序隐藏磁盘的I/O延迟，以加快程序运行。</p>
+</li>
+<li><p>预测：这是预读算法的核心任务。</p>
+</li>
+</ul>
+<p>前两个功能的达成都有赖于准确的预测能力。当前包括Linux、FreeBSD和Solaris等主流操作系统都遵循了一个简单有效的原则: 把读模式分为随机读和顺序读两大类，并只对顺序读进行预读。这一原则相对保守，但是可以保证很高的预读命中率，同时有效率/覆盖率也很好。因为顺序读是最简单而普遍的，而随机读在内核来说也确实是难以预测的。</p>
+<p>以dd程序读一个裸设备为例，每次读1K数据，连续读16次：</p>
+<pre><font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~</b></font>$ sudo dd if=/dev/sdb of=/dev/zero bs=1K count=16
+[sudo] szp 的密码： 
+记录了16+0 的读入
+记录了16+0 的写出
+16384 bytes (16 kB, 16 KiB) copied, 0.000382103 s, 42.9 MB/s
+</pre>
+
+
+<p>blktrace工具记录情况如下：</p>
+<pre><font color="#55FF55"><b>szp@szp-pc</b></font>:<font color="#5555FF"><b>~</b></font>$ sudo blktrace -d /dev/sdb -o - | blkparse -i -
+  8,16   1        1     0.000000000  2453  Q  RA 0 + 32 [dd]
+  8,16   1        2     0.000006462  2453  G  RA 0 + 32 [dd]
+  8,16   1        3     0.000007073  2453  P   N [dd]
+  8,16   1        4     0.000008215  2453  U   N [dd] 1
+  8,16   1        5     0.000008967  2453  I  RA 0 + 32 [dd]
+  8,16   1        6     0.000013205  2453  D  RA 0 + 32 [dd]
+  8,16   1        7     0.000094959  2453  C  RA 0 + 32 [0]
+  8,16   1        8     0.000124926  2453  Q  RA 32 + 64 [dd]
+  8,16   1        9     0.000125988  2453  G  RA 32 + 64 [dd]
+  8,16   1       10     0.000126169  2453  P   N [dd]
+  8,16   1       11     0.000126399  2453  U   N [dd] 1
+  8,16   1       12     0.000126639  2453  I  RA 32 + 64 [dd]
+  8,16   1       13     0.000127681  2453  D  RA 32 + 64 [dd]
+  8,16   1       14     0.000189909  2453  C  RA 32 + 64 [0]
+</pre>
+
+<ul>
+<li>第一个字段：8,16 这个字段是设备号 major device ID和minor device ID。</li>
+<li>第二个字段：1 表示CPU</li>
+<li>第三个字段：14 序列号</li>
+<li>第四个字段：0.000189909 Time Stamp是时间偏移</li>
+<li>第五个字段：PID 本次IO对应的进程ID</li>
+<li>第六个字段：Event，这个字段非常重要，反映了IO进行到了哪一步</li>
+<li>第七个字段：R表示 Read， W是Write，D表示block，B表示Barrier Operation</li>
+<li>第八个字段：223490+56，表示的是起始block number 和 number of blocks，即我们常说的Offset 和 Size</li>
+<li>第九个字段： 进程名</li>
+</ul>
+<p>简单介绍blktrace工具，blktrace 结合btt可以统计一个IO是在调度队列停留的时间长，还是在硬件上消耗的时间长，利用这个工具可以协助分析和优化问题，可以更好的追踪IO的过程。</p>
+<p>其中第六个字段非常有用：每一个字母都代表了IO请求所经历的某个阶段。</p>
+<p>Q – 即将生成IO请求（bio）<br>|
+G – IO请求（request）生成<br>|
+I – IO请求进入IO Scheduler队列<br>|
+D – IO请求进入driver<br>|
+C – IO请求执行完毕</p>
+<p>上面的输出可以简单解析为：</p>
+<ul>
+<li><p><strong>Q</strong> ：dd程序派发的第一个bio进入通用块层，该bio大小为32个扇区，包括了dd总共需要读取的16k数据。</p>
+</li>
+<li><p><strong>G</strong> ：获得一个request，用第一个bio初始化。</p>
+</li>
+<li><p><strong>[P-C]</strong> : 第一个bio在通用块层后续的处理。</p>
+</li>
+<li><p><strong>Q</strong> : dd程序派发的第二个bio进入通用块层，该bio大小为64个扇区，该bio为预读触发的请求。</p>
+</li>
+<li><p><strong>G</strong> : 同样获得一个request，用第二个bio初始化。读操作同步进行，不会与前一个请求产生合并。</p>
+</li>
+<li><p><strong>[P-C]</strong> : 第二个在通用块层的处理。</p>
+</li>
+</ul>
+<p>读操作是同步的，所以触发读请求的是dd进程本身。dd进程发起了16次读操作，总共读取16K数据，但是预读机制只向底层发送了两次读请求，分别为0+32(16K), 32+64(32K)，总共预读了16 + 32 = 48K数据，并保存到cache中，多预读的数据可以为后续的读操作服务。</p>
+<p>内核判断两次读访问是顺序的标准是：</p>
+<p>请求的第一个页面与上次访问的最后一个页面是相邻的。</p>
+<p>访问一个给定的文件，预读算法使用两个页面集：当前窗口（current window）和前进窗口（ahead window）。 </p>
+<p>当前窗口（current window）包括了进程已请求的页面或内核提前读且在页面cache中的页面。（当前窗口中的页面未必是最新的，因为可能仍有I/O数据传输正在进行。）</p>
+<p>前进窗口（ahead window）包含的页面是紧邻当前窗口（current window）中内核提前读的页面。前进窗口中的页面没有被进程请求，但内核假设进程迟早会访问这些页面。当内核判断出一个顺序访问和初始页面属于当前窗口时，就检查前进窗口是否已经建立起来。若未建立，内核建立一个新的前进窗口，并且为对应的文件页面触发读操作。</p>
+<p>在理想状况下，进程正在访问的页面都在当前窗口中，而前进窗口中的文件页面正在传输。当进程访问的页面在前进窗口中时，前进窗口变为当前窗口。</p>
+<h1 id="5-预读数据结构与函数"><a href="#5-预读数据结构与函数" class="headerlink" title="5.预读数据结构与函数"></a>5.预读数据结构与函数</h1><h1 id="5-1-file-ra-state数据结构"><a href="#5-1-file-ra-state数据结构" class="headerlink" title="5.1 file_ra_state数据结构"></a>5.1 file_ra_state数据结构</h1><p>预读算法使用的主要数据结构是file_ra_state，每个文件对象都有一个f_ra域。其定义在文件include/linux/fs.h中。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Track a single file's readahead state</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">file_ra_state</span> &#123;</span></span><br><span class="line">	<span class="keyword">pgoff_t</span> start;			<span class="comment">/* where readahead started  当前窗口的第一个页面*/</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> size;		<span class="comment">/* # of readahead pages 当前窗口的页面数量，值为-1表示预读临时关闭，0表示当前窗口为空*/</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> async_size;	<span class="comment">/* do asynchronous readahead when</span></span><br><span class="line"><span class="comment">					   there are only # of pages ahead  异步预读页面数量*/</span></span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> ra_pages;		<span class="comment">/* Maximum readahead window 预读窗口最大页面数量。0表示预读暂时关闭。 */</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> mmap_miss;		<span class="comment">/* Cache miss stat for mmap accesses 预读失效计数 */</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">loff_t</span> prev_pos;		<span class="comment">/* Cache last read() position Cache中最近一次读位置*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>ra_pages表示当前窗口的最大页面数，也就是针对该文件的最大预读页面数；其初始值由该文件所在块设备上的backing_dev_info描述符中。进程可以通过系统调用 posix_fadvise（）来改变已打开文件的ra_pages值来调优预读算法。</p>
+<h1 id="5-2-generic-file-buffered-read"><a href="#5-2-generic-file-buffered-read" class="headerlink" title="5.2 generic_file_buffered_read"></a>5.2 generic_file_buffered_read</h1><p>读文件函数路径如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">read()</span><br><span class="line">	-&gt;sys_read()</span><br><span class="line">		-&gt;vfs_read()</span><br><span class="line">			-&gt;__vfs_read()</span><br><span class="line">				-&gt;ext4_file_read_iter()</span><br><span class="line">					-&gt;generic_file_read_iter()</span><br><span class="line">						-&gt;generic_file_buffered_read()</span><br><span class="line">							-&gt;generic_file_buffered_read()</span><br><span class="line">							-&gt;page_cache_async_readahead()</span><br></pre></td></tr></table></figure>
+
+<p>内核处理用户进程的读数据请求时，使用最多的是调用page_cache_sync_readahead（）和page_cache_async_readahead（）函数来执行预读。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">generic_file_buffered_read</span><span class="params">(struct kiocb *iocb,</span></span></span><br><span class="line"><span class="function"><span class="params">		struct iov_iter *iter, <span class="keyword">ssize_t</span> written)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">filp</span> = <span class="title">iocb</span>-&gt;<span class="title">ki_filp</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span> = <span class="title">filp</span>-&gt;<span class="title">f_mapping</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span> = <span class="title">mapping</span>-&gt;<span class="title">host</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file_ra_state</span> *<span class="title">ra</span> = &amp;<span class="title">filp</span>-&gt;<span class="title">f_ra</span>;</span></span><br><span class="line">	<span class="keyword">loff_t</span> *ppos = &amp;iocb-&gt;ki_pos;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">//检查页是否已经包含在页缓存中</span></span><br><span class="line">		page = find_get_page(mapping, index);</span><br><span class="line">		<span class="keyword">if</span> (!page) &#123;</span><br><span class="line">			<span class="keyword">if</span> (iocb-&gt;ki_flags &amp; IOCB_NOWAIT)</span><br><span class="line">				<span class="keyword">goto</span> would_block;</span><br><span class="line">			page_cache_sync_readahead(mapping,</span><br><span class="line">					ra, filp,</span><br><span class="line">					index, last_index - index);</span><br><span class="line">			<span class="comment">//执行完同步预读后，再次检查是否已在页缓存</span></span><br><span class="line">			page = find_get_page(mapping, index);</span><br><span class="line">			<span class="keyword">if</span> (unlikely(page == <span class="literal">NULL</span>))</span><br><span class="line">				<span class="keyword">goto</span> no_cached_page;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (PageReadahead(page)) &#123;<span class="comment">//检测页标志是否设置了PG_readahead，启动异步预读</span></span><br><span class="line">			page_cache_async_readahead(mapping,</span><br><span class="line">					ra, filp, page,</span><br><span class="line">					index, last_index - index);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (!PageUptodate(page)) &#123;<span class="comment">//检查数据是不是最新的</span></span><br><span class="line">			<span class="keyword">if</span> (iocb-&gt;ki_flags &amp; IOCB_NOWAIT) &#123;</span><br><span class="line">				put_page(page);</span><br><span class="line">				<span class="keyword">goto</span> would_block;</span><br><span class="line">			&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>do_generic_file_read（）首先调用find_get_page（）检查页是否已经包含在页缓存中。如果没有则调用page_cache_sync_readahead（）发出一个同步预读请求。预读机制很大程度上能够保证数据已经进入缓存，因此再次调用find_get_page（）查找该页。这次仍然有一定失败的概率，那么就跳转到标号no_cached_page处直接进行读取操作。检测页标志是否设置了PG_readahead，如果设置了该标志就调用page_cache_async_readahead（）启动一个异步预读操作，这与前面的同步预读操作不同，这里并不等待预读操作的结束。虽然页在缓存中了，但是其数据不一定是最新的，这里通过PageUptodate(page)来检查。如果数据不是最新的，则调用函数mapping-&gt;a_ops-&gt;readpage（）进行再次数据读取。</p>
+<h1 id="5-3-page-cache-sync-readahead（）"><a href="#5-3-page-cache-sync-readahead（）" class="headerlink" title="5.3 page_cache_sync_readahead（）"></a>5.3 page_cache_sync_readahead（）</h1><p>page_cache_sync_readahead（）函数就是同步预读一些页面到内存中。<br>page_cache_sync_readahead（）它重新装满当前窗口和前进窗口，并根据预读命中率来更新窗口大小。函数有5个参数：</p>
+<p>mapping：文件拥有者的addresss_space对象</p>
+<p>ra：包含此页面的文件file_ra_state描述符</p>
+<p>filp：文件对象</p>
+<p>offset：页面在文件内的偏量</p>
+<p>req_size：完成当前读操作需要的页面数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * page_cache_sync_readahead - generic file readahead</span></span><br><span class="line"><span class="comment"> * @mapping: address_space which holds the pagecache and I/O vectors</span></span><br><span class="line"><span class="comment"> * @ra: file_ra_state which holds the readahead state</span></span><br><span class="line"><span class="comment"> * @filp: passed on to -&gt;readpage() and -&gt;readpages()</span></span><br><span class="line"><span class="comment"> * @offset: start offset into @mapping, in pagecache page-sized units</span></span><br><span class="line"><span class="comment"> * @req_size: hint: total size of the read which the caller is performing in</span></span><br><span class="line"><span class="comment"> *            pagecache pages</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * page_cache_sync_readahead() should be called when a cache miss happened:</span></span><br><span class="line"><span class="comment"> * it will submit the read.  The readahead logic may decide to piggyback more</span></span><br><span class="line"><span class="comment"> * pages onto the read request if access patterns suggest it will improve</span></span><br><span class="line"><span class="comment"> * performance.</span></span><br><span class="line"><span class="comment">   同步预读一些页面到内存中。</span></span><br><span class="line"><span class="comment">   mapping：文件拥有者的addresss_space对象</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	ra：包含此页面的文件file_ra_state描述符</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	filp：文件对象</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	offset：页面在文件内的偏量</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">	req_size：完成当前读操作需要的页面数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">page_cache_sync_readahead</span><span class="params">(struct address_space *mapping,</span></span></span><br><span class="line"><span class="function"><span class="params">			       struct file_ra_state *ra, struct file *filp,</span></span></span><br><span class="line"><span class="function"><span class="params">			       <span class="keyword">pgoff_t</span> offset, <span class="keyword">unsigned</span> <span class="keyword">long</span> req_size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* no read-ahead */</span></span><br><span class="line">	<span class="keyword">if</span> (!ra-&gt;ra_pages)</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* be dumb 当文件模式设置FMODE_RANDOM时，表示文件预期为随机访问,这种情形比较少见。*/</span></span><br><span class="line">	<span class="keyword">if</span> (filp &amp;&amp; (filp-&gt;f_mode &amp; FMODE_RANDOM)) &#123;</span><br><span class="line">		force_page_cache_readahead(mapping, filp, offset, req_size);</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* do read-ahead */</span></span><br><span class="line">	ondemand_readahead(mapping, ra, filp, <span class="literal">false</span>, offset, req_size);</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(page_cache_sync_readahead);</span><br></pre></td></tr></table></figure>
+
+<p>当文件模式设置FMODE_RANDOM时，表示文件预期为随机访问。这种情形比较少见，这里不关注。函数变成对ondemand_readahead（）封装。</p>
+<p>page_cache_async_readahead（）源码也在mm/readahead.c文件中，异步提前读取</p>
+<p>多个页面到内存中。 函数共6个参数，比page_cache_sync_readahead（）多一个参数page。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * page_cache_async_readahead - file readahead for marked pages</span></span><br><span class="line"><span class="comment"> * @mapping: address_space which holds the pagecache and I/O vectors</span></span><br><span class="line"><span class="comment"> * @ra: file_ra_state which holds the readahead state</span></span><br><span class="line"><span class="comment"> * @filp: passed on to -&gt;readpage() and -&gt;readpages()</span></span><br><span class="line"><span class="comment"> * @page: the page at @offset which has the PG_readahead flag set</span></span><br><span class="line"><span class="comment"> * @offset: start offset into @mapping, in pagecache page-sized units</span></span><br><span class="line"><span class="comment"> * @req_size: hint: total size of the read which the caller is performing in</span></span><br><span class="line"><span class="comment"> *            pagecache pages</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * page_cache_async_readahead() should be called when a page is used which</span></span><br><span class="line"><span class="comment"> * has the PG_readahead flag; this is a marker to suggest that the application</span></span><br><span class="line"><span class="comment"> * has used up enough of the readahead window that we should start pulling in</span></span><br><span class="line"><span class="comment"> * more pages.</span></span><br><span class="line"><span class="comment"> 异步提前读取多个页面到内存中。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">void</span></span><br><span class="line">page_cache_async_readahead(struct address_space *mapping,</span><br><span class="line">			   struct file_ra_state *ra, struct file *filp,</span><br><span class="line">			   struct page *page, <span class="keyword">pgoff_t</span> offset,</span><br><span class="line">			   <span class="keyword">unsigned</span> <span class="keyword">long</span> req_size)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">/* no read-ahead 是否需要预读*/</span></span><br><span class="line">	<span class="keyword">if</span> (!ra-&gt;ra_pages)</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	页面处于回写状态</span></span><br><span class="line"><span class="comment">	 * Same bit is used for PG_readahead and PG_reclaim.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (PageWriteback(page))</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	ClearPageReadahead(page);<span class="comment">//清除页面预读标志PG_ read ahed。</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Defer asynchronous read-ahead on IO congestion.检查当前磁盘I/O是否处于拥塞状态</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (inode_read_congested(mapping-&gt;host))</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* do read-ahead */</span></span><br><span class="line">	ondemand_readahead(mapping, ra, filp, <span class="literal">true</span>, offset, req_size);</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(page_cache_async_readahead);</span><br></pre></td></tr></table></figure>
+
+<p>若不需要预读或者页面处于回写状态，就直接返回。通过前面的检查后，就清除页面PG_ read ahed。在执行预读前，还要检查当前磁盘I/O是否处于拥塞状态，若处于拥塞就不能再进行预读。接下来就调用ondemand_readahead（）真正执行预读。</p>
+<h1 id="5-5-ondemand-readahead（）预读算法"><a href="#5-5-ondemand-readahead（）预读算法" class="headerlink" title="5.5 ondemand_readahead（）预读算法"></a>5.5 ondemand_readahead（）预读算法</h1><p>ondemand_readahead（）函数实现在文件mm/readahead.c。该函数主要根据file_ra_state描述符中的成员变量来执行一些动作。</p>
+<p>（1）首先判断如果是从文件头开始读取的，初始化预读信息。默认设置预读为4个page。</p>
+<p>（2）如果不是文件头，则判断是否连续的读取请求，如果是则扩大预读数量。一般等于上次预读数量x2。</p>
+<p>（3）否则就是随机的读取，不适用预读，只读取sys_read请求的数量。</p>
+<p>（4）然后调用ra_submit提交读取请求。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">unsigned</span> <span class="keyword">long</span></span><br><span class="line">ondemand_readahead(struct address_space *mapping,</span><br><span class="line">		   struct file_ra_state *ra, struct file *filp,</span><br><span class="line">		   <span class="keyword">bool</span> hit_readahead_marker, <span class="keyword">pgoff_t</span> offset,</span><br><span class="line">		   <span class="keyword">unsigned</span> <span class="keyword">long</span> req_size)</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">initial_readahead:</span><br><span class="line">	ra-&gt;start = offset;</span><br><span class="line">	<span class="comment">//计算初始预读窗口大小</span></span><br><span class="line">	ra-&gt;size = get_init_ra_size(req_size, max_pages);</span><br><span class="line">	ra-&gt;async_size = ra-&gt;size &gt; req_size ? ra-&gt;size - req_size : ra-&gt;size;</span><br><span class="line"></span><br><span class="line">readit:</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Will this read hit the readahead marker made by itself?</span></span><br><span class="line"><span class="comment">	 * If so, trigger the readahead marker hit now, and merge</span></span><br><span class="line"><span class="comment">	 * the resulted next readahead window into the current one.</span></span><br><span class="line"><span class="comment">	 * Take care of maximum IO pages as above.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (offset == ra-&gt;start &amp;&amp; ra-&gt;size == ra-&gt;async_size) &#123;</span><br><span class="line">		<span class="comment">//计算下一个预读窗口大小。</span></span><br><span class="line">		add_pages = get_next_ra_size(ra, max_pages);</span><br><span class="line">		<span class="keyword">if</span> (ra-&gt;size + add_pages &lt;= max_pages) &#123;</span><br><span class="line">			ra-&gt;async_size = add_pages;</span><br><span class="line">			ra-&gt;size += add_pages;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			ra-&gt;size = max_pages;</span><br><span class="line">			ra-&gt;async_size = max_pages &gt;&gt; <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ra_submit(ra, mapping, filp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>get_init_ra_size（）计算初始预读窗口大小，get_next_ra_size（）计算下一个预读窗口大小。 </p>
+<p>当进程第一次访问文件并且请求的第一个页面在文件内的偏移量是0时， ondemand _readahead（）函数会认为进程会进行顺序访问文件。</p>
+<p>于是函数从第一个页面开始创建新的当前窗口。当前窗口的初始值大小一般是2的幂次方，通常与进程第一次读取的页面数有关：请求的页面数越多，当前窗口越大，最大值保存在ra-&gt;ra_pages中。</p>
+<p>相反地，进程第一次访问文件，但请求的页面在文件内的偏移量不是0时，内核就认为进程不会进行顺序访问。这样暂时关闭预读功能（设置ra-&gt;size的值为-1）。</p>
+<p>然而内核重新发现顺序访问文件时，就会启用预读，创建新的当前窗口。若前进窗口（ahead window）不存在，当函数意识到进程在当前窗口进行顺序访问时，就会创建新的前进窗口。前进窗口的起始页面通常是紧邻当前窗口的最后一个页面。前进窗口的大小与当前窗口大小有关。一旦函数发现文件访问不是顺序的（根据前一次的访问），当前窗口和前进窗口就会被清空且预读功能被暂时关闭。当发现顺序访问时，就会重新启用预读。</p>
+<p>ra_submit（）仅是对__do_page_cache_readahead（）的封装。</p>
+<h1 id="5-6-do-page-cache-readahead"><a href="#5-6-do-page-cache-readahead" class="headerlink" title="5.6 __do_page_cache_readahead()"></a>5.6 __do_page_cache_readahead()</h1><p>__do_page_cache_readahead（）有4个参数：</p>
+<p>mapping：文件拥有者的addresss_space对象</p>
+<p>filp：文件对象 offset：页面在文件内的偏移量</p>
+<p>nr_to_read：完成当前读操作需要的页面数</p>
+<p>lookahead_size：异步预读大小</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">int</span> __do_page_cache_readahead(struct address_space *mapping, struct file *filp,</span><br><span class="line">			<span class="keyword">pgoff_t</span> offset, <span class="keyword">unsigned</span> <span class="keyword">long</span> nr_to_read,</span><br><span class="line">			<span class="keyword">unsigned</span> <span class="keyword">long</span> lookahead_size)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span> = <span class="title">mapping</span>-&gt;<span class="title">host</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">page</span>;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> end_index;	<span class="comment">/* The last page we want to read */</span></span><br><span class="line">	LIST_HEAD(page_pool);</span><br><span class="line">	<span class="keyword">int</span> page_idx;</span><br><span class="line">	<span class="keyword">int</span> ret = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">loff_t</span> isize = i_size_read(inode);</span><br><span class="line">	<span class="keyword">gfp_t</span> gfp_mask = readahead_gfp_mask(mapping);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (isize == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line">	end_index = ((isize - <span class="number">1</span>) &gt;&gt; PAGE_SHIFT);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Preallocate as many pages as we will need.再次检查页面是否已经被其他进程读进内存，如果没有申请页面</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">for</span> (page_idx = <span class="number">0</span>; page_idx &lt; nr_to_read; page_idx++) &#123;</span><br><span class="line">		<span class="keyword">pgoff_t</span> page_offset = offset + page_idx;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (page_offset &gt; end_index)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		rcu_read_lock();</span><br><span class="line">		page = radix_tree_lookup(&amp;mapping-&gt;page_tree, page_offset);</span><br><span class="line">		rcu_read_unlock();</span><br><span class="line">		<span class="keyword">if</span> (page &amp;&amp; !radix_tree_exceptional_entry(page))</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">		page = __page_cache_alloc(gfp_mask);</span><br><span class="line">		<span class="keyword">if</span> (!page)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		page-&gt;index = page_offset;</span><br><span class="line">		list_add(&amp;page-&gt;lru, &amp;page_pool);</span><br><span class="line">		<span class="comment">//当分配到第nr_to_read ‐ lookahead_size个页面时，就设置该页面标志PG_readahead，以让下次进行异步预读。</span></span><br><span class="line">		<span class="keyword">if</span> (page_idx == nr_to_read - lookahead_size)</span><br><span class="line">			SetPageReadahead(page);</span><br><span class="line">		ret++;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在从磁盘上读数据前，首先预分配一些内存页面，用来存放读取的文件数据。在预读过程中，可能有其他进程已经将某些页面读进内存，检因此在此检查页面是否已经在Cache中。若页面Cache中没有所请求的页面，则分配内存页面，并将页面加入到页面池中。 当分配到第nr_to_read ‐ lookahead_size个页面时，就设置该页面标志PG_readahead，以让下次进行异步预读。 页面准备好后，调用read_pages（）执行I/O操作，从磁盘读取文件数据。</p>
+<h1 id="5-7-readpages"><a href="#5-7-readpages" class="headerlink" title="5.7 readpages"></a>5.7 readpages</h1><p>ext4文件系统的address_space_operations对象中的readpages方法实现为 ext4_readpages（）。若readpages方法没有定义，则readpage方法来每次读取一页。从方法名字，我们很容易看出两者的区别，readpages是一次可以读取多个页面，readpage 是每次只读取一个页面。两个方法实现上差别不大，我们以ext4文件系统为例，只考虑readpages方法。 ext4_readpages（）在文件fs/ext4/inode.c中。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">ext4_readpages(struct file *file, struct address_space *mapping,</span><br><span class="line">		struct list_head *pages, <span class="keyword">unsigned</span> nr_pages)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span> = <span class="title">mapping</span>-&gt;<span class="title">host</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* If the file has inline data, no need to do readpages. */</span></span><br><span class="line">	<span class="keyword">if</span> (ext4_has_inline_data(inode))</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ext4_mpage_readpages(mapping, pages, <span class="literal">NULL</span>, nr_pages);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>整个函数调用流程如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210621194414741.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>参考内容：<br><a href="https://blog.csdn.net/jinking01/article/details/107221428" target="_blank" rel="noopener">https://blog.csdn.net/jinking01/article/details/107221428</a><br><a href="https://www.usenix.org/legacy/publications/library/proceedings/usenix2000/freenix/full_papers/silvers/silvers_html/index.html" target="_blank" rel="noopener">https://www.usenix.org/legacy/publications/library/proceedings/usenix2000/freenix/full_papers/silvers/silvers_html/index.html</a><br><a href="http://www.ilinuxkernel.com/files/Linux.Kernel.Cache.pdf" target="_blank" rel="noopener">http://www.ilinuxkernel.com/files/Linux.Kernel.Cache.pdf</a></p>
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    pageCache和bufferCache
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2021年04月20日 - 14:17:15
+  </li>
+    <strong>最后更新：</strong>
+    2022年03月21日 - 11:30:40
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/linux/pageCache和bufferCache/" title="pageCache和bufferCache">https://szp2016.github.io/linux/pageCache和bufferCache/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/内存/" rel="tag"><i class="fa fa-tag"></i> 内存</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/os/csapp-cache-lab/" rel="next" title="CSAPP cache lab(一)">
+                <i class="fa fa-chevron-left"></i> CSAPP cache lab(一)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/linux/lmbench/" rel="prev" title="lmbench安装与使用">
+                lmbench安装与使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-address-space结构体"><span class="nav-number">2.</span> <span class="nav-text">2. address_space结构体</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-bufferCache"><span class="nav-number">3.</span> <span class="nav-text">3. bufferCache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Cache-预读"><span class="nav-number">4.</span> <span class="nav-text">4. Cache 预读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-预读数据结构与函数"><span class="nav-number">5.</span> <span class="nav-text">5.预读数据结构与函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-1-file-ra-state数据结构"><span class="nav-number">6.</span> <span class="nav-text">5.1 file_ra_state数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-2-generic-file-buffered-read"><span class="nav-number">7.</span> <span class="nav-text">5.2 generic_file_buffered_read</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-3-page-cache-sync-readahead（）"><span class="nav-number">8.</span> <span class="nav-text">5.3 page_cache_sync_readahead（）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-5-ondemand-readahead（）预读算法"><span class="nav-number">9.</span> <span class="nav-text">5.5 ondemand_readahead（）预读算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-6-do-page-cache-readahead"><span class="nav-number">10.</span> <span class="nav-text">5.6 __do_page_cache_readahead()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-7-readpages"><span class="nav-number">11.</span> <span class="nav-text">5.7 readpages</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">11.0.1.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'linux/pageCache和bufferCache/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
