@@ -332,7 +332,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">56</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
 
   </li>
         
@@ -643,22 +643,22 @@
 <p>该命令表示，每次从/dev/zero中读或者写8k，一共执行4k次，输出到test文件中。</p>
 <p>没有任何参数，dd默认的方式不包括“同步(sync)”命令（没加关于操作系统“写缓存”的参数，默认“写缓存”启作用），也就是说，dd命令完成前并没有让系统真正把文件写到磁盘上。dd先把数据写到操作系统“写缓存”，就完成了写操作。所以以上命令只是单纯地把数据读到内存缓冲当中（写缓存[write cache]）。通常称为update的系统守护进程会周期性地（一般每隔30秒）调用sync函数，把“写缓存”中的数据刷入磁盘。<br>因为“写缓存”起作用，会测试出一个超快的性能。因为dd给的只是读取速度，直到dd完成后系统才开始真正往磁盘上写数据，但这个速度是看不到了。</p>
 <p>dd命令执行结果如下，可以看到向test文件中成功写入了约34MB数据。</p>
-<p><img src="2020-09-08-17-57-21.png" alt></p>
+<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-57-21.png" alt></p>
 <h2 id="2-2-一次同步"><a href="#2-2-一次同步" class="headerlink" title="2.2 一次同步"></a>2.2 一次同步</h2><h3 id="2-2-1同步包含文件元数据"><a href="#2-2-1同步包含文件元数据" class="headerlink" title="2.2.1同步包含文件元数据"></a>2.2.1同步包含文件元数据</h3><blockquote>
 <p>dd bs=8k count=4k if=/dev/zero of=test conv=fsync </p>
 </blockquote>
 <p>加入fsync 参数后，dd命令执行到最后会真正执行一次“同步(sync)”操作，，这样算出来的时间才是比较符合实际使用结果的。conv=fsync表示把文件的“数据”和“metadata”都写入磁盘（metadata包括size、访问时间st_atime &amp; st_mtime等等），因为文件的数据和metadata通常存在硬盘的不同地方，因此fsync至少需要两次IO写操作，fsync 与fdatasync相差不大。</p>
-<p><img src="2020-09-08-17-58-51.png" alt></p>
+<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-58-51.png" alt></p>
 <h3 id="2-2-2-同步不含文件元数据"><a href="#2-2-2-同步不含文件元数据" class="headerlink" title="2.2.2 同步不含文件元数据"></a>2.2.2 同步不含文件元数据</h3><blockquote>
 <p>dd bs=8k count=4k if=/dev/zero of=test conv=fdatasync</p>
 </blockquote>
 <p>加入fdatasync参数后，dd命令执行到最后会真正执行一次“同步(sync)”操作，conv=fdatasync表示只把文件的“数据”写入磁盘，而不写入文件的元数据。</p>
-<p><img src="2020-09-08-17-59-16.png" alt></p>
+<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-59-16.png" alt></p>
 <h2 id="2-3-每次同步"><a href="#2-3-每次同步" class="headerlink" title="2.3 每次同步"></a>2.3 每次同步</h2><blockquote>
 <p>dd bs=8k count=4k if=/dev/zero of=test oflag=dsync</p>
 </blockquote>
 <p>加入dsync参数后，dd在执行时每次都会进行同步写入操作。每次读取8k后就要先把这8k写入磁盘，然后再读取下面一个8k，一共重复4K次，生成一个34M文件。这是最慢的一种方式，基本上没有用到写缓存(write cache)。</p>
-<p><img src="2020-09-08-17-59-36.png" alt></p>
+<p><img src="//szp2016.github.io/linux/dd命令测试磁盘/2020-09-08-17-59-36.png" alt></p>
 <p>conv=fdatasync与oflag=dsync的区别在于：fdatasync只是将所有修改过的块缓冲区排入写队列，然后就返回，它并不等待实际写磁盘操作结束。dsync函数只对由文件描述符filedes指定的单一文件起作用，并且等待写磁盘操作结束，然后返回。所以看到的fdatasync速度比dsync好。</p>
 
       
@@ -889,7 +889,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">56</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1116,7 +1116,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">202k</span>
+    <span title="站点总字数">206k</span>
   
 
   
@@ -1125,7 +1125,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">3:04</span>
+    <span title="站点阅读时长">3:07</span>
   
 </div>
 
@@ -1136,7 +1136,8 @@
 
 
 
-
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
 <script>
     var now = new Date(); 
     function createtime() { 

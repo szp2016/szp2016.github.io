@@ -339,7 +339,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">56</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
 
   </li>
         
@@ -618,7 +618,7 @@
 <h2 id="什么是IO设备？"><a href="#什么是IO设备？" class="headerlink" title="什么是IO设备？"></a>什么是IO设备？</h2><p>I/O设备一般包括机械部件和电子部件两个部分:电子部件-设备控制器（适配器）和机械部件-设备本身。控制器是插在电路板上的一块芯片或一组芯片，这块电路板物理地控制设备。它从操作系统接收命令，例如，从设备读数据，并且完成数据的处理。</p>
 <p>I/O设备的另一个部分是实际设备的自身。设备本身有个相对简单的接口，这是因为接口既不能做很多工作，又已经被标准化了。例如，标准化后任何一个SATA磁盘控制器就可以适配任一种SATA磁盘。</p>
 <p>现在SATA是很多计算机的标准硬盘接口。由于实际的设备接口隐藏在控制器中，所以，操作系统看到的是对控制器的接口，这个接口可能和设备接口有很大的差别。</p>
-<p><img src="2020-08-21-20-19-43.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-19-43.png" alt></p>
 <p>每类设备控制器都是不同的，所以，需要不同的软件进行控制。专门与控制器对话，发出命令并接收响应的软件，称为设备驱动程序(device driver)。每个控制器厂家必须为所支持的操作系统提供相应的设备驱动程序。例如，一台扫描仪会配有用于OSX、Windows 7、Windows 8以及Linux的设备驱动程序。</p>
 <p>为了能够使用设备驱动程序，必须把设备驱动程序装人操作系统中，这样它可在核心态运行。</p>
 <h1 id="I-O设备常见分类"><a href="#I-O设备常见分类" class="headerlink" title="I/O设备常见分类"></a>I/O设备常见分类</h1><h2 id="字符设备"><a href="#字符设备" class="headerlink" title="字符设备"></a>字符设备</h2><p>字符设备指能够像字节流串行顺序依次进行访问的设备，对它的读写是以字节为单位。字符设备的上层没有磁盘文件系统，所以字符设备的file_operations成员函数就直接由字符设备驱动提供（一般字符设备都会实现相应的fops集），因此file_operations 也就成为了字符设备驱动的核心。</p>
@@ -631,7 +631,7 @@
 <li><p>每个字符设备在/dev目录下对应一个设备文件，linux用户程序通过设备文件（或称设备节点）来使用驱动程序操作字符设备。</p>
 </li>
 <li><p>常见的字符设备有鼠标、键盘、串口、控制台等</p>
-<p><img src="2020-08-21-20-20-31.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-20-31.png" alt></p>
 </li>
 </ul>
 <h2 id="块设备"><a href="#块设备" class="headerlink" title="块设备"></a>块设备</h2><p>块设备以数据块的形式存放数据，如NAND Flash以页为单位存储数据，并采用mount方式挂载块设备。</p>
@@ -651,7 +651,7 @@
 <li><p>块设备可以容纳文件系统，所以一般都通过文件系统来访问，而不是/dev设备节点。</p>
 </li>
 </ul>
-<p><img src="2020-08-21-20-21-05.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-21-05.png" alt></p>
 <h2 id="网络设备"><a href="#网络设备" class="headerlink" title="网络设备"></a>网络设备</h2><p>虽然在Linux系统存在一句话叫一切皆文件，无论是各种文本文件还是具体的硬件设备（硬件由设备文件来实现相应）。但是网络设备在Linux内核中却是唯一不体现一切皆设备思想的驱动架构，因为网络设备使用套接字来实现网数据的接受和发送。</p>
 <p>网络设备驱动不同于字符设备和块设备，不在/dev下以文件节点代表，而是通过单独的网络接口来代表。</p>
 <p>特点：</p>
@@ -661,8 +661,8 @@
 <li><p>通过socket操作，而不是open read write</p>
 </li>
 </ul>
-<p><img src="2020-08-21-20-21-24.png" alt></p>
-<h1 id="I-O子系统架构"><a href="#I-O子系统架构" class="headerlink" title="I/O子系统架构"></a>I/O子系统架构</h1><p><img src="2020-08-07-22-25-02.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-21-24.png" alt></p>
+<h1 id="I-O子系统架构"><a href="#I-O子系统架构" class="headerlink" title="I/O子系统架构"></a>I/O子系统架构</h1><p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-07-22-25-02.png" alt></p>
 <p>上图概括了一次磁盘 write 操作的过程，假设文件已经被从磁盘中读入了 page cache 中</p>
 <ol>
 <li><p>一个用户进程通过 write() 系统调用发起写请求</p>
@@ -688,9 +688,9 @@
 <p>调度器的算法和电梯运行的策略相似，因此 IO 调度器也被称作 IO 电梯( IO Elevator )。由于对请求进行了重排，一部分的请求可能会被延迟，以提升整体的性能。</p>
 <p>Linux 2.4 只使用了一种通用的 IO 算法。到 Linux 2.6 实现了 4 种 IO 调度模型，其中 anticipatory 在 2.6.33 中被移除。</p>
 <h2 id="读文件函数调用流程"><a href="#读文件函数调用流程" class="headerlink" title="读文件函数调用流程"></a>读文件函数调用流程</h2><p>以经过页缓存读取一个ext2文件系统上的普通文件的流程为例，看一看IO子系统的各个层级都实现了什么功能。IO系统架构分层如下：</p>
-<p><img src="2020-08-21-20-25-08.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-25-08.png" alt></p>
 <p>首先是应用程序发起系统调用，进入虚拟文件系统层。</p>
-<p><img src="2020-08-21-20-27-13.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-27-13.png" alt></p>
 <ul>
 <li>dentry ： 联系了文件名和文件的 i 节点</li>
 <li>inode ： 文件 i 节点，保存文件标识、权限和内容等信息</li>
@@ -700,8 +700,8 @@
 <li>address_space_operations ：操作 page cache 的函数接口集合</li>
 <li>bio ： IO 请求的描述</li>
 </ul>
-<p><img src="2020-08-21-20-28-59.png" alt></p>
-<p><img src="2020-08-21-20-29-11.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-28-59.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-21-20-29-11.png" alt></p>
 <h1 id="I-O性能评价指标"><a href="#I-O性能评价指标" class="headerlink" title="I/O性能评价指标"></a>I/O性能评价指标</h1><h2 id="IOPS"><a href="#IOPS" class="headerlink" title="IOPS"></a>IOPS</h2><p>每秒的输入输出量(或读写次数)，也就是在一秒内，磁盘进行多少次 I/O 读写。是衡量磁盘性能的主要指标之一。</p>
 <h2 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h2><p>指单位时间内可以成功传输的数据数量。即磁盘写入加上读出的数据的大小。吞吐量等于IOPS乘以每次IO大小。</p>
 <h2 id="使用率"><a href="#使用率" class="headerlink" title="使用率"></a>使用率</h2><p>使用率，是指磁盘处理I/O的时间百分比，也就是一个时间段内磁盘用于处理IO的时间占这段时间的比例。过高的使用率(比如超过80% ) , 通常意味着磁盘I/O存在性能瓶颈。</p>
@@ -931,7 +931,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
 <p>剩下的部分,则是从各个角度来分别表示进程的1/O情况,包括线程ID、I/O优先级、每秒读磁盘的大小、每秒写磁盘的大小、换入和等待I/O的时钟百分比等。</p>
 <h1 id="IO延迟"><a href="#IO延迟" class="headerlink" title="IO延迟"></a>IO延迟</h1><p>任何一个系统都有两个指标和性能紧密联系：响应时间和吞吐量。两个很关键的指标则是系统的IO延迟(响应时间)与IO吞吐量。</p>
 <h2 id="什么是IO延迟？"><a href="#什么是IO延迟？" class="headerlink" title="什么是IO延迟？"></a>什么是IO延迟？</h2><p>1个完整的I/O传输，可能会经过以下路径：<br>CPU -&gt;内存-&gt;硬盘<br>细分一下如下：<br>进程-&gt;虚拟文件系统-&gt;具体文件系统（页缓存）-&gt;通用块层（加入请求队列）-&gt;IO调度层-&gt;块设备驱动层-&gt;块设备层(操作磁盘)-&gt;磁盘 </p>
-<p><img src="2020-08-07-22-25-41.png" alt></p>
+<p><img src="//szp2016.github.io/linux/IO吞吐量与IO延迟/2020-08-07-22-25-41.png" alt></p>
 <p>在上述I/O传输途径中消耗的时间就是IO延迟。我们习惯性的把IO的延迟分为以下几部分：</p>
 <ol>
 <li>系统OS等软件配置产生的延迟：异步IO的情况下整个系统的延迟就会比同步IO下好很多。</li>
@@ -1198,7 +1198,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">56</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1429,7 +1429,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">202k</span>
+    <span title="站点总字数">206k</span>
   
 
   
@@ -1438,7 +1438,7 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">3:04</span>
+    <span title="站点阅读时长">3:07</span>
   
 </div>
 
@@ -1449,7 +1449,8 @@ Actual DISK READ:       0.00 B/s | Actual DISK WRITE:       4.70 M/s
 
 
 
-
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
 <script>
     var now = new Date(); 
     function createtime() { 

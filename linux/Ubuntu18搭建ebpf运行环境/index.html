@@ -333,7 +333,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">56</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
 
   </li>
         
@@ -624,7 +624,7 @@
 <blockquote>
 <p>sudo apt search linux-source</p>
 </blockquote>
-<p><img src="2020-10-08-13-43-23.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-43-23.png" alt></p>
 <p>使用命令</p>
 <blockquote>
 <p>sudo apt install linux-source</p>
@@ -635,7 +635,7 @@
 </blockquote>
 <p>建议下载和自身内核版本一致的源代码。</p>
 <p>进入/usr/src  查看刚才下载的源码包。</p>
-<p><img src="2020-10-08-13-47-54.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-47-54.png" alt></p>
 <p>将该压缩包解压。</p>
 <blockquote>
 <p> sudo tar -xjvf linux-source-5.4.0.tar.bz2</p>
@@ -647,15 +647,15 @@
 <p>sudo make menuconfig 配置内核选项生成.config文件</p>
 </blockquote>
 <p>可视化配置界面，直接选择save。</p>
-<p><img src="2020-10-08-14-00-04.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-00-04.png" alt></p>
 <p>生成.config文件，选择ok后，然后选择exit。</p>
-<p><img src="2020-10-08-14-01-23.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-01-23.png" alt></p>
 <p>编译sampls/bpf目录下的样例文件。</p>
 <blockquote>
 <p>sudo make M=samples/bpf</p>
 </blockquote>
 <p>成功后就会生成.o文件。</p>
-<p><img src="2020-10-08-14-03-56.png" alt></p>
+<p><img src="//szp2016.github.io/linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-03-56.png" alt></p>
 <h1 id="根据样例程序自定义ebpf程序"><a href="#根据样例程序自定义ebpf程序" class="headerlink" title="根据样例程序自定义ebpf程序"></a>根据样例程序自定义ebpf程序</h1><p>ebpf程序包含两个文件，一个运行在内核态，通常用*_kern.c命名，一个运行在用户态，通常用 *_user.c命名。</p>
 <ul>
 <li><p>为运行在内核空间的示例源代码（kern.c），编译生成.o后缀的目标文件，以便加载到对应BPF提供的钩子中去</p>
@@ -902,7 +902,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">56</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1129,7 +1129,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">202k</span>
+    <span title="站点总字数">206k</span>
   
 
   
@@ -1138,7 +1138,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">3:04</span>
+    <span title="站点阅读时长">3:07</span>
   
 </div>
 
@@ -1149,7 +1149,8 @@
 
 
 
-
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
 <script>
     var now = new Date(); 
     function createtime() { 
