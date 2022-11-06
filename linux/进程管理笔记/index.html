@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
+<meta name="keywords" content="进程,操作系统,fork,execve">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程管理笔记">
+<meta property="og:url" content="https://szp2016.github.io/Linux/进程管理笔记/index.html">
+<meta property="og:site_name" content="Linux工坊">
+<meta property="og:description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101180734930.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101203531611.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101204755985.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101221207264.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101220758344.png?x-oss-process=image%E3%80%81,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101223055751.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101223229918.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101223400810.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201101224253731.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201103100803645.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201103101207985.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201103101328962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201103131311936.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
+<meta property="og:updated_time" content="2022-07-08T05:53:23.946Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="进程管理笔记">
+<meta name="twitter:description" content="1.前言进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。 我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20201101180734930.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/Linux/进程管理笔记/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>进程管理笔记 | Linux工坊</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Linux工坊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/进程管理笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Linux工坊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">进程管理笔记
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-11-01 15:46:43" itemprop="dateCreated datePublished" datetime="2020-11-01T15:46:43+08:00">2020-11-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-07-08 13:53:23" itemprop="dateModified" datetime="2022-07-08T13:53:23+08:00">2022-07-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">5.9k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">5 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>进程的定义非常简单：进程就是运行中的程序。程序本身没有生命周期，它只是存在磁盘上面的一些指令或者静态数据。这些字节需要操作系统的帮助运行起来，发挥其应该有的作用。</p>
+<p>我们在使用计算机的时候，会喜欢一边听着音乐，一边玩着游戏，这样是没问题的，我们的操作系统可能有上百个进程在同时运行。但是我们的硬件资源是有限的，假设一个计算机只有一个CPU（实际上也不会太多），成百个进程都在运行着，那CPU应该给谁用呢？操作系统就创造了一个美丽的假象-虚拟化CPU，将一个物理CPU虚拟成多个虚拟CPU分给每一个进程使用，因此每一个进程都以为自己在独占CPU。</p>
+<h1 id="2-如何提供有许多CPU的假象？"><a href="#2-如何提供有许多CPU的假象？" class="headerlink" title="2.如何提供有许多CPU的假象？"></a>2.如何提供有许多CPU的假象？</h1><p>通过让一个进程只运行一个时间片，然后切换到其他进程，操作系统提供了存在多个虚拟CPU的假象。这叫做时分共享CPU技术。那么操作系统如何完成这一切功能。</p>
+<h2 id="2-1-操作系统是管理多个进程执行的软件"><a href="#2-1-操作系统是管理多个进程执行的软件" class="headerlink" title="2.1 操作系统是管理多个进程执行的软件"></a>2.1 操作系统是管理多个进程执行的软件</h2><p>简单来看，操作系统就是一组系统调用API。进程执行系统调用，会使用指令（syscall）回到操作系统的代码执行，当然这就属于进程主动的触发中断；除此之外，还有硬件中断（时钟，I/O设备），对于一个进程来说，是被动发生的。<br>假设以两个程序qq和微信为例，在最开始的时候肯定执行的操作系统程序。将物理内存分别分一部分给微信、qq和内核，我们上面说了进程是运行的程序，其是动态变化的，也就是包含其占有的内存和寄存器，里面存储了当前进程的状态。操作系统代码执行一段时间以后，加载微信程序，也就是恢复它的内存和寄存器状态，让其在CPU上运行，这一过程通过iret中断指令完成。接下来执行权就到了微信进程，也叫做用户态。当然当前进程不能无限执行下去，通过一次中断或者系统调用，会再次执行os代码，os会负责保存微信进行的执行现场也就是内存和寄存器信息。最后再次加载qq程序，一直这样切换执行下去。操作系统始终在内核态运行，而应用程序始终在用户态运行。正是通过这些切换，操作系统实现了对CPU的虚拟化，当某个应用程序运行的时候它感觉到的就是现在它独占了CPU资源。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101180734930.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="3-操作系统提供哪些系统调用API"><a href="#3-操作系统提供哪些系统调用API" class="headerlink" title="3.操作系统提供哪些系统调用API?"></a>3.操作系统提供哪些系统调用API?</h1><p>上面提到了一个进程可以主动放弃自己的执行权，也是就通过系统调用，将执行权交还给操作系统。那么操作系统内核都提供了哪些系统调用来管理进程？主要有创建（fork）、替换执行(execve)、删除(exit)。</p>
+<h1 id="3-1创建（fork）"><a href="#3-1创建（fork）" class="headerlink" title="3.1创建（fork）"></a>3.1创建（fork）</h1><p>为什么需要这么一个系统调用呢，因为我们的系统在最开始启动后并不会有太多的进程，需要有一个系统调用能够在接下来的使用中创建更多的进程。例如我们的shell，可以在shell中使用命令创建一个进程。<br>fork就像一把叉子，主要完成</p>
+<ul>
+<li>做一份进程完整的复制（内存、寄存器运行现场）</li>
+<li>父进程返回子进程的pid，子进程返回0</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20201101203531611.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>那么创建一个进程为什么要叫做叉子呢？还是以我们刚才的qq进程为例，如果它调用了fork系统调用就会在当前系统中多出一个进程，而这个进程是之前qq进程的拷贝，它包括几乎所有的进程当前的状态（除了返回值pid），包括内存、寄存器。原来的进程也叫父进程和新创建的进程也叫子进程都可以继续向下执行，所以说它像一个叉子，走着走着就分了个叉。父进程返回值是子进程的pid，子进程的返回值是0。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101204755985.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="3-2-直面fork"><a href="#3-2-直面fork" class="headerlink" title="3.2 直面fork"></a>3.2 直面fork</h1><p>下面通过两个小实验，来看一下fork究竟是如何工作的。</p>
+<h1 id="3-2-1-实验一"><a href="#3-2-1-实验一" class="headerlink" title="3.2.1 实验一"></a>3.2.1 实验一</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;                                                                                                             </span></span></span><br><span class="line"> <span class="number">2</span> <span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"> <span class="number">3</span> </span><br><span class="line"> <span class="number">4</span> <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="number">5</span>     <span class="keyword">pid_t</span> pid1 = fork();</span><br><span class="line"> <span class="number">6</span>     <span class="keyword">pid_t</span> pid2 = fork();</span><br><span class="line"> <span class="number">7</span>     <span class="keyword">pid_t</span> pid3 = fork();</span><br><span class="line"> <span class="number">8</span>     <span class="built_in">printf</span>(<span class="string">"Hello world : (%d,%d,%d)\n"</span>,pid1,pid2,pid3);</span><br><span class="line"> <span class="number">9</span>     <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">10</span></span><br><span class="line"><span class="number">11</span> </span><br><span class="line"><span class="number">12</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据父进程返回子进程的pid，子进程返回0，我们可以对上面的程序进行画图分析，括号中的内容用于记录三个变量的值和接下来要执行的PC指令，～代表目前未知的变量值，（pid1,pid2,pid3,PC）。程序执行完，一共会有八个进程对printf语句进行输出。红色标出的便是最终的结果。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101221207264.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>下面运行程序，查看实际的运行结果，结果和上面画图分析的结果是一致的，共有八种不同的结果输出。做完该实验就能理解子进程是父进程的一个拷贝，其中黑色标注出的0和FORK2_PID都会一直传递下去，并且fork会返回不同的函数值给父子进程。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101220758344.png?x-oss-process=image%E3%80%81,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h1 id="3-2-2-实验2"><a href="#3-2-2-实验2" class="headerlink" title="3.2.2 实验2"></a>3.2.2 实验2</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;                                                                                                                      </span></span></span><br><span class="line"> <span class="number">2</span> <span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"> <span class="number">3</span> <span class="meta">#<span class="meta-keyword">define</span> n 2</span></span><br><span class="line"> <span class="number">4</span> <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="number">5</span> <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line"> <span class="number">6</span> &#123;</span><br><span class="line"> <span class="number">7</span>     fork();</span><br><span class="line"> <span class="number">8</span>     <span class="built_in">printf</span>(<span class="string">"Hello world\n"</span>);</span><br><span class="line"> <span class="number">9</span> &#125;</span><br><span class="line"><span class="number">10</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">11</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序的执行流程如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101223055751.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>可以看到程序会打印出六个Hello world，我们执行程序结果也是一样的。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101223229918.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>似乎毫无疑问，现在将输出结果重定向到一个文件中。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101223400810.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>重定向输出结果到一个txt文件后，发现比刚才控制台多了两个输出。这是为什么呢？<br>原因就在于printf函数，printf函数在标准输出为控制台的时候会直接输出，但是当标准输出是一个文件的时候，printf会将结果暂存在缓冲区中，在第二次fork的时候，毫无疑问，缓冲区中的hello world 也被拷贝了一份，如下图所示，因此最终文件中就包含了8个Hello world。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201101224253731.png?x-oss-process=image,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h2 id="3-3-execve系统调用"><a href="#3-3-execve系统调用" class="headerlink" title="3.3 execve系统调用"></a>3.3 execve系统调用</h2><p>除了能够对进程进行创建，还需要能够执行别的程序，execve系统调用就是这样一个功能，将当前运行的进程“替换”成另一个程序，从头开始执行。fork以后得到的进程是与父进程相同的，但是跟多的时候我们创建子进程是为了让他执行不同的程序，去做别的工作。execve就是启动一个新程序的系统调用。exec函数一共有六个，其中execve为内核级系统调用，其他（execl，execle，execlp，execv，execvp）都是调用execve的库函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">execve(filename,argv,enpv)</span><br><span class="line"><span class="comment">//执行名称为filename的程序</span></span><br><span class="line"><span class="comment">//分别传入参数v，环境变量e</span></span><br></pre></td></tr></table></figure>
+
+<p>一个进程调用execve以后，它没有创建新的进程，而是从传入的可执行程序中加载代码和静态数据，并用它覆写自己的代码段、堆、栈，以及其他内存空间也会被重新初始化。然后操作系统就执行该程序。所以对execve的成功调用永远不会返回，只有在发生错误的时候才会返回-1，从原程序的调用点接着往下执行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">arch/i386/kernel/process.c</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * sys_execve() executes a new program.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">asmlinkage <span class="keyword">int</span> <span class="title">sys_execve</span><span class="params">(struct pt_regs regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> error;</span><br><span class="line">	<span class="keyword">char</span> * filename;</span><br><span class="line">	</span><br><span class="line">	filename = getname((<span class="keyword">char</span> *) regs.ebx);</span><br><span class="line">	error = PTR_ERR(filename);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(filename))</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	error = do_execve(filename, (<span class="keyword">char</span> **) regs.ecx, (<span class="keyword">char</span> **) regs.edx, &amp;regs);</span><br><span class="line">	<span class="keyword">if</span> (error == <span class="number">0</span>)</span><br><span class="line">		current-&gt;ptrace &amp;= ~PT_DTRACE;</span><br><span class="line">	putname(filename);</span><br><span class="line">out:</span><br><span class="line">	<span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> regs.ebx存储的是需要调用的程序名称，也就是第一个参数，使用getname 将该字符串从用户空间拷贝到系统空间。接下来就调用do_execve完成其主体功能。 </p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"> fs/exec.c</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * sys_execve() executes a new program.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">do_execve</span><span class="params">(<span class="keyword">char</span> * filename, <span class="keyword">char</span> ** argv, <span class="keyword">char</span> ** envp, struct pt_regs * regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">linux_binprm</span> <span class="title">bprm</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">file</span>;</span></span><br><span class="line">	<span class="keyword">int</span> retval;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">	file = open_exec(filename);</span><br><span class="line"></span><br><span class="line">	......</span><br><span class="line">	bprm.file = file;</span><br><span class="line">	bprm.filename = filename;</span><br><span class="line">	bprm.sh_bang = <span class="number">0</span>;</span><br><span class="line">	bprm.loader = <span class="number">0</span>;</span><br><span class="line">	bprm.exec = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">if</span> ((bprm.argc = count(argv, bprm.p / <span class="keyword">sizeof</span>(<span class="keyword">void</span> *))) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		allow_write_access(file);</span><br><span class="line">		fput(file);</span><br><span class="line">		<span class="keyword">return</span> bprm.argc;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ((bprm.envc = count(envp, bprm.p / <span class="keyword">sizeof</span>(<span class="keyword">void</span> *))) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		allow_write_access(file);</span><br><span class="line">		fput(file);</span><br><span class="line">		<span class="keyword">return</span> bprm.envc;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	retval = prepare_binprm(&amp;bprm);</span><br><span class="line">	<span class="keyword">if</span> (retval &lt; <span class="number">0</span>) </span><br><span class="line">		<span class="keyword">goto</span> out; </span><br><span class="line"></span><br><span class="line">	retval = copy_strings_kernel(<span class="number">1</span>, &amp;bprm.filename, &amp;bprm);</span><br><span class="line">	<span class="keyword">if</span> (retval &lt; <span class="number">0</span>) </span><br><span class="line">		<span class="keyword">goto</span> out; </span><br><span class="line"></span><br><span class="line">	bprm.exec = bprm.p;</span><br><span class="line">	retval = copy_strings(bprm.envc, envp, &amp;bprm);</span><br><span class="line">	<span class="keyword">if</span> (retval &lt; <span class="number">0</span>) </span><br><span class="line">		<span class="keyword">goto</span> out; </span><br><span class="line"></span><br><span class="line">	retval = copy_strings(bprm.argc, argv, &amp;bprm);</span><br><span class="line">	<span class="keyword">if</span> (retval &lt; <span class="number">0</span>) </span><br><span class="line">		<span class="keyword">goto</span> out; </span><br><span class="line"></span><br><span class="line">	retval = search_binary_handler(&amp;bprm,regs);</span><br><span class="line">	<span class="keyword">if</span> (retval &gt;= <span class="number">0</span>)</span><br><span class="line">		<span class="comment">/* execve success */</span></span><br><span class="line">		<span class="keyword">return</span> retval;</span><br><span class="line"></span><br><span class="line">	......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 使用 open_exec找到并打开可执行程序的文件，接下来就需要装载可执行程序了，内核中为可执行程序的装入提供了一个数据结构linux_binprm，以便于存储和组织可执行程序中的信息。</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> source/include/linux/binfmts.h#L22</span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment"> * This structure is used to hold the arguments that are used when loading binaries.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">linux_binprm</span>&#123;</span></span><br><span class="line">	<span class="keyword">char</span> buf[BINPRM_BUF_SIZE];</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">page</span> *<span class="title">page</span>[<span class="title">MAX_ARG_PAGES</span>];</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> p; <span class="comment">/* current top of mem */</span></span><br><span class="line">	<span class="keyword">int</span> sh_bang;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> * <span class="title">file</span>;</span></span><br><span class="line">	<span class="keyword">int</span> e_uid, e_gid;</span><br><span class="line">	<span class="keyword">kernel_cap_t</span> cap_inheritable, cap_permitted, cap_effective;</span><br><span class="line">	<span class="keyword">int</span> argc, envc;</span><br><span class="line">	<span class="keyword">char</span> * filename;	<span class="comment">/* Name of binary */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> loader, exec;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>函数open_exec()返回一个file结构指针，代表着读入可执行文件的上下文，所以将其保存在数据结构 bprm中。<br>最后的准备工作就是把执行的参数，也就是 argv[]，以及运行的环境，也就是envp[]，从用户空间拷贝到数据结构 bprm 中。其中的第1个参数 argv[0]就是可执行文件的路径名，已经在 bprm.filename中了，所以用copy_strings_kernel()从系统空间中拷贝，其它的就要用copy_strings()从用户空间拷贝。最后就到了关键的函数 search_binary_handler()，该函数就负责具体的装入和执行。</p>
+<h2 id="3-4-exit系统调用"><a href="#3-4-exit系统调用" class="headerlink" title="3.4 exit系统调用"></a>3.4 exit系统调用</h2><p>上面介绍了可以使用fork创建一个进程，然后使用execve将该进程替换为任意一个程序，显而易见还缺少一个销毁进程的系统调用，才能完整的运转整个流程。<br>常用的C库函数void exit(status)</p>
+<ul>
+<li>可以传入一个状态码status,0表示正常退出，其他表示非正常退出，一般都用-1或者1，标准C里有EXIT_SUCCESS和EXIT_FAILURE两个宏。</li>
+<li>父进程可以使用wait系统调用接受子进程的返回值，从而针对不同的情况进行处理。</li>
+</ul>
+<p>除了上面的exit函数，exit还有其他几种形态，_exit(0 )，SYS_exit。<br>通过一个程序看一下他们的区别：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/syscall.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>( <span class="string">"Goodbye,world!\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span>&#123;</span><br><span class="line">	<span class="comment">//当程序正常终止时，调用指定的函数 func。您可以在任何地方注册你的终止函数，但它会在程序终止的时候被调用。</span></span><br><span class="line">	atexit(func);</span><br><span class="line">	<span class="comment">//通过控制台传入不同的参数，调用不同的exit</span></span><br><span class="line">	<span class="keyword">if</span> (argc &lt; <span class="number">2</span> ) <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">strcmp</span>( argv[<span class="number">1</span>],<span class="string">"exit"</span>)==<span class="number">0</span>)</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">strcmp</span>( argv[<span class="number">1</span>], <span class="string">"_exit"</span>) ==<span class="number">0</span>)</span><br><span class="line">		_exit(<span class="number">0</span>) ;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">strcmp</span>( argv[<span class="number">1</span>], <span class="string">"__exit"</span>) ==<span class="number">0</span>)</span><br><span class="line">		syscall(SYS_exit,<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下</p>
+<p><img src="https://img-blog.csdnimg.cn/20201103100803645.png#pic_center" alt="在这里插入图片描述"></p>
+<p>不传入参数调用exit(0)，会执行func输出字符串，其余两个都不会执行atexit注册的func，没有任何输出。因为前者是libc的库函数，后两者是系统调用，看不到libc的atexit函数。</p>
+<p>使用strace分别跟踪后两个程序，发现_exit最终调用了exit_group(0)，会终止进程中的所有线程。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201103101207985.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>SYS_exit最终调用了exit(0)，只会终止当前的线程。</p>
+<p><img src="https://img-blog.csdnimg.cn/20201103101328962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>exit的几种形态</p>
+<ul>
+<li>exit(0) - stdlib.h中声明的 libc函数，会调用atexit，上面介绍的函数。</li>
+<li>_exit(0) - glibc的syscall wrapper<ul>
+<li>执行“exit_group”系统调用终止整个进程(所有线程)</li>
+<li>不会调用atexit</li>
+</ul>
+</li>
+<li>syscall(SYS_exit，0)<ul>
+<li>执行“exit”系统调用终止当前线程，不会调用atexit</li>
+</ul>
+</li>
+</ul>
+<h1 id="4-处理器调度"><a href="#4-处理器调度" class="headerlink" title="4.处理器调度"></a>4.处理器调度</h1><p> 通过前面已经了解到了，操作系统通过分时，实现了CPU的虚拟化。在中断发生以后，返回之前，操作系统一定要选择一个进程进行执行，那么这里就有了一个问题。</p>
+<h2 id="4-1中断以后选择哪个进程在处理器上执行？"><a href="#4-1中断以后选择哪个进程在处理器上执行？" class="headerlink" title="4.1中断以后选择哪个进程在处理器上执行？"></a>4.1中断以后选择哪个进程在处理器上执行？</h2><p>   选择哪个进程在处理器上运行，就是调度的概念，调度的实质就是资源的分配。操作系统考虑了不同的算法来实现资源的分配，而且一个好的调度算法应该考虑以下几个方面：</p>
+<ul>
+<li>公平：保证每个进程得到合理的CPU时间</li>
+<li>高效：使CPU保持忙碌状态</li>
+<li>响应时间：使交互响应时间尽可能短</li>
+<li>周转时间：等待输出的时间尽可能短</li>
+<li>吞吐量：单位时间内处理的进程数量尽可能多<br>显然不可能有算法同时达到这五个目标，不同的操作系统会有不同的取舍。</li>
+</ul>
+<p>常见的调度算法有：</p>
+<ul>
+<li>时间片轮转调度算法</li>
+<li>优先权调度算法</li>
+<li>多级反馈队列调度算法</li>
+<li>实时调度</li>
+<li>完全公平调度算法</li>
+</ul>
+<h2 id="4-2Linux系统中进程的组织方式"><a href="#4-2Linux系统中进程的组织方式" class="headerlink" title="4.2Linux系统中进程的组织方式"></a>4.2Linux系统中进程的组织方式</h2><p>一个系统中通常有成百上千的进程，相应的就有这么多的PCB，为了有效的进行管理，就必须用适当的方式将他们组织起来。<br>组织方式主要包括：</p>
+<ul>
+<li>进程链表</li>
+<li>哈希表</li>
+<li>就绪队列</li>
+<li>等待队列</li>
+</ul>
+<h2 id="4-3实际Linux内核的调度算法是如何取舍的？"><a href="#4-3实际Linux内核的调度算法是如何取舍的？" class="headerlink" title="4.3实际Linux内核的调度算法是如何取舍的？"></a>4.3实际Linux内核的调度算法是如何取舍的？</h2><p>Linux 2.4中使用goodness()函数，给每个处于可运行状态的进程赋予一个权值（Weight）,使用这个权值衡量一个处于可运行状态的进程值得运行的程度。调度程序以这个权值作为选择进程的唯一依据。</p>
+<p>虽然Linux2.4进程调度程序简单有效，但是也有其缺点。</p>
+<ul>
+<li>单个就绪队列问题，时间片耗尽的进程依然会放进同一个就绪队列中，在不可被调度的情况下，还会参与调度。</li>
+<li>多处理器问题，多个处理器上的进程放在同一个就绪队列中，因而调度器对它的所有操作都会因全局自旋锁而导致系统各个处理机之间的等待，使得就绪队列成为一个明显的瓶颈。</li>
+<li>内核不可抢占问题，如果某个进程，一旦进了内核态那么再高优先级的进程都无法剥夺，只有等进程返回内核态的时候才可以进行调度。缺乏对实时进程的支持。</li>
+</ul>
+<p>针对以上问题，Linux 2.6做了较大的改进。针对多处理器问题，为每个CPU设置一个就绪队列。针对单就绪队列问题，设置两个队列组，即active队列组和expired队列组。借助以上队列实现了时间复杂度为O(1)的调度算法。直到Linxu 2.6.23内核版本中，O(1)调度算法才真正替代为CFS（完全公平）调度算法。</p>
+<h3 id="4-3-1-就绪队列"><a href="#4-3-1-就绪队列" class="headerlink" title="4.3.1 就绪队列"></a>4.3.1 就绪队列</h3><p>O(1)调度器是以进程的动态优先级prio为调度依据的,它总是选择目前就绪队列中优先<br>级最高的进程作为候选进程 next。由于实时进程的优先级总是比普通进程的优先级高,故能<br>保证实时进程总是比普通进程先被调度。</p>
+<p>Linux2.6 中,优先级 prio 的计算不再集中在调度器选择 next 进程时,而是分散在进程<br>状态改变的任何时候,这些时机有:</p>
+<ul>
+<li>进程被创建时;</li>
+<li>休眠进程被唤醒时;</li>
+<li>从TASK_INTERRUPTIBLE 状态中被唤醒的进程被调度时;</li>
+<li>因时间片耗尽或时间片过长而分段被剥夺 CPU 时;</li>
+</ul>
+<p>在这些情况下,内核都会调用 effective_prio()重新计算进程的动态优先级 prio并根据计算结果调整它在就绪队列中的位置。</p>
+<p>Linux 2.6为每个cpu定义了一个struck runqueue数据结构，每个就绪队列都有一个自旋锁，从而解决了 2.4 中因只有一个就绪队列而造成的瓶颈。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">runqueue</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">prio_array_t</span> *active, *expired, <span class="built_in">array</span>[<span class="number">2</span>];</span><br><span class="line">    ...</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>active 是指向活动进程队列的指针；expired 是指向过期进程队列的指针；array[2]是实际的优先级进程队列，其中一个是活跃的一个是过期的，过期数组存放时间片耗完的进程。</p>
+<p>每个处理器的就绪队列都有两个优先级数组,它们是 prio_array 类型的结构体。Linux2.6<br>内核正是因为使用了优先级数组,才实现了 O(1)调度算法。该结构定义在 kernel/sched.c 中:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">prio_array</span>&#123;</span></span><br><span class="line">   ...</span><br><span class="line">   <span class="keyword">unsigned</span> <span class="keyword">int</span> nr_active;</span><br><span class="line">   <span class="comment">//相应 runqueue 中的进程数</span></span><br><span class="line">   </span><br><span class="line">   <span class="keyword">unsigned</span> <span class="keyword">long</span> bitmap[BITMAP_SIZE];</span><br><span class="line">   <span class="comment">/*索引位图，BITMAP_SIZE 默认值为 5,5个long(32位)类型，每位代表一个优先级，可以代表160个优先级，但实际中只有140。与下面的queue[]对应。分布0-99对应为实时进程，100-140对应为普通的进程*/</span></span><br><span class="line">   </span><br><span class="line">   <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">queue</span>[<span class="title">MAX_PRIO</span>];</span></span><br><span class="line">   <span class="comment">/*每个优先级的进程队列,MAX_PRIO 是系统允许的最大优先级数,默认值为 140,数值越小优先级越高</span></span><br><span class="line"><span class="comment">   bitmap每一位都与 queue[i]相对应,当 queue[i]的进程队列不为空时,bitmap 相应位为 1,否则就为 0。*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-2-调度算法介绍"><a href="#4-3-2-调度算法介绍" class="headerlink" title="4.3.2 调度算法介绍"></a>4.3.2 调度算法介绍</h3><p>选择并运行候选进程，确定next,下一个应该占有 CPU 并运行的进程，schedule()函数是完成进程调度的主要函数，并完成进程切换的工作。schedule()用于确定最高优先级进程的代码非常快捷高效，其性能的好坏对系统性能有着直接影响，它在/kernel/sched.c 中的定义如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">int</span> idx;</span><br><span class="line">...</span><br><span class="line">preempt_disable();</span><br><span class="line">...</span><br><span class="line">idx = sched_find_first_bit( <span class="built_in">array</span> -&gt; bitmap);</span><br><span class="line"><span class="built_in">queue</span> = <span class="built_in">array</span> -&gt; <span class="built_in">queue</span> + idx;</span><br><span class="line">next = list_entry( <span class="built_in">queue</span> -&gt; next, <span class="keyword">task_t</span>, run_list);</span><br><span class="line">...</span><br><span class="line">prev = context_switch( rq, prev, next);</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中,sched_find_first_bit()能快速定位优先级最高的非空就绪进程链表,运行时间和就绪队列中的进程数无关,是实现O(1)调度算法的一个关键所在。<br>schedule()的执行流程:<br>首先,调用 pre_empt_disable(),关闭内核抢占,因为此时要对内核的一些重要数据结构进行操作,所以必须将内核抢占关闭;其次,调用sched_find_first_bit()找到位图中的第1个置1的位，该位正好对应于就绪队列中的最高优先级进程链表;<br>再者,调用 context_switch()执行进程切换,选择在最高优先级链表中的第 1个进程投入运行;</p>
+<p><img src="https://img-blog.csdnimg.cn/20201103131311936.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>图中的网格为 140 位优先级数组,queue[7]为优先级为 7 的就绪进程链表。此种算法保证了调度器运行的时间上限,加速了候选进程的定位过程。</p>
+<p>Linux2.4 调度系统在所有就绪进程的时间片都耗完以后在调度器中一次性重新计算,其中重算是用for循环相当耗时。</p>
+<p>Linux2.6 为每个 CPU 保留 active 和 expired 两个优先级数组, active 数组中包含了有剩余时间片的任务,expired 数组中包含了所有用完时间片的任务。</p>
+<p>当一个任务的时间片用完了就会重新计算其时间片,并插入到 expired 队列中,当 active 队列中所有进程用完时间片时,只需交换指向 active 和 expired 队列的指针即可。此交换是实现 O(1)算法的核心,由 schedule()中以下程序来实现:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">array</span> = rq -&gt;active;</span><br><span class="line"><span class="keyword">if</span> (unlikely(!<span class="built_in">array</span>-&gt;nr_active)) &#123;</span><br><span class="line">         rq -&gt; active = rq -&gt; expired;</span><br><span class="line">         rq -&gt; expired = <span class="built_in">array</span>;</span><br><span class="line">         <span class="built_in">array</span> = rq -&gt;active;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    进程管理笔记
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2020年11月01日 - 15:46:43
+  </li>
+    <strong>最后更新：</strong>
+    2022年07月08日 - 13:53:23
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/Linux/进程管理笔记/" title="进程管理笔记">https://szp2016.github.io/Linux/进程管理笔记/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/进程/" rel="tag"><i class="fa fa-tag"></i> 进程</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/c/gdb常用调试命令/" rel="next" title="gdb常用调试命令">
+                <i class="fa fa-chevron-left"></i> gdb常用调试命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Linux/reduce-kernel-version/" rel="prev" title="Ubuntu 18降低内核版本">
+                Ubuntu 18降低内核版本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-如何提供有许多CPU的假象？"><span class="nav-number">2.</span> <span class="nav-text">2.如何提供有许多CPU的假象？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-操作系统是管理多个进程执行的软件"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 操作系统是管理多个进程执行的软件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-操作系统提供哪些系统调用API"><span class="nav-number">3.</span> <span class="nav-text">3.操作系统提供哪些系统调用API?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1创建（fork）"><span class="nav-number">4.</span> <span class="nav-text">3.1创建（fork）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-直面fork"><span class="nav-number">5.</span> <span class="nav-text">3.2 直面fork</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-1-实验一"><span class="nav-number">6.</span> <span class="nav-text">3.2.1 实验一</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-2-实验2"><span class="nav-number">7.</span> <span class="nav-text">3.2.2 实验2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-execve系统调用"><span class="nav-number">7.1.</span> <span class="nav-text">3.3 execve系统调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-exit系统调用"><span class="nav-number">7.2.</span> <span class="nav-text">3.4 exit系统调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-处理器调度"><span class="nav-number">8.</span> <span class="nav-text">4.处理器调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1中断以后选择哪个进程在处理器上执行？"><span class="nav-number">8.1.</span> <span class="nav-text">4.1中断以后选择哪个进程在处理器上执行？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2Linux系统中进程的组织方式"><span class="nav-number">8.2.</span> <span class="nav-text">4.2Linux系统中进程的组织方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3实际Linux内核的调度算法是如何取舍的？"><span class="nav-number">8.3.</span> <span class="nav-text">4.3实际Linux内核的调度算法是如何取舍的？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-就绪队列"><span class="nav-number">8.3.1.</span> <span class="nav-text">4.3.1 就绪队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-调度算法介绍"><span class="nav-number">8.3.2.</span> <span class="nav-text">4.3.2 调度算法介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">8.3.3.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'Linux/进程管理笔记/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

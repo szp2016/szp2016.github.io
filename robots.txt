@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /archives/
+Allow: /categories/
+Allow: /tags/
+Allow: /resources/
+Allow: /books/
+Allow: /assets/
+Disallow: /vendors/
+Disallow: /js/
+Disallow: /css/
+Disallow: /fonts/
+Disallow: /vendors/
+Disallow: /fancybox/
+
+Sitemap: https://szp2016.github.io/sitemap.xml
+Sitemap: https://szp2016.github.io/baidusitemap.xml

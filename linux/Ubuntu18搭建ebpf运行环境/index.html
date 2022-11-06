@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言eBPF之于Linux的作用与JavaScript对HTML的作用相同。 因此，JavaScript改变了静态HTML网站，使我们可以定义一些网页上的触发事件，例如用户的点击、鼠标滑动，这些js程序在浏览器的安全引擎中运行。 使用eBPF，而不是固定的内核，现在可以编写在例如磁盘I/O等事件上运行的触发程序，这些程序在内核中的安全引擎中运行。 实际上，eBPF更像是运行JavaScript的v">
+<meta name="keywords" content="ebpf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu18搭建ebpf运行环境">
+<meta property="og:url" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/index.html">
+<meta property="og:site_name" content="Linux工坊">
+<meta property="og:description" content="前言eBPF之于Linux的作用与JavaScript对HTML的作用相同。 因此，JavaScript改变了静态HTML网站，使我们可以定义一些网页上的触发事件，例如用户的点击、鼠标滑动，这些js程序在浏览器的安全引擎中运行。 使用eBPF，而不是固定的内核，现在可以编写在例如磁盘I/O等事件上运行的触发程序，这些程序在内核中的安全引擎中运行。 实际上，eBPF更像是运行JavaScript的v">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-43-23.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-47-54.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-00-04.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-01-23.png">
+<meta property="og:image" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-03-56.png">
+<meta property="og:updated_time" content="2022-07-08T05:53:23.951Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ubuntu18搭建ebpf运行环境">
+<meta name="twitter:description" content="前言eBPF之于Linux的作用与JavaScript对HTML的作用相同。 因此，JavaScript改变了静态HTML网站，使我们可以定义一些网页上的触发事件，例如用户的点击、鼠标滑动，这些js程序在浏览器的安全引擎中运行。 使用eBPF，而不是固定的内核，现在可以编写在例如磁盘I/O等事件上运行的触发程序，这些程序在内核中的安全引擎中运行。 实际上，eBPF更像是运行JavaScript的v">
+<meta name="twitter:image" content="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-43-23.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Ubuntu18搭建ebpf运行环境 | Linux工坊</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Linux工坊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Linux工坊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Ubuntu18搭建ebpf运行环境
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-10-08 13:06:31" itemprop="dateCreated datePublished" datetime="2020-10-08T13:06:31+08:00">2020-10-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-07-08 13:53:23" itemprop="dateModified" datetime="2022-07-08T13:53:23+08:00">2022-07-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">1.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">1 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>eBPF之于Linux的作用与JavaScript对HTML的作用相同。 因此，JavaScript改变了静态HTML网站，使我们可以定义一些网页上的触发事件，例如用户的点击、鼠标滑动，这些js程序在浏览器的安全引擎中运行。 使用eBPF，而不是固定的内核，现在可以编写在例如磁盘I/O等事件上运行的触发程序，这些程序在内核中的安全引擎中运行。 实际上，eBPF更像是运行JavaScript的v8引擎，而不是JavaScript程序本身。 eBPF是Linux内核的一部分。<br>直接在eBPF中进行编程非常困难，与在v8字节码中进行编码相同。它们使用JavaScript编写代码，或者通常是JavaScript之上的框架（jQuery，Angular，React等）。 eBPF也是如此，人们将使用它并通过框架对其进行封装，主要的是框架是bcc和bpftrace。 它们不存在于内核代码库中，而是存在于github上名为iovisor的Linux Foundation项目中。</p>
+<p>本文不是介绍如何搭建bcc或者bpftrace的开发环境，而是介绍不借助框架的情况下，ebpf的开发环境如何进行搭建。使用的操作系统是Ubuntu 18，Linux内核版本为5.4.0.48。</p>
+<h1 id="下载Linux内核源代码"><a href="#下载Linux内核源代码" class="headerlink" title="下载Linux内核源代码"></a>下载Linux内核源代码</h1><p>在下载代码之前，建议先更新Ubuntu中的软件下载源，更新为国内源，下载速度会更加感人。<br>编辑下载源文件</p>
+<blockquote>
+<p>sudo vim /etc/apt/sources.list</p>
+</blockquote>
+<p>将阿里源放到文件中保存。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+
+<p>保存好以后，使用下面的命令，进行软件源更新。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line"></span><br><span class="line">sudo apt-get upgrade</span><br></pre></td></tr></table></figure>
+
+<p>接下来就查看缓存仓库中可以下载的源码</p>
+<blockquote>
+<p>sudo apt search linux-source</p>
+</blockquote>
+<p><img src="//szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-43-23.png" alt></p>
+<p>使用命令</p>
+<blockquote>
+<p>sudo apt install linux-source</p>
+</blockquote>
+<p>下载源列表中最新的源码压缩包。也可以指定版本进行下载。</p>
+<blockquote>
+<p>sudo apt install linux-source[-version]</p>
+</blockquote>
+<p>建议下载和自身内核版本一致的源代码。</p>
+<p>进入/usr/src  查看刚才下载的源码包。</p>
+<p><img src="//szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-13-47-54.png" alt></p>
+<p>将该压缩包解压。</p>
+<blockquote>
+<p> sudo tar -xjvf linux-source-5.4.0.tar.bz2</p>
+</blockquote>
+<h1 id="编译ebpf样例程序"><a href="#编译ebpf样例程序" class="headerlink" title="编译ebpf样例程序"></a>编译ebpf样例程序</h1><p>安装依赖</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install libncurses5-dev flex bison libelf-dev binutils-dev libssl-dev </span><br><span class="line"></span><br><span class="line">sudo <span class="built_in">cd</span> linux-source-5.4.0 进入内核源码目录</span><br><span class="line"></span><br><span class="line">sudo apt install clang llvm 安装clang和llvm编译器</span><br><span class="line"></span><br><span class="line">sudo make headers_instal  与本系统内核头文件进行关联</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>sudo make menuconfig 配置内核选项生成.config文件</p>
+</blockquote>
+<p>可视化配置界面，直接选择save。</p>
+<p><img src="//szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-00-04.png" alt></p>
+<p>生成.config文件，选择ok后，然后选择exit。</p>
+<p><img src="//szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-01-23.png" alt></p>
+<p>编译sampls/bpf目录下的样例文件。</p>
+<blockquote>
+<p>sudo make M=samples/bpf</p>
+</blockquote>
+<p>成功后就会生成.o文件。</p>
+<p><img src="//szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/2020-10-08-14-03-56.png" alt></p>
+<h1 id="根据样例程序自定义ebpf程序"><a href="#根据样例程序自定义ebpf程序" class="headerlink" title="根据样例程序自定义ebpf程序"></a>根据样例程序自定义ebpf程序</h1><p>ebpf程序包含两个文件，一个运行在内核态，通常用*_kern.c命名，一个运行在用户态，通常用 *_user.c命名。</p>
+<ul>
+<li><p>为运行在内核空间的示例源代码（kern.c），编译生成.o后缀的目标文件，以便加载到对应BPF提供的钩子中去</p>
+</li>
+<li><p>为运行在用户空间的示例源代码（user.c），编译生成可以在本机直接运行的可执行文件，以便用户可以直接运行测试</p>
+</li>
+</ul>
+<p>编写ebpf程序放到samples/bpf目录下。<br>内核态程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//mybpf_01_kern.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/bpf.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"bpf_helpers.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SEC(NAME) __attribute__((section(NAME), used))</span></span><br><span class="line"></span><br><span class="line">SEC(<span class="string">"tracepoint/syscalls/sys_enter_execve"</span>)</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bpf_prog</span><span class="params">(<span class="keyword">void</span> *ctx)</span></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> msg[] = <span class="string">"Hello world ebpf!\n"</span>;</span><br><span class="line">	bpf_trace_printk(msg, <span class="keyword">sizeof</span>(msg));</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> _license[] SEC(<span class="string">"license"</span>) = <span class="string">"GPL"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>用户态程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//mybpf_01_user.c </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"bpf_load.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(load_bpf_file(<span class="string">"mybpf_01_kern.o"</span>)!=<span class="number">0</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"The kernel didn't load BPF program\n"</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	read_trace_pipe();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改bpf目录下的Makefile文件。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># SPDX-License-Identifier: GPL-2.0</span></span><br><span class="line"></span><br><span class="line">BPF_SAMPLES_PATH ?= <span class="variable">$(<span class="built_in">abspath</span> <span class="variable">$(srctree)</span>/<span class="variable">$(src)</span>)</span></span><br><span class="line">TOOLS_PATH := <span class="variable">$(BPF_SAMPLES_PATH)</span>/../../tools</span><br><span class="line"></span><br><span class="line"><span class="comment"># List of programs to build</span></span><br><span class="line">hostprogs-y := test_lru_dist</span><br><span class="line">hostprogs-y += sock_example</span><br><span class="line">hostprogs-y += fds_example</span><br><span class="line">hostprogs-y += sockex1</span><br><span class="line">hostprogs-y += sockex2</span><br><span class="line">hostprogs-y += sockex3</span><br><span class="line">hostprogs-y += tracex1</span><br><span class="line">hostprogs-y += tracex2</span><br><span class="line">hostprogs-y += tracex3</span><br><span class="line">hostprogs-y += tracex4</span><br><span class="line">hostprogs-y += tracex5</span><br><span class="line">hostprogs-y += tracex6</span><br><span class="line">hostprogs-y += tracex7</span><br><span class="line">hostprogs-y += test_probe_write_user</span><br><span class="line">hostprogs-y += trace_output</span><br><span class="line">hostprogs-y += lathist</span><br><span class="line">hostprogs-y += offwaketime</span><br><span class="line">hostprogs-y += spintest</span><br><span class="line">hostprogs-y += map_perf_test</span><br><span class="line">hostprogs-y += test_overhead</span><br><span class="line">hostprogs-y += test_cgrp2_array_pin</span><br><span class="line">hostprogs-y += test_cgrp2_attach</span><br><span class="line">hostprogs-y += test_cgrp2_sock</span><br><span class="line">hostprogs-y += test_cgrp2_sock2</span><br><span class="line">hostprogs-y += xdp1</span><br><span class="line">hostprogs-y += xdp2</span><br><span class="line">hostprogs-y += xdp_router_ipv4</span><br><span class="line">hostprogs-y += test_current_task_under_cgroup</span><br><span class="line">hostprogs-y += trace_event</span><br><span class="line">hostprogs-y += sampleip</span><br><span class="line">hostprogs-y += tc_l2_redirect</span><br><span class="line">hostprogs-y += lwt_len_hist</span><br><span class="line">hostprogs-y += xdp_tx_iptunnel</span><br><span class="line">hostprogs-y += test_map_in_map</span><br><span class="line">hostprogs-y += per_socket_stats_example</span><br><span class="line">hostprogs-y += xdp_redirect</span><br><span class="line">hostprogs-y += xdp_redirect_map</span><br><span class="line">hostprogs-y += xdp_redirect_cpu</span><br><span class="line">hostprogs-y += xdp_monitor</span><br><span class="line">hostprogs-y += xdp_rxq_info</span><br><span class="line">hostprogs-y += syscall_tp</span><br><span class="line">hostprogs-y += cpustat</span><br><span class="line">hostprogs-y += xdp_adjust_tail</span><br><span class="line">hostprogs-y += xdpsock</span><br><span class="line">hostprogs-y += xdp_fwd</span><br><span class="line">hostprogs-y += task_fd_query</span><br><span class="line">hostprogs-y += xdp_sample_pkts</span><br><span class="line">hostprogs-y += ibumad</span><br><span class="line">hostprogs-y += hbm</span><br><span class="line"><span class="comment">#自定义</span></span><br><span class="line">hostprogs-y += mybpf_01_kern</span><br><span class="line"></span><br><span class="line"><span class="comment"># Libbpf dependencies</span></span><br><span class="line">LIBBPF = <span class="variable">$(TOOLS_PATH)</span>/lib/bpf/libbpf.a</span><br><span class="line"></span><br><span class="line">CGROUP_HELPERS := ../../tools/testing/selftests/bpf/cgroup_helpers.o</span><br><span class="line">TRACE_HELPERS := ../../tools/testing/selftests/bpf/trace_helpers.o</span><br><span class="line"></span><br><span class="line">fds_example-objs := fds_example.o</span><br><span class="line">sockex1-objs := sockex1_user.o</span><br><span class="line">sockex2-objs := sockex2_user.o</span><br><span class="line">sockex3-objs := bpf_load.o sockex3_user.o</span><br><span class="line">tracex1-objs := bpf_load.o tracex1_user.o</span><br><span class="line">tracex2-objs := bpf_load.o tracex2_user.o</span><br><span class="line">tracex3-objs := bpf_load.o tracex3_user.o</span><br><span class="line">tracex4-objs := bpf_load.o tracex4_user.o</span><br><span class="line">tracex5-objs := bpf_load.o tracex5_user.o</span><br><span class="line">tracex6-objs := bpf_load.o tracex6_user.o</span><br><span class="line">tracex7-objs := bpf_load.o tracex7_user.o      </span><br><span class="line"></span><br><span class="line">test_probe_write_user-objs := bpf_load.o test_probe_write_user_user.o</span><br><span class="line">trace_output-objs := bpf_load.o trace_output_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">lathist-objs := bpf_load.o lathist_user.o</span><br><span class="line">offwaketime-objs := bpf_load.o offwaketime_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">spintest-objs := bpf_load.o spintest_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">map_perf_test-objs := bpf_load.o map_perf_test_user.o</span><br><span class="line">test_overhead-objs := bpf_load.o test_overhead_user.o</span><br><span class="line">test_cgrp2_array_pin-objs := test_cgrp2_array_pin.o</span><br><span class="line">test_cgrp2_attach-objs := test_cgrp2_attach.o</span><br><span class="line">test_cgrp2_sock-objs := test_cgrp2_sock.o</span><br><span class="line">test_cgrp2_sock2-objs := bpf_load.o test_cgrp2_sock2.o</span><br><span class="line">xdp1-objs := xdp1_user.o</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># reuse xdp1 source intentionally</span></span><br><span class="line">xdp2-objs := xdp1_user.o</span><br><span class="line">xdp_router_ipv4-objs := xdp_router_ipv4_user.o</span><br><span class="line">test_current_task_under_cgroup-objs := bpf_load.o <span class="variable">$(CGROUP_HELPERS)</span> \</span><br><span class="line">				       test_current_task_under_cgroup_user.o</span><br><span class="line">trace_event-objs := bpf_load.o trace_event_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">sampleip-objs := bpf_load.o sampleip_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">tc_l2_redirect-objs := bpf_load.o tc_l2_redirect_user.o</span><br><span class="line">lwt_len_hist-objs := bpf_load.o lwt_len_hist_user.o</span><br><span class="line">xdp_tx_iptunnel-objs := xdp_tx_iptunnel_user.o</span><br><span class="line">test_map_in_map-objs := bpf_load.o test_map_in_map_user.o</span><br><span class="line">per_socket_stats_example-objs := cookie_uid_helper_example.o</span><br><span class="line">xdp_redirect-objs := xdp_redirect_user.o</span><br><span class="line">xdp_redirect_map-objs := xdp_redirect_map_user.o</span><br><span class="line">xdp_redirect_cpu-objs := bpf_load.o xdp_redirect_cpu_user.o</span><br><span class="line">xdp_monitor-objs := bpf_load.o xdp_monitor_user.o</span><br><span class="line">xdp_rxq_info-objs := xdp_rxq_info_user.o</span><br><span class="line">syscall_tp-objs := bpf_load.o syscall_tp_user.o</span><br><span class="line">cpustat-objs := bpf_load.o cpustat_user.o</span><br><span class="line">xdp_adjust_tail-objs := xdp_adjust_tail_user.o</span><br><span class="line">xdpsock-objs := xdpsock_user.o</span><br><span class="line">xdp_fwd-objs := xdp_fwd_user.o</span><br><span class="line">task_fd_query-objs := bpf_load.o task_fd_query_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">xdp_sample_pkts-objs := xdp_sample_pkts_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">ibumad-objs := bpf_load.o ibumad_user.o <span class="variable">$(TRACE_HELPERS)</span></span><br><span class="line">hbm-objs := bpf_load.o hbm.o <span class="variable">$(CGROUP_HELPERS)</span></span><br><span class="line"><span class="comment">#自定义</span></span><br><span class="line">mybpf_01-objs := bpf_load.o mybpf_01_user.o </span><br><span class="line"></span><br><span class="line"><span class="comment"># Tell kbuild to always build the programs</span></span><br><span class="line">always := $(hostprogs-y)</span><br><span class="line">always += sockex1_kern.o</span><br><span class="line">always += sockex2_kern.o</span><br><span class="line">always += sockex3_kern.o</span><br><span class="line">always += tracex1_kern.o</span><br><span class="line">always += tracex2_kern.o</span><br><span class="line">always += tracex3_kern.o</span><br><span class="line">always += tracex4_kern.o</span><br><span class="line">always += tracex5_kern.o</span><br><span class="line">always += tracex6_kern.o</span><br><span class="line">always += tracex7_kern.o</span><br><span class="line">always += sock_flags_kern.o</span><br><span class="line">always += test_probe_write_user_kern.o</span><br><span class="line">always += trace_output_kern.o</span><br><span class="line">always += tcbpf1_kern.o</span><br><span class="line">always += tc_l2_redirect_kern.o</span><br><span class="line">always += lathist_kern.o</span><br><span class="line">always += offwaketime_kern.o</span><br><span class="line">always += spintest_kern.o</span><br><span class="line">always += map_perf_test_kern.o</span><br><span class="line">always += test_overhead_tp_kern.o</span><br><span class="line">always += test_overhead_raw_tp_kern.o</span><br><span class="line">always += test_overhead_kprobe_kern.o</span><br><span class="line">always += parse_varlen.o parse_simple.o parse_ldabs.o</span><br><span class="line">always += test_cgrp2_tc_kern.o</span><br><span class="line">always += xdp1_kern.o</span><br><span class="line">always += xdp2_kern.o</span><br><span class="line">always += xdp_router_ipv4_kern.o</span><br><span class="line">always += test_current_task_under_cgroup_kern.o</span><br><span class="line">always += trace_event_kern.o</span><br><span class="line">always += sampleip_kern.o</span><br><span class="line">always += lwt_len_hist_kern.o</span><br><span class="line">always += xdp_tx_iptunnel_kern.o</span><br><span class="line">always += test_map_in_map_kern.o</span><br><span class="line">always += cookie_uid_helper_example.o</span><br><span class="line">always += tcp_synrto_kern.o</span><br><span class="line">always += tcp_rwnd_kern.o</span><br><span class="line">always += tcp_bufs_kern.o</span><br><span class="line">always += tcp_cong_kern.o</span><br><span class="line">always += tcp_iw_kern.o</span><br><span class="line">always += tcp_clamp_kern.o</span><br><span class="line">always += tcp_basertt_kern.o</span><br><span class="line">always += tcp_tos_reflect_kern.o</span><br><span class="line">always += tcp_dumpstats_kern.o</span><br><span class="line">always += xdp_redirect_kern.o</span><br><span class="line">always += xdp_redirect_map_kern.o</span><br><span class="line">always += xdp_redirect_cpu_kern.o</span><br><span class="line">always += xdp_monitor_kern.o</span><br><span class="line">always += xdp_rxq_info_kern.o</span><br><span class="line">always += xdp2skb_meta_kern.o</span><br><span class="line">always += syscall_tp_kern.o</span><br><span class="line">always += cpustat_kern.o</span><br><span class="line">always += xdp_adjust_tail_kern.o</span><br><span class="line">always += xdp_fwd_kern.o</span><br><span class="line">always += task_fd_query_kern.o</span><br><span class="line">always += xdp_sample_pkts_kern.o</span><br><span class="line">always += ibumad_kern.o</span><br><span class="line">always += hbm_out_kern.o</span><br><span class="line">always += hbm_edt_kern.o</span><br><span class="line"><span class="comment">#自定义</span></span><br><span class="line">always += mybpf_01_kern.o</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">KBUILD_HOSTCFLAGS += -I<span class="variable">$(objtree)</span>/usr/<span class="keyword">include</span></span><br><span class="line">KBUILD_HOSTCFLAGS += -I<span class="variable">$(srctree)</span>/tools/lib/bpf/</span><br><span class="line">KBUILD_HOSTCFLAGS += -I<span class="variable">$(srctree)</span>/tools/testing/selftests/bpf/</span><br><span class="line">KBUILD_HOSTCFLAGS += -I<span class="variable">$(srctree)</span>/tools/lib/ -I<span class="variable">$(srctree)</span>/tools/<span class="keyword">include</span></span><br><span class="line">KBUILD_HOSTCFLAGS += -I<span class="variable">$(srctree)</span>/tools/perf</span><br><span class="line">KBUILD_HOSTCFLAGS += -DHAVE_ATTR_TEST=0</span><br><span class="line"></span><br><span class="line">HOSTCFLAGS_bpf_load.o += -I<span class="variable">$(objtree)</span>/usr/<span class="keyword">include</span> -Wno-unused-variable</span><br><span class="line"></span><br><span class="line">KBUILD_HOSTLDLIBS		+= <span class="variable">$(LIBBPF)</span> -lelf</span><br><span class="line">HOSTLDLIBS_tracex4		+= -lrt</span><br><span class="line">HOSTLDLIBS_trace_output	+= -lrt</span><br><span class="line">HOSTLDLIBS_map_perf_test	+= -lrt</span><br><span class="line">HOSTLDLIBS_test_overhead	+= -lrt</span><br><span class="line">HOSTLDLIBS_xdpsock		+= -pthread</span><br><span class="line"></span><br><span class="line"><span class="comment"># Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:</span></span><br><span class="line"><span class="comment">#  make samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang</span></span><br><span class="line">LLC ?= llc</span><br><span class="line">CLANG ?= clang</span><br><span class="line">LLVM_OBJCOPY ?= llvm-objcopy</span><br><span class="line">BTF_PAHOLE ?= pahole</span><br><span class="line"></span><br><span class="line"><span class="comment"># Detect that we're cross compiling and use the cross compiler</span></span><br><span class="line"><span class="keyword">ifdef</span> CROSS_COMPILE</span><br><span class="line">HOSTCC = <span class="variable">$(CROSS_COMPILE)</span>gcc</span><br><span class="line">CLANG_ARCH_ARGS = -target <span class="variable">$(ARCH)</span></span><br><span class="line"><span class="keyword">endif</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Don't evaluate probes and warnings if we need to run make recursively</span></span><br><span class="line"><span class="keyword">ifneq</span> (<span class="variable">$(src)</span>,)</span><br><span class="line">HDR_PROBE := <span class="variable">$(<span class="built_in">shell</span> echo "\#include &lt;linux/types.h&gt;\n struct list_head &#123; int a; &#125;; int main()</span> &#123; return 0; &#125;<span class="string">" | \</span></span><br><span class="line"><span class="string">	<span class="variable">$(HOSTCC)</span> <span class="variable">$(KBUILD_HOSTCFLAGS)</span> -x c - -o /dev/null 2&gt;/dev/null &amp;&amp; \</span></span><br><span class="line"><span class="string">	echo okay)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">ifeq (<span class="variable">$(HDR_PROBE)</span>,)</span></span><br><span class="line"><span class="string">$(warning WARNING: Detected possible issues with include path.)</span></span><br><span class="line"><span class="string">$(warning WARNING: Please install kernel headers locally (make headers_install).)</span></span><br><span class="line"><span class="string">endif</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">BTF_LLC_PROBE := $(shell <span class="variable">$(LLC)</span> -march=bpf -mattr=help 2&gt;&amp;1 | grep dwarfris)</span></span><br><span class="line"><span class="string">BTF_PAHOLE_PROBE := $(shell <span class="variable">$(BTF_PAHOLE)</span> --help 2&gt;&amp;1 | grep BTF)</span></span><br><span class="line"><span class="string">BTF_OBJCOPY_PROBE := $(shell <span class="variable">$(LLVM_OBJCOPY)</span> --help 2&gt;&amp;1 | grep -i 'usage.*llvm')</span></span><br><span class="line"><span class="string">BTF_LLVM_PROBE := $(shell echo "</span>int main() &#123; return 0; &#125;<span class="string">" | \</span></span><br><span class="line"><span class="string">			  <span class="variable">$(CLANG)</span> -target bpf -O2 -g -c -x c - -o ./llvm_btf_verify.o; \</span></span><br><span class="line"><span class="string">			  readelf -S ./llvm_btf_verify.o | grep BTF; \</span></span><br><span class="line"><span class="string">			  /bin/rm -f ./llvm_btf_verify.o)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">BPF_EXTRA_CFLAGS += -fno-stack-protector</span></span><br><span class="line"><span class="string">ifneq (<span class="variable">$(BTF_LLVM_PROBE)</span>,)</span></span><br><span class="line"><span class="string">	EXTRA_CFLAGS += -g</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">ifneq ($(and <span class="variable">$(BTF_LLC_PROBE)</span>,<span class="variable">$(BTF_PAHOLE_PROBE)</span>,<span class="variable">$(BTF_OBJCOPY_PROBE)</span>),)</span></span><br><span class="line"><span class="string">	EXTRA_CFLAGS += -g</span></span><br><span class="line"><span class="string">	LLC_FLAGS += -mattr=dwarfris</span></span><br><span class="line"><span class="string">	DWARF2BTF = y</span></span><br><span class="line"><span class="string">endif</span></span><br><span class="line"><span class="string">endif</span></span><br><span class="line"><span class="string">endif</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># Trick to allow make to be run from this directory</span></span><br><span class="line"><span class="string">all:</span></span><br><span class="line"><span class="string">	<span class="variable">$(MAKE)</span> -C ../../ <span class="variable">$(CURDIR)</span>/ BPF_SAMPLES_PATH=<span class="variable">$(CURDIR)</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">clean:</span></span><br><span class="line"><span class="string">	<span class="variable">$(MAKE)</span> -C ../../ M=<span class="variable">$(CURDIR)</span> clean</span></span><br><span class="line"><span class="string">	@find <span class="variable">$(CURDIR)</span> -type f -name '*~' -delete</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"><span class="variable">$(LIBBPF)</span>: FORCE</span></span><br><span class="line"><span class="string"># Fix up variables inherited from Kbuild that tools/ build system won't like</span></span><br><span class="line"><span class="string">	<span class="variable">$(MAKE)</span> -C $(dir <span class="variable">$@</span>) RM='rm -rf' LDFLAGS= srctree=<span class="variable">$(BPF_SAMPLES_PATH)</span>/../../ O=</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"><span class="variable">$(obj)</span>/syscall_nrs.h:	<span class="variable">$(obj)</span>/syscall_nrs.s FORCE</span></span><br><span class="line"><span class="string">	$(call filechk,offsets,__SYSCALL_NRS_H__)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">targets += syscall_nrs.s</span></span><br><span class="line"><span class="string">clean-files += syscall_nrs.h</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">FORCE:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># Verify LLVM compiler tools are available and bpf target is supported by llc</span></span><br><span class="line"><span class="string">.PHONY: verify_cmds verify_target_bpf <span class="variable">$(CLANG)</span> <span class="variable">$(LLC)</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">verify_cmds: <span class="variable">$(CLANG)</span> <span class="variable">$(LLC)</span></span></span><br><span class="line"><span class="string">	@for TOOL in <span class="variable">$^</span> ; do \</span></span><br><span class="line"><span class="string">		if ! (which -- "</span>$$&#123;TOOL&#125;<span class="string">" &gt; /dev/null 2&gt;&amp;1); then \</span></span><br><span class="line"><span class="string">			echo "</span>*** ERROR: Cannot find LLVM tool $$&#123;TOOL&#125;<span class="string">" ;\</span></span><br><span class="line"><span class="string">			exit 1; \</span></span><br><span class="line"><span class="string">		else true; fi; \</span></span><br><span class="line"><span class="string">	done</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">verify_target_bpf: verify_cmds</span></span><br><span class="line"><span class="string">	@if ! ($&#123;LLC&#125; -march=bpf -mattr=help &gt; /dev/null 2&gt;&amp;1); then \</span></span><br><span class="line"><span class="string">		echo "</span>*** ERROR: LLVM ($&#123;LLC&#125;) does not support 'bpf' target<span class="string">" ;\</span></span><br><span class="line"><span class="string">		echo "</span>   NOTICE: LLVM version &gt;= 3.7.1 required<span class="string">" ;\</span></span><br><span class="line"><span class="string">		exit 2; \</span></span><br><span class="line"><span class="string">	else true; fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"><span class="variable">$(BPF_SAMPLES_PATH)</span>/*.c: verify_target_bpf <span class="variable">$(LIBBPF)</span></span></span><br><span class="line"><span class="string"><span class="variable">$(src)</span>/*.c: verify_target_bpf <span class="variable">$(LIBBPF)</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"><span class="variable">$(obj)</span>/tracex5_kern.o: <span class="variable">$(obj)</span>/syscall_nrs.h</span></span><br><span class="line"><span class="string"><span class="variable">$(obj)</span>/hbm_out_kern.o: <span class="variable">$(src)</span>/hbm.h <span class="variable">$(src)</span>/hbm_kern.h</span></span><br><span class="line"><span class="string"><span class="variable">$(obj)</span>/hbm.o: <span class="variable">$(src)</span>/hbm.h</span></span><br><span class="line"><span class="string"><span class="variable">$(obj)</span>/hbm_edt_kern.o: <span class="variable">$(src)</span>/hbm.h <span class="variable">$(src)</span>/hbm_kern.h</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># asm/sysreg.h - inline assembly used by it is incompatible with llvm.</span></span><br><span class="line"><span class="string"># But, there is no easy way to fix it, so just exclude it since it is</span></span><br><span class="line"><span class="string"># useless for BPF samples.</span></span><br><span class="line"><span class="string"><span class="variable">$(obj)</span>/%.o: <span class="variable">$(src)</span>/%.c</span></span><br><span class="line"><span class="string">	@echo "</span>  CLANG-bpf <span class="string">" <span class="variable">$@</span></span></span><br><span class="line"><span class="string">	<span class="variable">$(Q)</span><span class="variable">$(CLANG)</span> <span class="variable">$(NOSTDINC_FLAGS)</span> <span class="variable">$(LINUXINCLUDE)</span> <span class="variable">$(EXTRA_CFLAGS)</span> -I<span class="variable">$(obj)</span> \</span></span><br><span class="line"><span class="string">		-I<span class="variable">$(srctree)</span>/tools/testing/selftests/bpf/ \</span></span><br><span class="line"><span class="string">		-D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \</span></span><br><span class="line"><span class="string">		-D__TARGET_ARCH_<span class="variable">$(SRCARCH)</span> -Wno-compare-distinct-pointer-types \</span></span><br><span class="line"><span class="string">		-Wno-gnu-variable-sized-type-not-at-end \</span></span><br><span class="line"><span class="string">		-Wno-address-of-packed-member -Wno-tautological-compare \</span></span><br><span class="line"><span class="string">		-Wno-unknown-warning-option <span class="variable">$(CLANG_ARCH_ARGS)</span> \</span></span><br><span class="line"><span class="string">		-I<span class="variable">$(srctree)</span>/samples/bpf/ -include asm_goto_workaround.h \</span></span><br><span class="line"><span class="string">		-O2 -emit-llvm -c <span class="variable">$&lt;</span> -o -| <span class="variable">$(LLC)</span> -march=bpf <span class="variable">$(LLC_FLAGS)</span> -filetype=obj -o <span class="variable">$@</span></span></span><br><span class="line"><span class="string">ifeq (<span class="variable">$(DWARF2BTF)</span>,y)</span></span><br><span class="line"><span class="string">	<span class="variable">$(BTF_PAHOLE)</span> -J <span class="variable">$@</span></span></span><br><span class="line"><span class="string">endif</span></span><br></pre></td></tr></table></figure>
+
+<p>Makefile文件只需修改三处，在上面文件中用“自定义”标识。需要注意的是 hostprogs-y += mybpf_01_kern，等号后面的文件名称，除去.c后缀后，务必写完整。否则会有一个gcc错误“no input file”。</p>
+
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    Ubuntu18搭建ebpf运行环境
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2020年10月08日 - 13:06:31
+  </li>
+    <strong>最后更新：</strong>
+    2022年07月08日 - 13:53:23
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/" title="Ubuntu18搭建ebpf运行环境">https://szp2016.github.io/Linux/Ubuntu18搭建ebpf运行环境/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/ebpf/" rel="tag"><i class="fa fa-tag"></i> ebpf</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Linux/Linux进程调度算法/" rel="next" title="Linux 2.6进程O(1)调度算法">
+                <i class="fa fa-chevron-left"></i> Linux 2.6进程O(1)调度算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Linux/内存管理笔记/" rel="prev" title="内存管理笔记">
+                内存管理笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#下载Linux内核源代码"><span class="nav-number">2.</span> <span class="nav-text">下载Linux内核源代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译ebpf样例程序"><span class="nav-number">3.</span> <span class="nav-text">编译ebpf样例程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#根据样例程序自定义ebpf程序"><span class="nav-number">4.</span> <span class="nav-text">根据样例程序自定义ebpf程序</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'Linux/Ubuntu18搭建ebpf运行环境/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

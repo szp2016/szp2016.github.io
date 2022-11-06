@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta name="google-site-verification" content="f0Q5sh5uWL7FWAvljeOOD2iT7Fsrc8AFah-bLOv8I7w">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+  
+  
+    
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css">
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/favicon.png?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="从Linux 2.6.32开始，Linux内核脏页回写通过bdi_writeback机制实现，bdi的全拼是backing device info（后端存储设备信息，如ssd、hdd）。用户态调用write系统调用写入数据后，文件系统只在页缓存中写入数据便返回了write系统调用，并没有分配实际的物理磁盘块，ext4称为延迟分配技术（delay allocation）。本文将介绍内核是在何时如何将">
+<meta name="keywords" content="Linux内核，Java，物联网">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux脏页回写机制">
+<meta property="og:url" content="https://szp2016.github.io/uncategorized/linux脏页回写机制/index.html">
+<meta property="og:site_name" content="Linux工坊">
+<meta property="og:description" content="从Linux 2.6.32开始，Linux内核脏页回写通过bdi_writeback机制实现，bdi的全拼是backing device info（后端存储设备信息，如ssd、hdd）。用户态调用write系统调用写入数据后，文件系统只在页缓存中写入数据便返回了write系统调用，并没有分配实际的物理磁盘块，ext4称为延迟分配技术（delay allocation）。本文将介绍内核是在何时如何将">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://szp2016.github.io/image/lora.jpg">
+<meta property="og:updated_time" content="2022-07-08T04:26:27.734Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux脏页回写机制">
+<meta name="twitter:description" content="从Linux 2.6.32开始，Linux内核脏页回写通过bdi_writeback机制实现，bdi的全拼是backing device info（后端存储设备信息，如ssd、hdd）。用户态调用write系统调用写入数据后，文件系统只在页缓存中写入数据便返回了write系统调用，并没有分配实际的物理磁盘块，ext4称为延迟分配技术（delay allocation）。本文将介绍内核是在何时如何将">
+<meta name="twitter:image" content="https://szp2016.github.io/image/lora.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://szp2016.github.io/uncategorized/linux脏页回写机制/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>linux脏页回写机制 | Linux工坊</title>
+  
+
+
+
+
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?022632d919d25a691cdd07315187b392";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Linux工坊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <h1 class="site-subtitle" itemprop="description">szp2016.github.io</h1>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">36</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时光轴<span class="badge">58</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-books">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/books/" rel="section"><i class="menu-item-icon fa fa-fw fa-book"></i> <br>书屋</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-assets">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/assets/" rel="section"><i class="menu-item-icon fa fa-fw fa-ambulance"></i> <br>救护车</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/szp2016" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/linux脏页回写机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="你是我的阳光">
+      <meta itemprop="description" content="有鉴于往事，以资于治道。">
+      <meta itemprop="image" content="/images/hard.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Linux工坊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">linux脏页回写机制
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-03-25 21:01:42" itemprop="dateCreated datePublished" datetime="2022-03-25T21:01:42+08:00">2022-03-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-07-08 12:26:27" itemprop="dateModified" datetime="2022-07-08T12:26:27+08:00">2022-07-08</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             热度： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">2.4k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">2 分钟</span>
+              
+            </div>
+          
+
+           
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+        <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+          
+          
+            <div class="post-gallery-row">
+              <img src="/image/lora.jpg" itemprop="contentUrl">
+            
+          
+
+          
+          </div>
+        </div>
+      
+
+      
+        <p>从Linux 2.6.32开始，Linux内核脏页回写通过bdi_writeback机制实现，bdi的全拼是backing device info（后端存储设备信息，如ssd、hdd）。用户态调用write系统调用写入数据后，文件系统只在页缓存中写入数据便返回了write系统调用，并没有分配实际的物理磁盘块，ext4称为延迟分配技术（delay allocation）。本文将介绍内核是在何时如何将写入的数据回写到磁盘。</p>
+<h2 id="核心数据结构初始化"><a href="#核心数据结构初始化" class="headerlink" title="核心数据结构初始化"></a>核心数据结构初始化</h2><p>回写机制借助了Linux中工作队列来完成，在内核启动的时候，系统会使用alloc_workqueue函数申请一个用于回写的工作队列。具体实现在函数default_bdi_init中。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /mm/backing-dev.c</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> __<span class="function">init <span class="title">default_bdi_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line">	bdi_wq = alloc_workqueue(<span class="string">"writeback"</span>, WQ_MEM_RECLAIM | WQ_FREEZABLE |</span><br><span class="line">					      WQ_UNBOUND | WQ_SYSFS, <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (!bdi_wq)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line">	err = bdi_init(&amp;noop_backing_dev_info);</span><br><span class="line">	<span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数调用栈如下图。<br><img src="https://img-blog.csdnimg.cn/e0a4bf734fc845328f644f6802dff935.png?x-oss-process=,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_19,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p>bdi_init()函数初始化bdi (struct backing_dev_info)，该结构体包含了块设备信息，代表一个设备。</p>
+<ul>
+<li>struct backing_dev_info：描述一个块设备。</li>
+<li>struct bdi_writeback：管理一个块设备所有的回写任务。</li>
+<li>struct wb_writeback_work ：描述需要回写的任务。</li>
+</ul>
+<p>还有管理回写任务的结构体bdi_writeback，描述任务的结构体wb_writeback_work，其三者的关系如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/5d761d69c6b94e7eba655b6a31385b55.png?x-oss-process=,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p>backing_dev_info中维护了wb_list链表，管理bdi_writeback，同时每个bdi_writeback中维护了dwork和work_list，前者代表处理任务的函数，后者则是任务列表。</p>
+<p>在bdi_init中对bdi进行初始化后，会继续调用倒wb_init()，该函数对bdi中的wb（struct bdi_writeback）进行初始化。<br><img src="https://img-blog.csdnimg.cn/59c0f4cc3a044e81b72c5368f6ceaff7.png?x-oss-process=,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /fs/fs-writeback.c</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bdi_writeback</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">backing_dev_info</span> *<span class="title">bdi</span>;</span>	<span class="comment">/* our parent bdi */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> state;		<span class="comment">/* Always use atomic bitops on this */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> last_old_flush;	<span class="comment">/* 上次刷写数据的时间，用于周期性回写数据 */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">b_dirty</span>;</span>	<span class="comment">/* 暂存dirty inode，mark_dirty_inode会加入到这个list */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">b_io</span>;</span>		<span class="comment">/* 用于暂存即将要被writeback处理的inode */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">b_more_io</span>;</span>	<span class="comment">/* parked for more writeback */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">b_dirty_time</span>;</span>	<span class="comment">/* 暂存在cache过期的inode */</span></span><br><span class="line">	<span class="keyword">spinlock_t</span> list_lock;		<span class="comment">/* protects the b_* lists */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">percpu_counter</span> <span class="title">stat</span>[<span class="title">NR_WB_STAT_ITEMS</span>];</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bdi_writeback_congested</span> *<span class="title">congested</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> bw_time_stamp;	<span class="comment">/* last time write bw is updated */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> dirtied_stamp;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> written_stamp;	<span class="comment">/* pages written at bw_time_stamp */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> write_bandwidth;	<span class="comment">/* 单次wb任务的带宽 */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> avg_write_bandwidth; <span class="comment">/* further smoothed write bw, &gt; 0 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> dirty_ratelimit;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> balanced_dirty_ratelimit;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">fprop_local_percpu</span> <span class="title">completions</span>;</span></span><br><span class="line">	<span class="keyword">int</span> dirty_exceeded;</span><br><span class="line">	<span class="keyword">enum</span> wb_reason start_all_reason; <span class="comment">/* 回写任务的触发原因 ，常见的原因有周期回写、脏页超出阈值回写，和用户主动回写*/</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">spinlock_t</span> work_lock;		<span class="comment">/* protects work_list &amp; dwork scheduling */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">work_list</span>;</span> <span class="comment">/* 保存wb_writeback_work结构的list，用于处理这次回写任务下面所有的任务 */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">delayed_work</span> <span class="title">dwork</span>;</span>	<span class="comment">/* work item used for writeback */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> dirty_sleep;	<span class="comment">/* last wait */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">bdi_node</span>;</span>	<span class="comment">/* anchored at bdi-&gt;wb_list */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//描述一个回写任务</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">wb_writeback_work</span> &#123;</span></span><br><span class="line">	<span class="keyword">long</span> nr_pages;<span class="comment">//待回写页面数量；</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">super_block</span> *<span class="title">sb</span>;</span><span class="comment">// writeback 任务所属的 super_block；</span></span><br><span class="line">	<span class="keyword">enum</span> writeback_sync_modes sync_mode;<span class="comment">/*指定同步模式，WB_SYNC_ALL 表示当遇到锁住的 inode 时，它必须</span></span><br><span class="line"><span class="comment"> 等待该 inode 解锁，而不能跳过。WB_SYNC_NONE 表示跳过被锁住的 inode；*/</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> tagged_writepages:<span class="number">1</span>;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> for_kupdate:<span class="number">1</span>;<span class="comment">//若值为 1，则表示回写原因是周期性的回写；否则值为 0；</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> range_cyclic:<span class="number">1</span>;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> for_background:<span class="number">1</span>;<span class="comment">//若值为 1，表示后台回写；否则值为 0；</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> for_sync:<span class="number">1</span>;	<span class="comment">/* sync(2) WB_SYNC_ALL writeback */</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> auto_free:<span class="number">1</span>;	<span class="comment">/* free on completion */</span></span><br><span class="line">	<span class="keyword">enum</span> wb_reason reason;		<span class="comment">/* why was writeback initiated? */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">list</span>;</span>		<span class="comment">/* pending work list */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">wb_completion</span> *<span class="title">done</span>;</span>	<span class="comment">/* set if the caller waits */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>wb_init在初始化过程中，给wb-&gt;dwork字段赋值了函数wb_workfn，后面触发回写任务时，就会通过该函数进行执行回写。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">wb_init</span><span class="params">(struct bdi_writeback *wb, struct backing_dev_info *bdi,</span></span></span><br><span class="line"><span class="function"><span class="params">		   <span class="keyword">int</span> blkcg_id, <span class="keyword">gfp_t</span> gfp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	INIT_LIST_HEAD(&amp;wb-&gt;b_dirty);</span><br><span class="line">  ...</span><br><span class="line">	wb-&gt;bw_time_stamp = jiffies;</span><br><span class="line">  ...</span><br><span class="line">	INIT_DELAYED_WORK(&amp;wb-&gt;dwork, wb_workfn);</span><br><span class="line">	wb-&gt;dirty_sleep = jiffies;</span><br><span class="line">  ...</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此bdi_writeback机制初始化完成。</p>
+<h2 id="触发回写任务的时机"><a href="#触发回写任务的时机" class="headerlink" title="触发回写任务的时机"></a>触发回写任务的时机</h2><p>由于写入的数据都缓存在内存中，猜想当空闲内存紧张的时候，内核会执行回写任务。于是我们需要减少系统可用内存，使用如下命令在内存中创建文件系统然后往里面写入文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir tmp</span><br><span class="line">mount -t ramfs ramfs tmp/</span><br></pre></td></tr></table></figure>
+
+<p>使用 dd 命令在该目录下创建文件。我们创建了一个79M的文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd <span class="keyword">if</span>=/dev/zero of=tmp/file bs=1M count=79</span><br></pre></td></tr></table></figure>
+
+<p>完成上述操作以后系统还剩余2M内存，内核并没有立即触发回写，于是使用write系统调用继续向磁盘写入数据。</p>
+<p><img src="https://img-blog.csdnimg.cn/66fa05344f3e4dfe9cb94482cc588a13.png?x-oss-process=,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p>很快就触发了内核函数wakeup_flusher_threads（事先添加了断点），函数调用栈如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/0dbcc509696344dd93f2c27556064738.png?x-oss-process=i,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p>从内核函数调用栈来看是触发了kswapd内核线程的非活跃LRU链表回收。shrink_inactive_list函数扫描不活跃页面链表并且回收页面，调用了wakeup_flusher_threads函数进行回写操作。</p>
+<p><img src="https://img-blog.csdnimg.cn/a4797a6fdae54e9389f6736dbcb7b1f3.png?x-oss-process=,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p>函数代码如下，该函数遍历所有bdi设备下的writeback，并通过函数wb_start_writeback执行回写操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* fs/fs-writeback.c</span></span><br><span class="line"><span class="comment"> * Start writeback of `nr_pages' pages.  If `nr_pages' is zero, write back</span></span><br><span class="line"><span class="comment"> * the whole world.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">wakeup_flusher_threads</span><span class="params">(<span class="keyword">long</span> nr_pages, <span class="keyword">enum</span> wb_reason reason)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">backing_dev_info</span> *<span class="title">bdi</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * If we are expecting writeback progress we must submit plugged IO.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (blk_needs_flush_plug(current))</span><br><span class="line">		blk_schedule_flush_plug(current);</span><br><span class="line">	<span class="keyword">if</span> (!nr_pages)</span><br><span class="line">		nr_pages = get_nr_dirty_pages();</span><br><span class="line">	rcu_read_lock();</span><br><span class="line">  <span class="comment">//遍历当前的bdi_list所有的bdi设备</span></span><br><span class="line">	list_for_each_entry_rcu(bdi, &amp;bdi_list, bdi_list) &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">bdi_writeback</span> *<span class="title">wb</span>;</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (!bdi_has_dirty_io(bdi))</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">      <span class="comment">//遍历当前bdi设备中wb_list存储的所有wb</span></span><br><span class="line">		list_for_each_entry_rcu(wb, &amp;bdi-&gt;wb_list, bdi_node)</span><br><span class="line">			wb_start_writeback(wb, wb_split_bdi_pages(wb, nr_pages),</span><br><span class="line">					   <span class="literal">false</span>, reason);</span><br><span class="line">	&#125;</span><br><span class="line">	rcu_read_unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>GDB查看传入wakeup_flusher_threads的参数值分别是nr_pages = 0和reason = WB_REASON_VMSCAN。</p>
+<p><img src="https://img-blog.csdnimg.cn/d7fbcd913d45437e95ccf45955f4b823.png" alt="在这里插入图片描述"></p>
+<p>其中nr_pages等于0表示尽可能回写所有的脏页reason表示本次回写触发的原因。除了WB_REASON_VMSCAN，还定义了如下原因，如周期回写：WB_REASON_PERIODIC，后台回写：WB_REASON_BACKGROUND。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * why some writeback work was initiated</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">enum</span> wb_reason &#123;</span><br><span class="line">	WB_REASON_BACKGROUND,<span class="comment">//脏页达到阈值，后台回写</span></span><br><span class="line">	WB_REASON_VMSCAN,<span class="comment">//内存压力</span></span><br><span class="line">	WB_REASON_SYNC,<span class="comment">//sync系统调用回写</span></span><br><span class="line">	WB_REASON_PERIODIC,<span class="comment">//周期回写</span></span><br><span class="line">	WB_REASON_LAPTOP_TIMER,<span class="comment">//Laptop模式回写</span></span><br><span class="line">	WB_REASON_FREE_MORE_MEM,</span><br><span class="line">	WB_REASON_FS_FREE_SPACE,</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * There is no bdi forker thread any more and works are done</span></span><br><span class="line"><span class="comment">	 * by emergency worker, however, this is TPs userland visible</span></span><br><span class="line"><span class="comment">	 * and we'll be exposing exactly the same information,</span></span><br><span class="line"><span class="comment">	 * so it has a mismatch name.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	WB_REASON_FORKER_THREAD,</span><br><span class="line"></span><br><span class="line">	WB_REASON_MAX,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>我们继续分析wb_start_writeback回写函数。该函数创建并初始化了一个wb_writeback_work来描述本次回写任务，最后调用wb_queue_work。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">wb_start_writeback</span><span class="params">(struct bdi_writeback *wb, <span class="keyword">long</span> nr_pages,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">bool</span> range_cyclic, <span class="keyword">enum</span> wb_reason reason)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">wb_writeback_work</span> *<span class="title">work</span>;</span></span><br><span class="line">	<span class="keyword">if</span> (!wb_has_dirty_io(wb))</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	work = kzalloc(<span class="keyword">sizeof</span>(*work),</span><br><span class="line">	work-&gt;sync_mode	= WB_SYNC_NONE;</span><br><span class="line">	work-&gt;nr_pages	= nr_pages;</span><br><span class="line">	work-&gt;range_cyclic = range_cyclic;</span><br><span class="line">	work-&gt;reason	= reason;</span><br><span class="line">	work-&gt;auto_free	= <span class="number">1</span>;</span><br><span class="line">	wb_queue_work(wb, work);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>wb_queue_work调用mod_delayed_work将该任务挂入工作队列（workqueue），在等待delay时间后由工作队列的工作线程（worker）执行初始化时注册的任务管理函数wb-&gt;dwork。Linux workqueue如何处理work的过程可以参考文章，本文跳过该过程，直接到回写任务的处理函数wb_workfn继续分析：<br><a href="http://www.wowotech.net/irq_subsystem/queue_and_handle_work.html" target="_blank" rel="noopener">http://www.wowotech.net/irq_subsystem/queue_and_handle_work.html</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">wb_queue_work</span><span class="params">(struct bdi_writeback *wb,</span></span></span><br><span class="line"><span class="function"><span class="params">			  struct wb_writeback_work *work)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	trace_writeback_queue(wb, work);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (work-&gt;done)</span><br><span class="line">		atomic_inc(&amp;work-&gt;done-&gt;cnt);</span><br><span class="line"></span><br><span class="line">	spin_lock_bh(&amp;wb-&gt;work_lock);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (test_bit(WB_registered, &amp;wb-&gt;state)) &#123;</span><br><span class="line">		list_add_tail(&amp;work-&gt;<span class="built_in">list</span>, &amp;wb-&gt;work_list);</span><br><span class="line">		mod_delayed_work(bdi_wq, &amp;wb-&gt;dwork, <span class="number">0</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span></span><br><span class="line">		finish_writeback_work(wb, work);</span><br><span class="line"></span><br><span class="line">	spin_unlock_bh(&amp;wb-&gt;work_lock);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">mod_delayed_work_on</span><span class="params">(<span class="keyword">int</span> cpu, struct workqueue_struct *wq,</span></span></span><br><span class="line"><span class="function"><span class="params">			 struct delayed_work *dwork, <span class="keyword">unsigned</span> <span class="keyword">long</span> delay)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> flags;</span><br><span class="line">	<span class="keyword">int</span> ret;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">do</span> &#123;<span class="comment">//判断当前work的状态,找到一个pending的work</span></span><br><span class="line">		ret = try_to_grab_pending(&amp;dwork-&gt;work, <span class="literal">true</span>, &amp;flags);</span><br><span class="line">	&#125; <span class="keyword">while</span> (unlikely(ret == -EAGAIN));</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (likely(ret &gt;= <span class="number">0</span>)) &#123;</span><br><span class="line">		<span class="comment">//将work加入到工作队列中，在delay时间周期后去执行</span></span><br><span class="line">		__queue_delayed_work(cpu, wq, dwork, delay);</span><br><span class="line">		local_irq_restore(flags);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* -ENOENT from try_to_grab_pending() becomes %true */</span></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于触发内核回写的函数调用总结如下图：<br><img src="https://img-blog.csdnimg.cn/e05dae44cf13472d8d8e1ef754f4c4ca.png?x-oss-process=k,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<h2 id="回写任务的执行"><a href="#回写任务的执行" class="headerlink" title="回写任务的执行"></a>回写任务的执行</h2><p>回写的执行在文件系统层的函数调用如下所示。<br><img src="https://img-blog.csdnimg.cn/0b7c295e1e794202be0220e50487dd7b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<p>函数wb_workfn正常路径为遍历work_list，执行wb_do_writeback函数。如果没有足够的worker则执行writeback_inodes_wb函数回写1024个脏页。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">wb_workfn</span><span class="params">(struct work_struct *work)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bdi_writeback</span> *<span class="title">wb</span> = <span class="title">container_of</span>(<span class="title">to_delayed_work</span>(<span class="title">work</span>),</span></span><br><span class="line"><span class="class">						<span class="title">struct</span> <span class="title">bdi_writeback</span>, <span class="title">dwork</span>);</span></span><br><span class="line">	<span class="keyword">long</span> pages_written;</span><br><span class="line"></span><br><span class="line">	set_worker_desc(<span class="string">"flush-%s"</span>, dev_name(wb-&gt;bdi-&gt;dev));</span><br><span class="line">	current-&gt;flags |= PF_SWAPWRITE;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (likely(!current_is_workqueue_rescuer() ||</span><br><span class="line">		   !test_bit(WB_registered, &amp;wb-&gt;state))) &#123;</span><br><span class="line">		<span class="keyword">do</span> &#123;</span><br><span class="line">			pages_written = wb_do_writeback(wb);</span><br><span class="line">			trace_writeback_pages_written(pages_written);</span><br><span class="line">		&#125; <span class="keyword">while</span> (!list_empty(&amp;wb-&gt;work_list)); <span class="comment">// 正常情况下遍历work_list，执行wb_do_writeback</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		pages_written = writeback_inodes_wb(wb, <span class="number">1024</span>,</span><br><span class="line">						    WB_REASON_FORKER_THREAD); <span class="comment">// 没有足够的worker去处理writeback，紧急情况下回写。</span></span><br><span class="line">		trace_writeback_pages_written(pages_written);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!list_empty(&amp;wb-&gt;work_list))</span><br><span class="line">		wb_wakeup(wb); <span class="comment">// 如果没有处理完，再唤醒处理一次</span></span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (wb_has_dirty_io(wb) &amp;&amp; dirty_writeback_interval)</span><br><span class="line">		wb_wakeup_delayed(wb); <span class="comment">// 如果还有dirty inode在其他list，延迟500再执行一次</span></span><br><span class="line"></span><br><span class="line">	current-&gt;flags &amp;= ~PF_SWAPWRITE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>wb_do_writeback函数在遍历wb并调用wb_writeback回写结束后会进行定时回写和脏页是否超过阈值的回写检查。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Retrieve work items and do the writeback they describe</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">long</span> <span class="title">wb_do_writeback</span><span class="params">(struct bdi_writeback *wb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">wb_writeback_work</span> *<span class="title">work</span>;</span></span><br><span class="line">	<span class="keyword">long</span> wrote = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">//检查running标识，可以直接执行</span></span><br><span class="line">	set_bit(WB_writeback_running, &amp;wb-&gt;state);</span><br><span class="line">	<span class="keyword">while</span> ((work = get_next_work_item(wb)) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">		trace_writeback_exec(wb, work);</span><br><span class="line">		wrote += wb_writeback(wb, work);</span><br><span class="line">		finish_writeback_work(wb, work);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Check for periodic writeback, kupdated() style</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="comment">//定期回写检查</span></span><br><span class="line">	wrote += wb_check_old_data_flush(wb);</span><br><span class="line">	wrote += wb_check_background_flush(wb);<span class="comment">//脏页超过阈值回写检查</span></span><br><span class="line">	clear_bit(WB_writeback_running, &amp;wb-&gt;state);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> wrote;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>wb_writeback根据是否包含superblock，分别调用writeback_sb_inodes和__writeback_inodes_wb。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">long</span> <span class="title">wb_writeback</span><span class="params">(struct bdi_writeback *wb,</span></span></span><br><span class="line"><span class="function"><span class="params">			 struct wb_writeback_work *work)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ...</span><br><span class="line">	blk_start_plug(&amp;plug);</span><br><span class="line">	<span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    ...</span><br><span class="line">		<span class="keyword">if</span> (work-&gt;sb)</span><br><span class="line">			progress = writeback_sb_inodes(work-&gt;sb, wb, work);</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			progress = __writeback_inodes_wb(wb, work);</span><br><span class="line">    ...</span><br><span class="line">	&#125;</span><br><span class="line">	spin_unlock(&amp;wb-&gt;list_lock);</span><br><span class="line">	blk_finish_plug(&amp;plug);</span><br><span class="line">	<span class="keyword">return</span> nr_pages - work-&gt;nr_pages;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>writeback_sb_inodes调用__writeback_single_inode。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">long</span> <span class="title">writeback_sb_inodes</span><span class="params">(struct super_block *sb,</span></span></span><br><span class="line"><span class="function"><span class="params">				struct bdi_writeback *wb,</span></span></span><br><span class="line"><span class="function"><span class="params">				struct wb_writeback_work *work)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (!list_empty(&amp;wb-&gt;b_io)) &#123; <span class="comment">// 遍历wb-&gt;b_io里面的所有inode</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">inode</span> = <span class="title">wb_inode</span>(<span class="title">wb</span>-&gt;<span class="title">b_io</span>.<span class="title">prev</span>);</span> <span class="comment">// 从list中取出一个inode</span></span><br><span class="line">		...</span><br><span class="line">    <span class="keyword">if</span> ((inode-&gt;i_state &amp; I_SYNC) &amp;&amp; wbc.sync_mode != WB_SYNC_ALL) &#123; </span><br><span class="line">			spin_unlock(&amp;inode-&gt;i_lock);</span><br><span class="line">			requeue_io(inode, wb); <span class="comment">// 将这个inode迁移到wb-&gt;b_more_io</span></span><br><span class="line">			trace_writeback_sb_inodes_requeue(inode);</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		spin_unlock(&amp;wb-&gt;list_lock);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (inode-&gt;i_state &amp; I_SYNC) &#123; <span class="comment">/* 对于SYNC模式的inode和SYNC的wb类型 */</span></span><br><span class="line">			<span class="comment">/* Wait for I_SYNC. This function drops i_lock... */</span></span><br><span class="line">			inode_sleep_on_writeback(inode);</span><br><span class="line">			<span class="comment">/* Inode may be gone, start again */</span></span><br><span class="line">			spin_lock(&amp;wb-&gt;list_lock);</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		inode-&gt;i_state |= I_SYNC;</span><br><span class="line">		wbc_attach_and_unlock_inode(&amp;wbc, inode); <span class="comment">// 对于inode进行解锁</span></span><br><span class="line"></span><br><span class="line">		write_chunk = writeback_chunk_size(wb, work); <span class="comment">// 计算需要写多少数据</span></span><br><span class="line">		wbc.nr_to_write = write_chunk; <span class="comment">// 一般是4096</span></span><br><span class="line">		wbc.pages_skipped = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">		__writeback_single_inode(inode, &amp;wbc); <span class="comment">// 将inode的数据写入磁盘</span></span><br><span class="line"></span><br><span class="line">		wbc_detach_inode(&amp;wbc);</span><br><span class="line">		work-&gt;nr_pages -= write_chunk - wbc.nr_to_write; <span class="comment">// 记录写了多少页</span></span><br><span class="line">		wrote += write_chunk - wbc.nr_to_write;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (need_resched()) &#123;</span><br><span class="line">			blk_flush_plug(current);</span><br><span class="line">			cond_resched();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		tmp_wb = inode_to_wb_and_lock_list(inode); <span class="comment">// 给wb加锁</span></span><br><span class="line">    ...</span><br><span class="line">	<span class="keyword">return</span> wrote;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>__writeback_single_inode调用do_writepages。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">__writeback_single_inode(struct inode *inode, struct writeback_control *wbc)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span> = <span class="title">inode</span>-&gt;<span class="title">i_mapping</span>;</span></span><br><span class="line">	<span class="keyword">long</span> nr_to_write = wbc-&gt;nr_to_write;</span><br><span class="line">	<span class="keyword">unsigned</span> dirty;</span><br><span class="line">	<span class="keyword">int</span> ret;</span><br><span class="line"></span><br><span class="line">	WARN_ON(!(inode-&gt;i_state &amp; I_SYNC));</span><br><span class="line"></span><br><span class="line">	trace_writeback_single_inode_start(inode, wbc, nr_to_write);</span><br><span class="line"></span><br><span class="line">	ret = do_writepages(mapping, wbc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>do_writepages就出现了我们熟悉的页缓存函数操作集struct address_space_operations *a_ops。其中writepages函数在ext4中的实现为ext4_writepages。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">do_writepages</span><span class="params">(struct address_space *mapping, struct writeback_control *wbc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> ret;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (wbc-&gt;nr_to_write &lt;= <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (mapping-&gt;a_ops-&gt;writepages)</span><br><span class="line">			ret = mapping-&gt;a_ops-&gt;writepages(mapping, wbc);</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			ret = generic_writepages(mapping, wbc);</span><br><span class="line">		<span class="keyword">if</span> ((ret != -ENOMEM) || (wbc-&gt;sync_mode != WB_SYNC_ALL))</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		cond_resched();</span><br><span class="line">		congestion_wait(BLK_RW_ASYNC, HZ/<span class="number">50</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//ext4延时分配</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">address_space_operations</span> <span class="title">ext4_da_aops</span> = &#123;</span></span><br><span class="line">	.readpage		= ext4_readpage,</span><br><span class="line">	.readahead		= ext4_readahead,</span><br><span class="line">	.writepage		= ext4_writepage,</span><br><span class="line">	.writepages		= ext4_writepages,</span><br><span class="line">	.write_begin		= ext4_da_write_begin,</span><br><span class="line">	.write_end		= ext4_da_write_end,</span><br><span class="line">  ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>接下来会在ext4_writepages中打包bio结构体，发送到通用块层，继续更底层的IO操作。</p>
+<p>最后，bdi_writeback机制整体流程如下。</p>
+<p><img src="https://img-blog.csdnimg.cn/e9a87f7be5674c209fe0d2f7d7cf709f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA6aOO6Zuo5aSV,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+
+<br>
+<br>
+<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
+      
+    </div>
+
+    
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+
+    
+ </div>
+    
+    
+    
+    
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div></div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechat.png" alt="你是我的阳光 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.jpg" alt="你是我的阳光 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-license">
+    <strong>文章标题：</strong>
+    linux脏页回写机制
+  </li>
+
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>你是我的阳光</li>
+
+  <li class="post-copyright-license">
+    <strong>发布时间：</strong>
+    2022年03月25日 - 21:01:42
+  </li>
+    <strong>最后更新：</strong>
+    2022年07月08日 - 12:26:27
+  
+
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://szp2016.github.io/uncategorized/linux脏页回写机制/" title="linux脏页回写机制">https://szp2016.github.io/uncategorized/linux脏页回写机制/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+
+</ul>
+
+      </div>
+    
+    
+    <footer class="post-footer">
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+              <div id="needsharebutton-postbottom">
+                <span class="btn">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/uncategorized/ebpf入门/" rel="next" title="cilium/ebpf入门">
+                <i class="fa fa-chevron-left"></i> cilium/ebpf入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/uncategorized/进程基础/" rel="prev" title="进程基础">
+                进程基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC81MTI2MC8yNzc0MQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/hard.jpg" alt="你是我的阳光">
+            
+              <p class="site-author-name" itemprop="name">你是我的阳光</p>
+              <div class="site-description motion-element" itemprop="description">有鉴于往事，以资于治道。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com.hk/" title="https://www.google.com.hk/" rel="noopener" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="https://stackoverflow.com/" rel="noopener" target="_blank">Stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/" title="https://github.com/" rel="noopener" target="_blank">Github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#核心数据结构初始化"><span class="nav-number">1.</span> <span class="nav-text">核心数据结构初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#触发回写任务的时机"><span class="nav-number">2.</span> <span class="nav-text">触发回写任务的时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回写任务的执行"><span class="nav-number">3.</span> <span class="nav-text">回写任务的执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+
+
+
+</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank"> </a>&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">你是我的阳光</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">206k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">3:07</span>
+  
+</div>
+
+
+
+
+
+
+
+
+<span id="timeDate">站点运行天数</span>
+<span id="times">运行的时分秒</span>
+<script>
+    var now = new Date(); 
+    function createtime() { 
+        var grt= new Date("06/15/2019 12:00:00");//此处修改你的建站时间或者网站上线时间 
+        now.setTime(now.getTime()+250); 
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "; 
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒"; 
+    } 
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+      <div>
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      // "image": {
+      //   "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+      //   "viewText": "分享到：",
+      //   "viewSize": "16"
+      // },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      </div>
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'uncategorized/linux脏页回写机制/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+  
+
+  
+  
+  
+    
+  
+  <script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+    
+      pbOptions = {};
+      
+        pbOptions.iconStyle = "true";
+      
+        pbOptions.boxForm = "horizontal";
+      
+        pbOptions.position = "bottomCenter";
+      
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#更多");
+  
+  </script>
+
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+<!--浏览器搞笑标题-->
+<script type="text/javascript" src="\js\FunnyTitle.js"></script>
+<!--动态线条背景-->
+<script type="text/javascript" color="220,220,220" opacity="0.7" zindex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+</script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
