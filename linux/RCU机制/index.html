@@ -134,7 +134,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210712210939902.png">
 <meta property="og:image" content="https://static.lwn.net/images/ns/kernel/rcu/GracePeriodGood.png">
 <meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
-<meta property="og:updated_time" content="2022-07-08T05:53:23.942Z">
+<meta property="og:updated_time" content="2022-11-07T08:45:00.719Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux RCU机制">
 <meta name="twitter:description" content="1. 简介RCU (Read-copy update)是2002年10月添加到Linux内核中的一种同步机制。作为数据同步的一种方式，在当前的Linux内核中发挥着重要的作用。 RCU主要针对的数据对象是链表，目的是提高遍历读取数据的效率，为了达到目的使用RCU机制读取数据的时候不对链表进行耗时的加锁操作。这样在同一时间可以有多个线程同时读取该链表，并且允许一个线程对链表进行修改（修改的时候，需要">
@@ -532,7 +532,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-07-08 13:53:23" itemprop="dateModified" datetime="2022-07-08T13:53:23+08:00">2022-07-08</time>
+                <time title="修改时间：2022-11-07 16:45:00" itemprop="dateModified" datetime="2022-11-07T16:45:00+08:00">2022-11-07</time>
               
             
           </span>
@@ -690,7 +690,7 @@
 </blockquote>
 <p>synchronize_rcu()：这是RCU的核心所在，它挂起写线程，等待读者都退出后释放老的数据。</p>
 <p>参考链接：<br><a href="https://lwn.net/Articles/262464/" target="_blank" rel="noopener">https://lwn.net/Articles/262464/</a><br><a href="https://www.cnblogs.com/schips/p/linux_cru.html" target="_blank" rel="noopener">https://www.cnblogs.com/schips/p/linux_cru.html</a></p>
-<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+<h3 style="text-align:center">PS：前往公众号“Linux工坊”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
 
 <br>
 <br>
@@ -778,7 +778,7 @@
     2021年07月12日 - 18:01:55
   </li>
     <strong>最后更新：</strong>
-    2022年07月08日 - 13:53:23
+    2022年11月07日 - 16:45:00
   
 
   <li class="post-copyright-link">
@@ -1115,7 +1115,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-简介"><span class="nav-number">1.</span> <span class="nav-text">1. 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-实现功能"><span class="nav-number">2.</span> <span class="nav-text">2. 实现功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-数据完整性"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 数据完整性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-插入数据时保证读取数据的完整性"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 插入数据时保证读取数据的完整性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-删除数据时保证读取数据的完整性"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 删除数据时保证读取数据的完整性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-更新数据时保证读取数据的完整性"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 更新数据时保证读取数据的完整性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-发布订阅机制"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 发布订阅机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-RCU宽限期"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 RCU宽限期</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-总结"><span class="nav-number">3.</span> <span class="nav-text">3. 总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.0.1.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-简介"><span class="nav-number">1.</span> <span class="nav-text">1. 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-实现功能"><span class="nav-number">2.</span> <span class="nav-text">2. 实现功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-数据完整性"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 数据完整性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-插入数据时保证读取数据的完整性"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 插入数据时保证读取数据的完整性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-删除数据时保证读取数据的完整性"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 删除数据时保证读取数据的完整性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-更新数据时保证读取数据的完整性"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 更新数据时保证读取数据的完整性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-发布订阅机制"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 发布订阅机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-RCU宽限期"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 RCU宽限期</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-总结"><span class="nav-number">3.</span> <span class="nav-text">3. 总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.0.1.</span> <span class="nav-text">PS：前往公众号“Linux工坊”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
 
 
 

@@ -123,7 +123,7 @@
 <meta property="og:description" content="1. 前言操作系统是第一个并发程序，是在拥有多线程的进程中应该研究的问题。每个线程都是一个进程的执行流，代表着程序做事，但是当线程访问内存的时候，对于他们来说有些内存节点是与其他线程共享的，如果不协调线程之间的内存访问，程序将无法按着预期工作。如何解决呢？操作系统使用锁或者条件变量这样的原语，来支持多线程应用程序，如果不非常小心的访问自己的内存，将会发生许多奇怪而可怕的事情，接下来就看看会发生什么">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://szp2016.github.io/image/wechat2.png">
-<meta property="og:updated_time" content="2022-03-21T03:30:22.822Z">
+<meta property="og:updated_time" content="2022-11-07T08:45:00.741Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="并发">
 <meta name="twitter:description" content="1. 前言操作系统是第一个并发程序，是在拥有多线程的进程中应该研究的问题。每个线程都是一个进程的执行流，代表着程序做事，但是当线程访问内存的时候，对于他们来说有些内存节点是与其他线程共享的，如果不协调线程之间的内存访问，程序将无法按着预期工作。如何解决呢？操作系统使用锁或者条件变量这样的原语，来支持多线程应用程序，如果不非常小心的访问自己的内存，将会发生许多奇怪而可怕的事情，接下来就看看会发生什么">
@@ -521,7 +521,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-03-21 11:30:22" itemprop="dateModified" datetime="2022-03-21T11:30:22+08:00">2022-03-21</time>
+                <time title="修改时间：2022-11-07 16:45:00" itemprop="dateModified" datetime="2022-11-07T16:45:00+08:00">2022-11-07</time>
               
             
           </span>
@@ -693,7 +693,7 @@ after.....sum = 160000
 
 
 
-<h3 style="text-align:center">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+<h3 style="text-align:center">PS：前往公众号“Linux工坊”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
 
 <br>
 <br>
@@ -781,7 +781,7 @@ after.....sum = 160000
     2020年12月25日 - 20:03:48
   </li>
     <strong>最后更新：</strong>
-    2022年03月21日 - 11:30:22
+    2022年11月07日 - 16:45:00
   
 
   <li class="post-copyright-link">
@@ -1118,7 +1118,7 @@ after.....sum = 160000
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-共享变量加一发生什么事了"><span class="nav-number">2.</span> <span class="nav-text">2. 共享变量加一发生什么事了</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-多个线程并发执行，共享变量的加1操作到底会带来什么问题？"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 多个线程并发执行，共享变量的加1操作到底会带来什么问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-什么是原子操作？Linux下如何进行原子操作？"><span class="nav-number">3.</span> <span class="nav-text">3. 什么是原子操作？Linux下如何进行原子操作？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-什么是临界区和临界资源？"><span class="nav-number">4.</span> <span class="nav-text">4. 什么是临界区和临界资源？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Linux-C中如何保护临界区"><span class="nav-number">5.</span> <span class="nav-text">5. Linux C中如何保护临界区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.1.</span> <span class="nav-text">PS：前往公众号“知书码迹”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-共享变量加一发生什么事了"><span class="nav-number">2.</span> <span class="nav-text">2. 共享变量加一发生什么事了</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-多个线程并发执行，共享变量的加1操作到底会带来什么问题？"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 多个线程并发执行，共享变量的加1操作到底会带来什么问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-什么是原子操作？Linux下如何进行原子操作？"><span class="nav-number">3.</span> <span class="nav-text">3. 什么是原子操作？Linux下如何进行原子操作？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-什么是临界区和临界资源？"><span class="nav-number">4.</span> <span class="nav-text">4. 什么是临界区和临界资源？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Linux-C中如何保护临界区"><span class="nav-number">5.</span> <span class="nav-text">5. Linux C中如何保护临界区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.1.</span> <span class="nav-text">PS：前往公众号“Linux工坊”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
 
 
 
