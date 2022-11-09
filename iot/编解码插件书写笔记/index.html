@@ -115,7 +115,7 @@
 
 
   <meta name="description" content="本文记录了书写编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
-<meta name="keywords" content="编解码,OceanConnect">
+<meta name="keywords" content="OceanConnect,编解码">
 <meta property="og:type" content="article">
 <meta property="og:title" content="堪比华为还详细的编解码插件线下开发教程">
 <meta property="og:url" content="https://szp2016.github.io/iot/编解码插件书写笔记/index.html">
@@ -123,7 +123,7 @@
 <meta property="og:description" content="本文记录了书写编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://szp2016.github.io/image/005RbHCfly1g4en22rkvej30gp07w0wc.jpg">
-<meta property="og:updated_time" content="2022-11-07T08:45:00.717Z">
+<meta property="og:updated_time" content="2022-11-09T07:52:35.072Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="堪比华为还详细的编解码插件线下开发教程">
 <meta name="twitter:description" content="本文记录了书写编解码插件的过程，以及注意事项，帮助你轻松编写编解码插件，甚至可以早点回去陪(男)女友！">
@@ -314,7 +314,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
 
   </li>
         
@@ -521,7 +521,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-11-07 16:45:00" itemprop="dateModified" datetime="2022-11-07T16:45:00+08:00">2022-11-07</time>
+                <time title="修改时间：2022-11-09 15:52:35" itemprop="dateModified" datetime="2022-11-09T15:52:35+08:00">2022-11-09</time>
               
             
           </span>
@@ -633,19 +633,19 @@
 <p>蓝色方框中代表三级目录，代表具体的服务，每个服务中又包含了属性和命令，属性用于描述设备上报数据，命令用于下发指令给设备，分别对应图3‑4中的Property模块和Command模块。</p>
 <p>此外只有红色与蓝色方框中文件的命名可以改动，其他名称固定不变。</p>
 <p>例如图2‑1service中包含了WellWaterCommand代表井盖+水位设备所有的下行命令；WellWaterDeviceInfo代表该设备上报的设备信息；WellWaterTiming代表该设备定时上报的信息，共计三个服务。关于如何根据设备的通信协议划分服务，将在第三章中详细介绍。<br>media/4e8ad1d840e65bfc32b745a7004fb776.png</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/4e8ad1d840e65bfc32b745a7004fb776.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113047990.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图2‑1 Profile文件结构</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/04eeb087a81cf47f9575f929e56b629a.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/201811271131169.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图2‑2 Profile功能结构</p>
 <h2 id="编解码插件结构"><a href="#编解码插件结构" class="headerlink" title="编解码插件结构"></a>编解码插件结构</h2><p>编解码插件使用java开发且jdk版本必须为1.8，maven进行项目管理，建议使用eclipse开发工具。其工程目录结构如图3‑4所示。工程的命名建议和Profile项目相同，即采用：设备类型-厂商ID-设备型号的格式。其余包名类名无需更改，即使用华为提供的名称。</p>
 <p>其中下行数据编码表示该类将平台下发的json格式的命令转化为字节数组。</p>
 <p>上行数据解码则表示该类将设备上报的字节数组转化为json格式数据。</p>
 <p>主类则负责调用下行数据编码或者上行数据解码。</p>
 <p>工具类中包含了不同数据类型之间转换的方法。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/b0668ded531bc180ba453f0e2176c521.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113130356.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图2‑3 编解码插件工程结构</p>
 <h1 id="编解码插件开发"><a href="#编解码插件开发" class="headerlink" title="编解码插件开发"></a>编解码插件开发</h1><h2 id="Profile开发"><a href="#Profile开发" class="headerlink" title="Profile开发"></a>Profile开发</h2><h3 id="新建工程"><a href="#新建工程" class="headerlink" title="新建工程"></a>新建工程</h3><p>新建名称为：设备类型-厂商ID-设备型号的文件夹，例如WellMonitor_Chinastar_CSiTWLM05，打开该文件夹新建profile和service两个子文件夹，如图3‑4所示。<strong>注意profile和service这两个文件夹名称是固定不变的。</strong></p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/99ef6fe911261c7f8eb2c73f36a5137f.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113154177.png" alt="在这里插入图片描述"></p>
 <p>图3‑1 Profile文件夹</p>
 <h3 id="创建概述文件"><a href="#创建概述文件" class="headerlink" title="创建概述文件"></a>创建概述文件</h3><p>打开profile文件夹新建devicetype-capability.json文件，编辑该json文件如图3‑4所示。其中每个字段所代表的含义如图3‑4所示。serviceTypeCapabilities<br>Json数组包含了该Profile文件所有的服务模块，即每增加一个service都需要在这个数组中添加一个对应的json对象。例如Chinstar公司采用CoAP协议，设备型号为CSiTWLM05的井盖设备包含三个服务（功能）模块，井盖命令、井盖开机信息，井盖定时上报信息。</p>
 <h3 id="Service划分"><a href="#Service划分" class="headerlink" title="Service划分"></a>Service划分</h3><p>关于一个设备service的划分，可以采用根据设备通信协议中上报报文的功能码进行划分的方法，即协议中一条上报报文对应一个service（通常一条报文占用一个功能码）。</p>
@@ -658,43 +658,43 @@
 <li><p>将上行数据根据功能码的不同，分成若干个不同的service。</p>
 </li>
 </ol>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ddf34b95238e815fe87246e0e110fc64.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113211897.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑2 Profile概述文件</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/ab01d431876d7fe3d2f8ba67a53e85b5.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113231721.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑3 Profile文件字段含义</p>
 <h3 id="创建service"><a href="#创建service" class="headerlink" title="创建service"></a>创建service</h3><p>打开第二级目录的service文件夹，根据步骤二devicetype-capability.json文件中serviceTypeCapabilities数组中定义的service创建对应的文件夹，文件夹名称为serviceId对应的值。每个文件夹下分别创建profile文件夹，profile文件夹下创建servicetype-capability.json文件，用来描述具体服务的功能，如图3‑4所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/a9957a368fcf5a0081ca6a016d0a20b4.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113249294.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑4 service文件结构</p>
 <p>接下来编写每个service对应的servicetype-capability.json，如图3‑4所示的Profile，将井盖水位设备的所有命令下发模块单独写在了一个service中，即WellWaterCommand模块；将设备的上报数据信息按照通信协议中每个报文的功能码区分为不同的service，即WellWaterDeviceInfo（开机信息）模块与WellWaterTiming（定时上报）模块。</p>
 <h3 id="编写下行service"><a href="#编写下行service" class="headerlink" title="编写下行service"></a>编写下行service</h3><p>下行命令在service中的书写格式如图3‑5所示。Commands数组里面存放若干个命令对象，每个命令对象包含CommandName命令的名称和paras命令携带的参数数组，以及responses命令回应数组。paras数组里面包含若干个参数对象。参数对象包含paraName等一系列属性。这每一个参数对象都对应通信协议报文中的一个属性。serviceType的值一定要与当前服务文件夹名称保持一致。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/1a510309babebf4bc44c419eb84e7dba.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113314389.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑5 命令service</p>
 <h3 id="编写上行service"><a href="#编写上行service" class="headerlink" title="编写上行service"></a>编写上行service</h3><p>上行属性service比命令service要简单，properties数组中存放的是设备上报上来的数据，每一个json对象对应通信协议报文中的一个属性。propertyName的值可以随意定义，dataType的值如不能根据通信协议中的默认参数值明显的判断该属性的数据类型，应找相关人员确认，否则解析将会出现数据错误。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/f3aa9a21509479ad6e0d2ec7f8ee9b65.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113330345.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <h2 id="打包Profile"><a href="#打包Profile" class="headerlink" title="打包Profile"></a>打包Profile</h2><p>将WellMonitor_Chinastar_CSiTWLM05文件夹下的profile和service文件打包为zip格式，命名为WellMonitor_Chinastar_CSiTWLM05，并且压缩包内不能包含WellMonitor_Chinastar_CSiTWLM05文件夹这一层目录。</p>
 <h2 id="编解码开发"><a href="#编解码开发" class="headerlink" title="编解码开发"></a>编解码开发</h2><p>使用eclipse配置本地maven仓库，并导入华为提供的demo工程。</p>
 <p>修改pom.xml中的&lt;artifactId&gt;XXX&lt;/artifactId&gt;和&lt;Bundle-SymbolicName&gt;XXX&lt;/Bundle-SymbolicName&gt;命名规范：设备类型-厂商ID-设备型号，与Profile文件保持一致。如图3‑6、图3‑7所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0fae57687737d2580c8a4057b7361c0d.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113344941.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑6 pom修改厂商名称</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/0a1598030403de62421404d272d03449.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/201811271133560.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑7 pom修改厂商名称</p>
 <p>修改ProtocolAdapterImpl.java中的厂商名称与设备型号，注意与Profile保持一致。如图3‑8所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/46aebb425e311ba4d59f8637297121aa.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113414388.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑8 修改Protocol文件</p>
 <h3 id="编写下行编码"><a href="#编写下行编码" class="headerlink" title="编写下行编码"></a>编写下行编码</h3><p>数据下行编码流程如图3‑9所示，通过获取OC平台发送过来的json数据，首先根据serviceId将对应数据保存到全局变量中，然后调用toByte方法，将各种类型的数据装换为16进制的比特数组。拼装成一条完整的报文并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/cfb74c29be05bbbd2d1c729f3f642b24.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113432257.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑9 数据下行编码流程图</p>
 <h3 id="编写上行解码"><a href="#编写上行解码" class="headerlink" title="编写上行解码"></a>编写上行解码</h3><p>数据上行解码流程如图3‑10所示。通过获取OC平台发送过来的16进制比特数组格式数据，首先根据比特数组中的功能码（功能码在数据哪个位置，请从通信协议中查看），将不同服务对应的不同数据，根据通信协议将byte类型的属性转换为所需类型，保存到全局变量中，然后调用toJsonNode方法，拼装成一个Json对象并返回。其中mid为消息序号，根据通信协议中是否使用消息序号来决定代码中是否使用。详情请参照文末样例代码。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d3d96855d73d6672e148012e8eccc772.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113442222.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑10 数据上行解码流程图</p>
 <h2 id="打包编解码"><a href="#打包编解码" class="headerlink" title="打包编解码"></a>打包编解码</h2><p>打包编解码，即将该maven工程打包成jar文件。检查pom.xml中的&lt;packaging&gt;bundle&lt;/packaging&gt;值是否为bundle，不能为jar。以eclipse为例，在工程上右键选择Run<br>As然后选择Maven build…如图3‑11所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/6b61595390f369c7f5b0363149265e1f.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113514486.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑11 Mavenbuild</p>
 <p>在Goals中输入clean package点击Run按钮，如图3‑12所示。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/d89e750364de272a6d6eb8e3999150d6.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113535752.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑12 Mavenpackage</p>
 <p>等待控制台出现BUILD<br>SUCCESS，即可在当前项目的target目录下找到打包好的jar文件，如图3‑13所示，打包编解码完成。</p>
-<p><img src="https://raw.githubusercontent.com/szp2016/ProgramNotes/master/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%8F%92%E4%BB%B6/media/625906a1d5ede2c57835af1fd6f60a9e.png" alt></p>
+<p><img src="https://img-blog.csdnimg.cn/20181127113554212.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMDk1NzMz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <p>图3‑13 Build</p>
 <p>附录</p>
 <div><div class="fold_hider"><div class="close hider_title">点击显/隐内容</div></div><div class="fold">
@@ -795,7 +795,7 @@
     2019年06月24日 - 10:57:19
   </li>
     <strong>最后更新：</strong>
-    2022年11月07日 - 16:45:00
+    2022年11月09日 - 15:52:35
   
 
   <li class="post-copyright-link">
@@ -818,9 +818,9 @@
         
         <div class="post-tags">
           
-            <a href="/tags/编解码/" rel="tag"><i class="fa fa-tag"></i> 编解码</a>
-          
             <a href="/tags/OceanConnect/" rel="tag"><i class="fa fa-tag"></i> OceanConnect</a>
+          
+            <a href="/tags/编解码/" rel="tag"><i class="fa fa-tag"></i> 编解码</a>
           
         </div>
       
@@ -985,7 +985,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">13</span>
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>

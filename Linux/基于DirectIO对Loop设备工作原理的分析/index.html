@@ -114,19 +114,19 @@
 
 
 
-  <meta name="description" content="eBPF的大部分实现都在Linux内核当中，uBPF项目在用户空间实现了eBPF虚拟机，可以在用户空间模拟执行eBPF程序，添加断点，帮助开发者调试程序。eBPF虚拟机运行在内核中，但是内核可以通过GDB进行调试，因此eBPF虚拟机也可以通过GDB进行调试。 在内核调试eBPF VM有什么益处吗？ 调试可以很好的帮助理解其工作原理。  开发者编写的程序有时无法加载进内核，调试可以帮助定位问题。">
+  <meta name="description" content="前言本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。 Loop设备/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。例如，">
 <meta name="keywords" content="Linux内核，Java，物联网">
 <meta property="og:type" content="article">
-<meta property="og:title" content="调试eBPF虚拟机">
-<meta property="og:url" content="https://szp2016.github.io/uncategorized/调试eBPF虚拟机/index.html">
+<meta property="og:title" content="基于DirectIO对Loop设备工作原理的分析">
+<meta property="og:url" content="https://szp2016.github.io/Linux/基于DirectIO对Loop设备工作原理的分析/index.html">
 <meta property="og:site_name" content="Linux工坊">
-<meta property="og:description" content="eBPF的大部分实现都在Linux内核当中，uBPF项目在用户空间实现了eBPF虚拟机，可以在用户空间模拟执行eBPF程序，添加断点，帮助开发者调试程序。eBPF虚拟机运行在内核中，但是内核可以通过GDB进行调试，因此eBPF虚拟机也可以通过GDB进行调试。 在内核调试eBPF VM有什么益处吗？ 调试可以很好的帮助理解其工作原理。  开发者编写的程序有时无法加载进内核，调试可以帮助定位问题。">
+<meta property="og:description" content="前言本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。 Loop设备/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。例如，">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://szp2016.github.io/image/lora.jpg">
-<meta property="og:updated_time" content="2022-11-07T08:45:00.736Z">
+<meta property="og:updated_time" content="2022-11-09T08:12:25.637Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="调试eBPF虚拟机">
-<meta name="twitter:description" content="eBPF的大部分实现都在Linux内核当中，uBPF项目在用户空间实现了eBPF虚拟机，可以在用户空间模拟执行eBPF程序，添加断点，帮助开发者调试程序。eBPF虚拟机运行在内核中，但是内核可以通过GDB进行调试，因此eBPF虚拟机也可以通过GDB进行调试。 在内核调试eBPF VM有什么益处吗？ 调试可以很好的帮助理解其工作原理。  开发者编写的程序有时无法加载进内核，调试可以帮助定位问题。">
+<meta name="twitter:title" content="基于DirectIO对Loop设备工作原理的分析">
+<meta name="twitter:description" content="前言本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。 Loop设备/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。例如，">
 <meta name="twitter:image" content="https://szp2016.github.io/image/lora.jpg">
 
 
@@ -135,7 +135,7 @@
 
   
   
-  <link rel="canonical" href="https://szp2016.github.io/uncategorized/调试eBPF虚拟机/">
+  <link rel="canonical" href="https://szp2016.github.io/Linux/基于DirectIO对Loop设备工作原理的分析/">
 
 
 
@@ -145,7 +145,7 @@
   };
 </script>
 
-  <title>调试eBPF虚拟机 | Linux工坊</title>
+  <title>基于DirectIO对Loop设备工作原理的分析 | Linux工坊</title>
   
 
 
@@ -314,7 +314,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">13</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">14</span></a>
 
   </li>
         
@@ -461,7 +461,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/uncategorized/调试eBPF虚拟机/">
+    <link itemprop="mainEntityOfPage" href="https://szp2016.github.io/Linux/基于DirectIO对Loop设备工作原理的分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="你是我的阳光">
@@ -478,7 +478,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">调试eBPF虚拟机
+          <h2 class="post-title" itemprop="name headline">基于DirectIO对Loop设备工作原理的分析
 
               
             
@@ -504,7 +504,7 @@
                 
               
 
-              <time title="创建时间：2022-03-13 10:48:04" itemprop="dateCreated datePublished" datetime="2022-03-13T10:48:04+08:00">2022-03-13</time>
+              <time title="创建时间：2022-06-25 17:57:51" itemprop="dateCreated datePublished" datetime="2022-06-25T17:57:51+08:00">2022-06-25</time>
             
 
             
@@ -521,11 +521,29 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-11-07 16:45:00" itemprop="dateModified" datetime="2022-11-07T16:45:00+08:00">2022-11-07</time>
+                <time title="修改时间：2022-11-09 16:12:25" itemprop="dateModified" datetime="2022-11-09T16:12:25+08:00">2022-11-09</time>
               
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -556,7 +574,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">1.8k</span>
+                <span title="本文字数">3.2k</span>
               
 
               
@@ -570,7 +588,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">2 分钟</span>
+                <span title="阅读时长">3 分钟</span>
               
             </div>
           
@@ -602,104 +620,90 @@
       
 
       
-        <p>eBPF的大部分实现都在Linux内核当中，uBPF项目在用户空间实现了eBPF虚拟机，可以在用户空间模拟执行eBPF程序，添加断点，帮助开发者调试程序。eBPF虚拟机运行在内核中，但是内核可以通过GDB进行调试，因此eBPF虚拟机也可以通过GDB进行调试。</p>
-<h2 id="在内核调试eBPF-VM有什么益处吗？"><a href="#在内核调试eBPF-VM有什么益处吗？" class="headerlink" title="在内核调试eBPF VM有什么益处吗？"></a>在内核调试eBPF VM有什么益处吗？</h2><ul>
-<li><p>调试可以很好的帮助理解其工作原理。</p>
-</li>
-<li><p>开发者编写的程序有时无法加载进内核，调试可以帮助定位问题。</p>
-</li>
-</ul>
-<p>本文记录了踩完众多坑的搭建环境过程，供需要的人进行参考。</p>
-<h2 id="所需环境"><a href="#所需环境" class="headerlink" title="所需环境"></a>所需环境</h2><h3 id="内核镜像"><a href="#内核镜像" class="headerlink" title="内核镜像"></a>内核镜像</h3><p>通过下载内核源码编译构建内核镜像文件，源码可以通过<a href="https://mirrors.edge.kernel.org/pub/linux/kernel/" target="_blank" rel="noopener">Linux官方网站</a>，或者<a href="https://mirrors.tuna.tsinghua.edu.cn/kernel/" target="_blank" rel="noopener">清华镜像网站</a>选择需要的版本下载。本文采用了<a href="https://mirrors.tuna.tsinghua.edu.cn/kernel/v5.x/linux-5.4.1.tar.xz" target="_blank" rel="noopener">5.4.1版本内核</a>。</p>
-<p>编译内核镜像的步骤可以参考之前的文章，<a href="https://mp.weixin.qq.com/s/DUk0v5VSr82MKGHJ__D1WQ" target="_blank" rel="noopener">QEMU调试Linux内核环境搭建</a>。</p>
-<h3 id="根文件系统"><a href="#根文件系统" class="headerlink" title="根文件系统"></a>根文件系统</h3><p>使用buildroot工具，构建根文件系统。从git仓库下载源码，也可以从<a href="https://buildroot.net/download.html" target="_blank" rel="noopener">官网</a>下载并解压。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://git.buildroot.net/buildroot /<span class="built_in">source</span>/buildroot</span><br><span class="line"><span class="built_in">cd</span> buildroot </span><br><span class="line">make menuconfig</span><br><span class="line">make -j4</span><br></pre></td></tr></table></figure>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文记录了在使用DirectIO对Loop设备与真实设备进行吞吐量对比测试时，遇到的异常情况。通过该异常情况，分析了Loop设备的工作原理。</p>
+<h2 id="Loop设备"><a href="#Loop设备" class="headerlink" title="Loop设备"></a>Loop设备</h2><p>/dev/loop设备在Linux中是一种伪设备，这种设备可以让文件如同块设备一般被访问，让普通文件可以像块设备被格式化文件系统，可以进行挂载。<br>Loop设备必须与一个现有的文件进行关联，如果文件中包含文件系统，那么这个文件就可以被挂载。<br>例如，查看当前系统空闲的Loop设备：</p>
+<blockquote>
+<p>losetup -f</p>
+</blockquote>
+<p>关联空闲设备loop1到一个现有文件test.img，格式化为ext4文件系统并挂载到./mnt目录下。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">losetup /dev/loop1 test.img</span><br><span class="line"></span><br><span class="line">mount /dev/loop1 ./mnt/</span><br><span class="line"></span><br><span class="line">mkfs.ext4 /dev/loop1</span><br></pre></td></tr></table></figure>
 
-<p>在buildroot需要进行几个关键的配置，才能在虚拟机中运行bpf程序。</p>
-<ul>
-<li>Target options<br>架构选择为x86_64，如下图。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/aaabe725c638421eab9b4004e0ded2ef.png" alt="在这里插入图片描述"></p>
-<ul>
-<li><p>Toolchain<br>编译工具链的配置是能否在qemu虚拟机中运行ebpf程序的关键。<br><img src="https://img-blog.csdnimg.cn/2a7f86c0b2f64bfab27f6307ac6e3774.png" alt="在这里插入图片描述"></p>
-</li>
-<li><p>Kernel<br>buildroot也支持下载内核源码并编译内核镜像，建议勾不勾选，使用自己下载的内核。<br><img src="https://img-blog.csdnimg.cn/6dcbe797990f4bff9ebb1deb92aa2618.png" alt="在这里插入图片描述"></p>
-</li>
-</ul>
-<ul>
-<li><p>Target packages</p>
-<ul>
-<li>Debugging, profiling and benchmark</li>
-</ul>
-<p>该目录下勾选bpftool和libbpf，其他软件根据需要勾选，建议勾选strace，可以结合strace学习bpf工作原理，同时加载程序出错时也能看到更多的错误信息。<br><img src="https://img-blog.csdnimg.cn/af3843d063114a5f868f62305c66867a.png" alt="在这里插入图片描述"></p>
-<ul>
-<li>Libraries → Other<br>勾选clang和llvm、BPF backend。<br><img src="https://img-blog.csdnimg.cn/93c475188c29409a8c94d81c3e9e7690.png" alt="在这里插入图片描述"></li>
-</ul>
-</li>
-</ul>
-<p>  <img src="https://img-blog.csdnimg.cn/4ef4117877a84ce0851d6630c0281422.png" alt="在这里插入图片描述"></p>
-<ul>
-<li>Networking applications<br>添加对ssh的支持，方便宿主机往虚拟机里面传输编译完成的ebpf程序。<br><img src="https://img-blog.csdnimg.cn/474a1edd5e854783a0ce559577f2eeaa.png" alt="在这里插入图片描述"></li>
-</ul>
-<ul>
-<li>Filesystem images<br>选择ext4 root filesystem，exact size改成256M，取消选择f2fs root filesystem。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/e43f987e5b9f46c290c2ee1edfd1fb25.png" alt="在这里插入图片描述"></p>
-<ul>
-<li>Bootloaders<br>取消U-Boot，可以加快编译速度。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/58d7dbc3d4014adf825ad1e9b13fe7b8.png" alt="在这里插入图片描述"></p>
-<p>最后别忘了选择Save保存到.config文件。</p>
-<p>在make的过程中，buildroot需要从国外网站下载软件包，速度很慢，如果观察到下载速度慢，可以复制窗口日志中的下载地址，从其他渠道下载完成后放到buildroot/dl/目录下，再次make就能够直接从dl目录解压了。</p>
-<p>make完成后，会在buildroot/output/images目录下生成rootfs.ext4文件。</p>
-<p><img src="https://img-blog.csdnimg.cn/5b7e50ecf5074890a390f752c872eb9f.png" alt="在这里插入图片描述"></p>
-<h3 id="eBPF程序"><a href="#eBPF程序" class="headerlink" title="eBPF程序"></a>eBPF程序</h3><p>编写一个简单打印hello world的eBPF测试程序bpf_program.c，挂载在ext4_file_write_iter函数。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/version.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;uapi/linux/bpf.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"bpf_helpers.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SEC(NAME) __attribute__((section(NAME), used))</span></span><br><span class="line"></span><br><span class="line"><span class="function">struct bpf_map_def <span class="title">SEC</span><span class="params">(<span class="string">"maps"</span>)</span> my_map </span>= &#123;</span><br><span class="line">        .type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,</span><br><span class="line">        .key_size = <span class="keyword">sizeof</span>(<span class="keyword">int</span>),</span><br><span class="line">        .value_size = <span class="keyword">sizeof</span>(u32),</span><br><span class="line">        .max_entries = <span class="number">2</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">SEC(<span class="string">"kprobe/ext4_file_write_iter"</span>)</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bpf_prog1</span><span class="params">(struct pt_regs *ctx)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> msg[] = <span class="string">"Hello, BPF World!"</span>;</span><br><span class="line">	bpf_trace_printk(msg, <span class="keyword">sizeof</span>(msg));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> _license[] SEC(<span class="string">"license"</span>) = <span class="string">"GPL"</span>;</span><br><span class="line">u32 _<span class="function">version <span class="title">SEC</span><span class="params">(<span class="string">"version"</span>)</span> </span>= LINUX_VERSION_CODE;</span><br></pre></td></tr></table></figure>
+<h2 id="DirectIO"><a href="#DirectIO" class="headerlink" title="DirectIO"></a>DirectIO</h2><p>直接IO是一种无缓冲的IO，对文件的读写操作不会经过操作系统内核中的文件缓存。内核文件缓存中提供的预读取、延迟写入等机制不一定适合所有应用场景，例如数据库通常有一套自身的缓存机制和落盘机制，如果没有能够绕过内核文件缓存的机制，就会存在双重缓存。DirectIO就提供了绕过内核文件缓存的方法。</p>
+<p>在open文件的时候设置 O_DIRECT 标识就可以使用DirectIO。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">fd = open(argv[<span class="number">1</span>], O_RDONLY | O_DIRECT);</span><br></pre></td></tr></table></figure>
 
-<p>用户态加载程序loader.c</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"bpf_load.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (load_bpf_file(<span class="string">"bpf_program.o"</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"The kernel didn't load the BPF program\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  read_trace_pipe();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="DirectIO吞吐量对比"><a href="#DirectIO吞吐量对比" class="headerlink" title="DirectIO吞吐量对比"></a>DirectIO吞吐量对比</h1><p>分别对真实设备和Loop设备进行吞吐量测试。<br>实验猜想：<br>真实设备的吞吐量会明显高于Loop设备。因为采用DirectIO都绕过内核缓存去设备中读取数据的情况下，Loop设备因为是关联的一个已存在的文件，会转化为对原镜像文件test.img的读取，在经过两层IO栈的情况下，吞吐量会低于直接读取真实设备。</p>
+<p>吞吐量测试程序如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">fd = open(argv[<span class="number">1</span>], O_RDONLY | O_DIRECT);</span><br><span class="line"><span class="keyword">if</span> (fd == <span class="number">-1</span>)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"open\n"</span>);</span><br><span class="line"></span><br><span class="line">gettimeofday(&amp;start, <span class="literal">NULL</span>);</span><br><span class="line"><span class="keyword">while</span> (numRead != <span class="number">0</span>) &#123;</span><br><span class="line">        numRead = read(fd, buf, size);</span><br><span class="line">        totalnumRead += numRead;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (numRead == <span class="number">-1</span>) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">"Error\n"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">gettimeofday(&amp;end, <span class="literal">NULL</span>);</span><br><span class="line"><span class="keyword">double</span> elapsed_time = ((<span class="keyword">double</span>)t)/CLOCKS_PER_SEC;</span><br><span class="line">secs_used=(end.tv_sec - start.tv_sec);</span><br><span class="line">micros_used = secs_used*<span class="number">1000000</span> + end.tv_usec - start.tv_usec;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"Throughput = %f\n"</span>, (<span class="keyword">double</span>)totalnumRead/micros_used);</span><br></pre></td></tr></table></figure>
 
-<p>Makefile文件，使用sed命令替换为自己的内核源码路径。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i <span class="string">'s;/kernel-src;/home/szp/linux-5.4.1;'</span> ./Makefile</span><br></pre></td></tr></table></figure>
+<p>使用该程序分别读取Loop设备中的文件./mnt/loop_file，真实设备中的文件./device_file。</p>
+<p>真实设备吞吐量如下图所示，在120左右：</p>
+<p><img src="https://img-blog.csdnimg.cn/06cf3fa3f63b43ba8d91137d3da86159.png" alt="在这里插入图片描述"></p>
+<p>Loop设备吞吐量如下图所示，在700左右：</p>
+<p><img src="https://img-blog.csdnimg.cn/799982167ec14ceb8c18a0f01c1f3b98.png" alt="在这里插入图片描述"></p>
+<p>实验结果与猜想正好相反，Loop设备的吞吐量远大于真实设备。是什么原因造成了这种结果呢？</p>
+<h2 id="实验现象分析"><a href="#实验现象分析" class="headerlink" title="实验现象分析"></a>实验现象分析</h2><p>Loop设备的吞吐量如此高，猜想它在设置O_DIRECT标识的情况下，还是使用了内核中的文件缓存，才会比真实设备快。通过如下两步进行验证：</p>
+<ol>
+<li>查看测试程序执行前后，系统中cache大小的变化情况。</li>
+<li>通过trace工具根据内核中函数调用栈，判断测试程序是走的buff IO分支还是direct IO分支。</li>
+</ol>
+<h2 id="cache大小分析"><a href="#cache大小分析" class="headerlink" title="cache大小分析"></a>cache大小分析</h2><p>首先清空系统中的文件cache，清空后的buff/cache大小为213816KB。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">free</span><br><span class="line">sync; sudo <span class="built_in">echo</span> 3 &gt; /proc/sys/vm/drop_caches</span><br><span class="line">free</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">CLANG = clang</span><br><span class="line">EXECABLE = monitor-exec</span><br><span class="line">BPFCODE = bpf_program</span><br><span class="line">BPFTOOLS = /home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/samples/bpf</span><br><span class="line">BPFLOADER = $(BPFTOOLS)/bpf_load.c</span><br><span class="line">CCINCLUDE += -I/home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/tools/testing/selftests/bpf</span><br><span class="line">LOADINCLUDE += -I/home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/samples/bpf</span><br><span class="line">LOADINCLUDE += -I/home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/tools/lib</span><br><span class="line">LOADINCLUDE += -I/home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/tools/perf</span><br><span class="line">LOADINCLUDE += -I/home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/tools/include</span><br><span class="line">LIBRARY_PATH = -L/usr/local/lib64</span><br><span class="line">BPFSO = -lbpf</span><br><span class="line">CFLAGS += $(shell grep -q <span class="string">"define HAVE_ATTR_TEST 1"</span> /home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/tools/perf/perf-sys.h \</span><br><span class="line">                  &amp;&amp; echo <span class="string">"-DHAVE_ATTR_TEST=0"</span>)</span><br><span class="line">.PHONY: clean $(CLANG) bpfload build</span><br><span class="line">clean:</span><br><span class="line">	rm -f *.o *.so $(EXECABLE)</span><br><span class="line">build: $&#123;BPFCODE.c&#125; $&#123;BPFLOADER&#125;</span><br><span class="line">	$(CLANG) -O2 -target bpf -c $(BPFCODE:=.c) $(CCINCLUDE) -I/home/szp/linux<span class="number">-5.4</span><span class="number">.1</span>/include/ -o $&#123;BPFCODE:=.o&#125;</span><br><span class="line">bpfload: build</span><br><span class="line">	clang $(CFLAGS) -o $(EXECABLE) -lelf $(LOADINCLUDE) $(LIBRARY_PATH) $(BPFSO) \</span><br><span class="line">        $(BPFLOADER) loader.c</span><br><span class="line">$(EXECABLE): bpfload</span><br><span class="line">.DEFAULT_GOAL := $(EXECABLE)</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/e259dfc9dfde41b5881aed495c10c69e.png" alt="在这里插入图片描述"></p>
+<p>执行Loop设备下的吞吐量测试程序，可以看到清空缓存后，第一次执行，吞吐量变低了，后续执行结果，又回到了高吞吐量。说明后续读取内容都命中了缓存，吞吐量变高。</p>
+<p><img src="https://img-blog.csdnimg.cn/a6f14ad9add74eb8851c8fcc76c6c330.png" alt="在这里插入图片描述"></p>
+<p>继续查看现在系统中的cache大小，变成了267688KB，增加了50M的大小。而我们读写的文件大小为40M，也很接近。</p>
+<p><img src="https://img-blog.csdnimg.cn/36d5451179424060a71c59adb445bf6c.png" alt="在这里插入图片描述"></p>
+<p>所以，在设置O_DIRECT标识的情况下对Loop设备中的文件进行读取，Loop设备还是使用了内核中的文件缓存。那么Loop设备具体是在哪里使用了缓存呢？</p>
+<h2 id="Loop设备读操作内核栈跟踪"><a href="#Loop设备读操作内核栈跟踪" class="headerlink" title="Loop设备读操作内核栈跟踪"></a>Loop设备读操作内核栈跟踪</h2><p>猜想Loop设备的调用栈如下图所示，在这个调用栈里面如果Loop设备使用缓存，最可能就是在下图中两个橙色的文件缓存处。接下来我们对这个假设进行验证。</p>
+<p><img src="https://img-blog.csdnimg.cn/035831abdf804d63939d6ffce26bf50e.png" alt="在这里插入图片描述"></p>
+<p>我们需要捕获到读取loop设备中文件的内核调用栈，才能验证上图是正确的。上图中经过了两次ext4文件系统，所以我们先跟踪一下ext4_file_read_iter函数，看一次read是否调用了两次该函数。</p>
+<p>借助bcc，成功捕获到了两次ext4读取操作。如下图所示，第一次由read发起，第二次由loop1发起，而且第二次执行是由内核线程kthread执行的kthread work，很明显loop_queue_work是loop驱动设置的work回调函数。</p>
+<p><img src="https://img-blog.csdnimg.cn/703d12073d9148c78f475c0cd88c0b02.png" alt="在这里插入图片描述"></p>
+<p>loop_queue_work由loop设备驱动初始化时设置的多请求队列函数操作集中的loop_init_request函数设置，过程如下图所示。当块层的请求队列进行请求派发时，就会唤醒worker，执行该函数。（/drivers/block/loop.c）</p>
+<p><img src="https://img-blog.csdnimg.cn/15025903b8734bc48f3d388c5576fbb5.png" alt="在这里插入图片描述"></p>
+<p>下面我们需要跟踪执行loop_queue_work的函数调用栈，查看第一段读操作的IO栈完整路径。<br>这次我们挂载loop驱动中负责处理块层多请求队列派发的request函数，即上图中的loop_queue_rq，调用栈如下图所示（自下向上）。</p>
+<p><img src="https://img-blog.csdnimg.cn/d35f1c29cac04ccda1d6229b59bbcab8.png" alt="在这里插入图片描述"></p>
+<p>可以看到第一段IO栈由于设置了O_DIRECT标识的原因，确实没有使用内核文件缓存，执行了ext4_direct_IO分支。</p>
+<p>块层一些函数的主要功能如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">blk_finish_plug : IO请求泄流(进程)</span><br><span class="line">blk_flush_plug_list ： 发起泄流</span><br><span class="line">blk_mq_flush_plug_list ： 多请求队列泄流</span><br><span class="line">blk_mq_sched_insert_requests ： 如果定义了调度算法则插入调度器。</span><br><span class="line">blk_mq_run_hw_queue ： 启动硬件队列，派发request到块设备驱动</span><br><span class="line">__blk_mq_delay_run_hw_queue ：派发hctx-&gt;dispatch链表</span><br><span class="line">blk_mq_sched_dispatch_requests ： 执行各种派发（直接派发、软件队列派发、调度队列派发）</span><br><span class="line">blk_mq_do_dispatch_sched ： 派发调度器的请求队列</span><br><span class="line">loop_queue_rq ：即queue_rq，是一个钩子函数，由具体的设备驱动定义用来处理request，loop_queue_rq是loop设备定义的处理函数，在驱动初始化时注入。</span><br></pre></td></tr></table></figure>
 
-<p>在宿主机编译eBPF代码，生成bpf_program.o文件和monitor-exec文件。<br><img src="https://img-blog.csdnimg.cn/bf418b9b1fc04a50ad71c37b8310014d.png" alt="在这里插入图片描述"></p>
-<h3 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h3><p>使用vscode可以将gdb调试可视化，推荐使用。所需插件</p>
-<ul>
-<li>Remote-SSH</li>
-<li>C/C++</li>
-<li>GDB Debug</li>
-</ul>
-<p>使用远程资源管理器打开内核源码根目录，在“运行（Debug）”菜单下添加配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;version&quot;: &quot;0.2.0&quot;,</span><br><span class="line">    &quot;configurations&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;name&quot;: &quot;kernel debug&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;cppdbg&quot;,</span><br><span class="line">            &quot;request&quot;: &quot;launch&quot;,</span><br><span class="line">            &quot;miDebuggerServerAddress&quot;: &quot;127.0.0.1:1234&quot;,</span><br><span class="line">            &quot;program&quot;: &quot;$&#123;workspaceFolder&#125;/vmlinux&quot;,</span><br><span class="line">            &quot;args&quot;: [],</span><br><span class="line">            &quot;stopAtEntry&quot;: false,</span><br><span class="line">            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;,</span><br><span class="line">            &quot;environment&quot;: [],</span><br><span class="line">            &quot;externalConsole&quot;: false,</span><br><span class="line">            &quot;MIMode&quot;: &quot;gdb&quot;,</span><br><span class="line">            &quot;setupCommands&quot;: [</span><br><span class="line">                &#123;</span><br><span class="line">                    &quot;description&quot;: &quot;为 gdb 启用整齐打印&quot;,</span><br><span class="line">                    &quot;text&quot;: &quot;-enable-pretty-printing&quot;,</span><br><span class="line">                    &quot;ignoreFailures&quot;: true</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    &quot;description&quot;: &quot;将反汇编风格设置为 Intel&quot;,</span><br><span class="line">                    &quot;text&quot;: &quot;-gdb-set disassembly-flavor intel&quot;,</span><br><span class="line">                    &quot;ignoreFailures&quot;: true</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>loop_queue_rq最终会将work插入到worker队列中，并唤醒睡眠的 worker-&gt;task，此刻 worker 上 work 的 work-&gt;func 得以执行，此处就是执行loop_queue_work。</p>
+<p><img src="https://img-blog.csdnimg.cn/7409d168da3d4ebd91c5c63948d1d84b.png" alt="在这里插入图片描述"></p>
+<h2 id="loop驱动如何处理请求"><a href="#loop驱动如何处理请求" class="headerlink" title="loop驱动如何处理请求"></a>loop驱动如何处理请求</h2><p>从下图loop1发起的第二次IO调用栈可以看到，loop驱动又将请求转发到了虚拟文件系统层，即函数vfs_iter_read。此时就是对loop设备所关联的镜像文件进行IO操作了。接下来我们验证一下，第二段IO操作是否使用了文件缓存。</p>
+<p><img src="https://img-blog.csdnimg.cn/703d12073d9148c78f475c0cd88c0b02.png" alt="在这里插入图片描述"></p>
+<p>我们挑选缓存读中的负责预读窗口初始化的函数ondemand_readahead进行跟踪，结果如下图所示。<br>结果显示了generic_file_buffered_read函数，第二段对镜像文件test.img的读取采用了buff IO。</p>
+<p><img src="https://img-blog.csdnimg.cn/d4c77ce60bbc4361a958fca50e32e8e8.png" alt="在这里插入图片描述"></p>
+<p>至此，已经能够解释为什么在设置了O_DIRECT标识的情况下，loop设备的吞吐量的比真实设备高那么多。loop设备在驱动层又将请求转发到了vfs层，进行对其关联镜像文件的第二段读取，在第二段读取的时候依然采用了buff IO。</p>
+<p>读取loop设备的整体IO栈如下图所示。</p>
+<p><img src="https://img-blog.csdnimg.cn/f8c112e93c1849ad996e65d8ea5a133d.png" alt="在这里插入图片描述"></p>
+<h1 id="后续工作"><a href="#后续工作" class="headerlink" title="后续工作"></a>后续工作</h1><p>接下来分析一下，为什么第二段IO不能延续第一段IO的O_DIRECT标识。从loop_queue_work函数开始看loop驱动如何将第一次的请求转化为第二次的请求。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">loop_queue_work</span><br><span class="line">    loop_handle_cmd</span><br><span class="line">        do_req_filebacked</span><br></pre></td></tr></table></figure>
 
-<p>启动调试即可远程连接GDB进行调试。</p>
-<h2 id="启动QEMU"><a href="#启动QEMU" class="headerlink" title="启动QEMU"></a>启动QEMU</h2><p>进入内核源码根目录下，使用buildroot构建的根文件系统启动QEMU虚拟机，将虚拟机ssh端口映射到宿主机2222。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo qemu-system-x86_64 -kernel arch/x86/boot/bzImage --<span class="built_in">enable</span>-kvm -s -smp 1 -nic user,hostfwd=tcp::2222-:22 -boot c -m 2049M -hda ../buildtool/output/images/rootfs.ext4 -append <span class="string">"root=/dev/sda rw console=ttyS0,115200 acpi=off nokaslr"</span> -serial stdio -display none</span><br></pre></td></tr></table></figure>
+<p>do_req_filebacked函数中对读写和不同的读写类型进行了处理，direct IO是通过非阻塞I/O来进行io的转发。可以看出，loop设备关联的镜像文件是单独进行读写方式设置的，与第一段IO读写的方式是不相干的。那么cmd-&gt;use_aio是在何时进行设置的？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">do_req_filebacked</span><span class="params">(struct loop_device *lo, struct request *rq)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">loop_cmd</span> *<span class="title">cmd</span> = <span class="title">blk_mq_rq_to_pdu</span>(<span class="title">rq</span>);</span></span><br><span class="line">	<span class="keyword">loff_t</span> pos = ((<span class="keyword">loff_t</span>) blk_rq_pos(rq) &lt;&lt; <span class="number">9</span>) + lo-&gt;lo_offset;</span><br><span class="line">	<span class="keyword">switch</span> (req_op(rq)) &#123;<span class="comment">//跟据request的flag对文件进行不同的操作</span></span><br><span class="line">	<span class="keyword">case</span> REQ_OP_FLUSH:<span class="comment">//flush操作</span></span><br><span class="line">		<span class="keyword">return</span> lo_req_flush(lo, rq);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_WRITE_ZEROES:<span class="comment">//discard操作</span></span><br><span class="line">		<span class="keyword">return</span> lo_fallocate(lo, rq, pos,</span><br><span class="line">			(rq-&gt;cmd_flags &amp; REQ_NOUNMAP) ?</span><br><span class="line">				FALLOC_FL_ZERO_RANGE :</span><br><span class="line">				FALLOC_FL_PUNCH_HOLE);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_DISCARD:<span class="comment">//discard操作</span></span><br><span class="line">		<span class="keyword">return</span> lo_fallocate(lo, rq, pos, FALLOC_FL_PUNCH_HOLE);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_WRITE:<span class="comment">//写操作</span></span><br><span class="line">		<span class="keyword">if</span> (lo-&gt;transfer)<span class="comment">//配置了加密算法</span></span><br><span class="line">			<span class="keyword">return</span> lo_write_transfer(lo, rq, pos);</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (cmd-&gt;use_aio)<span class="comment">//关联的镜像文件设置了direct I/O</span></span><br><span class="line">			<span class="keyword">return</span> lo_rw_aio(lo, cmd, pos, WRITE);</span><br><span class="line">		<span class="keyword">else</span><span class="comment">//buff IO</span></span><br><span class="line">			<span class="keyword">return</span> lo_write_simple(lo, rq, pos);</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_READ:<span class="comment">//读操作</span></span><br><span class="line">		<span class="keyword">if</span> (lo-&gt;transfer)</span><br><span class="line">			<span class="keyword">return</span> lo_read_transfer(lo, rq, pos);</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (cmd-&gt;use_aio)<span class="comment">//关联的镜像文件设置了direct I/O</span></span><br><span class="line">			<span class="keyword">return</span> lo_rw_aio(lo, cmd, pos, READ);</span><br><span class="line">		<span class="keyword">else</span><span class="comment">//buff IO</span></span><br><span class="line">			<span class="keyword">return</span> lo_read_simple(lo, rq, pos);</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		WARN_ON_ONCE(<span class="number">1</span>);</span><br><span class="line">		<span class="keyword">return</span> -EIO;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>使用root用户登录虚拟机，配置网卡与ip地址：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ifconfig eth0 10.0.2.15</span><br><span class="line">ifconfig eth0 up</span><br></pre></td></tr></table></figure>
+<p>从man手册中loop下面可以看到，可以通过ioctl来设置backing file为direct IO模式。<br><img src="https://img-blog.csdnimg.cn/a4ffc4a22e834aa2a3b7a6117f427122.png" alt="在这里插入图片描述"></p>
+<p>查看loop驱动中的ioctl处理函数，loop_set_dio函数对该ioctl命令进行处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//drivers/block/loop.c</span><br><span class="line">static int lo_ioctl(struct block_device *bdev, fmode_t mode,</span><br><span class="line">	unsigned int cmd, unsigned long arg)</span><br><span class="line">&#123;</span><br><span class="line">	struct loop_device *lo = bdev-&gt;bd_disk-&gt;private_data;</span><br><span class="line">	int err;</span><br><span class="line"></span><br><span class="line">	mutex_lock_nested(&amp;lo-&gt;lo_ctl_mutex, 1);</span><br><span class="line">	switch (cmd) &#123;</span><br><span class="line">	case LOOP_SET_FD:</span><br><span class="line">		err = loop_set_fd(lo, mode, bdev, arg);</span><br><span class="line">		break;</span><br><span class="line">        ......</span><br><span class="line">	case LOOP_SET_DIRECT_IO://处理direct IO设置</span><br><span class="line">		err = -EPERM;</span><br><span class="line">		if ((mode &amp; FMODE_WRITE) || capable(CAP_SYS_ADMIN))</span><br><span class="line">			err = loop_set_dio(lo, arg);</span><br><span class="line">		break;</span><br><span class="line">	.......</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/a3ae60bb3aaf472084c7387945e83fcc.png" alt="在这里插入图片描述"></p>
-<p>修改/etc/ssh/sshd_config文件，将如下两项改为yes：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PermitRootLogin yes</span><br><span class="line">PermitEmptyPasswords yes</span><br></pre></td></tr></table></figure>
+<p>__loop_update_dio会对lo-&gt;use_dio进行判断和配置。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">loop_set_dio</span><span class="params">(struct loop_device *lo, <span class="keyword">unsigned</span> <span class="keyword">long</span> arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> error = -ENXIO;</span><br><span class="line">	<span class="keyword">if</span> (lo-&gt;lo_state != Lo_bound)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line">	__loop_update_dio(lo, !!arg);</span><br><span class="line">	<span class="keyword">if</span> (lo-&gt;use_dio == !!arg)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	error = -EINVAL;</span><br><span class="line"> out:</span><br><span class="line">	<span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>现在就可以使用ssh登录该虚拟机了：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 2222 root@127.0.0.1</span><br><span class="line"></span><br><span class="line">scp -P 2222 monitor-exec    root@127.0.0.1:/tmp/</span><br><span class="line">scp -P 2222 bpf_program.o root@127.0.0.1:/tmp/</span><br></pre></td></tr></table></figure>
+<p>但是我们在驱动处理请求时判断diretIO是使用的cmd-&gt;use_aio，这个变量是何时和lo-&gt;use_dio关联起来的呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> blk_status_t <span class="title">loop_queue_rq</span><span class="params">(struct blk_mq_hw_ctx *hctx,</span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">const</span> struct blk_mq_queue_data *bd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">switch</span> (req_op(cmd-&gt;rq)) &#123;</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_FLUSH:</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_DISCARD:</span><br><span class="line">	<span class="keyword">case</span> REQ_OP_WRITE_ZEROES:</span><br><span class="line">		cmd-&gt;use_aio = <span class="literal">false</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:<span class="comment">//设置backing file的读写方式</span></span><br><span class="line">		cmd-&gt;use_aio = lo-&gt;use_dio;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	kthread_queue_work(&amp;lo-&gt;worker, &amp;cmd-&gt;work);</span><br><span class="line">	<span class="keyword">return</span> BLK_STS_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>使用scp将bpf可执行文件拷贝到虚拟机中。</p>
-<p><img src="https://img-blog.csdnimg.cn/85a7e874faed4847b402d00f2d7e7817.png" alt="在这里插入图片描述"></p>
-<h3 id="执行程序"><a href="#执行程序" class="headerlink" title="执行程序"></a>执行程序</h3><p>在kernel/bpf/syscall.c:bpf_prog_load()函数中添加断点，启动GDB调试并运行bpf程序，就可以打印变量，进行调试。虽然内核优化掉了很多变量，但是还是可以通过现有的变量和函数调用栈直观的学习bpf程序的加载过程，map初始化过程。</p>
-<p><img src="https://img-blog.csdnimg.cn/0450c78a43e54eaabbd6df52f0eae304.png" alt="内核打印的调试日志"></p>
-<p><img src="https://img-blog.csdnimg.cn/7e8af663d7ba4614b76ec0bf3f0b65f1.png" alt="vscode调试面板"></p>
-<p>参考资料：<br><a href="https://youtu.be/W6rgaghycFI" target="_blank" rel="noopener">https://youtu.be/W6rgaghycFI</a></p>
-<h3 style="text-align:center">PS：前往公众号“Linux工坊”，可以查看最新内容！关注即可免费领取面试&Linux技术书籍！
+<p>loop_queue_rq中对cmd-&gt;use_aio进行了赋值。最后，lo-&gt;use_dio的默认值在何时设置的？<br>loop_set_fd函数负责将loop设备和某个文件进行关联，在其中初始化了lo-&gt;use_dio为false。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">loop_set_fd</span><span class="params">(struct loop_device *lo, <span class="keyword">fmode_t</span> mode,</span></span></span><br><span class="line"><span class="function"><span class="params">		       struct block_device *bdev, <span class="keyword">unsigned</span> <span class="keyword">int</span> arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span>	*<span class="title">file</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">inode</span>	*<span class="title">inode</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span>;</span></span><br><span class="line">	<span class="keyword">int</span>		lo_flags = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span>		error;</span><br><span class="line">	<span class="keyword">loff_t</span>		size;</span><br><span class="line">    ......</span><br><span class="line">	lo-&gt;use_dio = <span class="literal">false</span>;<span class="comment">//默认不采用directIO</span></span><br><span class="line">	lo-&gt;lo_device = bdev;</span><br><span class="line">	lo-&gt;lo_flags = lo_flags;</span><br><span class="line">	lo-&gt;lo_backing_file = file;</span><br><span class="line">	lo-&gt;transfer = <span class="literal">NULL</span>;</span><br><span class="line">	lo-&gt;ioctl = <span class="literal">NULL</span>;</span><br><span class="line">	lo-&gt;lo_sizelimit = <span class="number">0</span>;</span><br><span class="line">    ......</span><br><span class="line">	<span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>至此，我们已经弄清了为什么loop设备在direct IO读写设置下，还是能够使用内核文件缓存。总结如下：</p>
+<ol>
+<li>loop设备关联的backing file ，其读写方式需要单独进行设置。</li>
+<li>loop设备关联文件的读写方式默认为buff IO。</li>
+<li>系统通过ioctl系统调用，设置backing file的读写方式，对应的cmd为LOOP_SET_DIRECT_IO。</li>
+</ol>
 
-<br>
-<br>
-<img src="/image/wechat2.png" width="600px" height="500px" align="middle"></h3>
       
     </div>
 
@@ -772,7 +776,7 @@
 <ul class="post-copyright">
   <li class="post-copyright-license">
     <strong>文章标题：</strong>
-    调试eBPF虚拟机
+    基于DirectIO对Loop设备工作原理的分析
   </li>
 
   <li class="post-copyright-author">
@@ -780,16 +784,16 @@
 
   <li class="post-copyright-license">
     <strong>发布时间：</strong>
-    2022年03月13日 - 10:48:04
+    2022年06月25日 - 17:57:51
   </li>
     <strong>最后更新：</strong>
-    2022年11月07日 - 16:45:00
+    2022年11月09日 - 16:12:25
   
 
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
     
-    <a href="https://szp2016.github.io/uncategorized/调试eBPF虚拟机/" title="调试eBPF虚拟机">https://szp2016.github.io/uncategorized/调试eBPF虚拟机/</a>
+    <a href="https://szp2016.github.io/Linux/基于DirectIO对Loop设备工作原理的分析/" title="基于DirectIO对Loop设备工作原理的分析">https://szp2016.github.io/Linux/基于DirectIO对Loop设备工作原理的分析/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
@@ -831,8 +835,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/虚拟化/虚拟化技术介绍/" rel="next" title="虚拟化技术介绍">
-                <i class="fa fa-chevron-left"></i> 虚拟化技术介绍
+              <a href="/Linux/进程基础/" rel="next" title="进程基础">
+                <i class="fa fa-chevron-left"></i> 进程基础
               </a>
             
           </div>
@@ -840,10 +844,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/uncategorized/ebpf入门/" rel="prev" title="cilium/ebpf入门">
-                cilium/ebpf入门 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -962,7 +962,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">13</span>
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1111,12 +1113,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#在内核调试eBPF-VM有什么益处吗？"><span class="nav-number">1.</span> <span class="nav-text">在内核调试eBPF VM有什么益处吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#所需环境"><span class="nav-number">2.</span> <span class="nav-text">所需环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内核镜像"><span class="nav-number">2.1.</span> <span class="nav-text">内核镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根文件系统"><span class="nav-number">2.2.</span> <span class="nav-text">根文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eBPF程序"><span class="nav-number">2.3.</span> <span class="nav-text">eBPF程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GDB"><span class="nav-number">2.4.</span> <span class="nav-text">GDB</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动QEMU"><span class="nav-number">3.</span> <span class="nav-text">启动QEMU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#执行程序"><span class="nav-number">3.1.</span> <span class="nav-text">执行程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">PS：前往公众号“Linux工坊”，可以查看最新内容！关注即可免费领取面试&amp;Linux技术书籍！
-
-
-
-
-</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Loop设备"><span class="nav-number">1.1.</span> <span class="nav-text">Loop设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DirectIO"><span class="nav-number">1.2.</span> <span class="nav-text">DirectIO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DirectIO吞吐量对比"><span class="nav-number">2.</span> <span class="nav-text">DirectIO吞吐量对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实验现象分析"><span class="nav-number">2.1.</span> <span class="nav-text">实验现象分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cache大小分析"><span class="nav-number">2.2.</span> <span class="nav-text">cache大小分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Loop设备读操作内核栈跟踪"><span class="nav-number">2.3.</span> <span class="nav-text">Loop设备读操作内核栈跟踪</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loop驱动如何处理请求"><span class="nav-number">2.4.</span> <span class="nav-text">loop驱动如何处理请求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后续工作"><span class="nav-number">3.</span> <span class="nav-text">后续工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
@@ -1362,7 +1359,7 @@ setInterval("createtime()",250);
   
     <script>
   window.livereOptions = {
-    refer: 'uncategorized/调试eBPF虚拟机/'
+    refer: 'Linux/基于DirectIO对Loop设备工作原理的分析/'
   };
   (function(d, s) {
     var j, e = d.getElementsByTagName(s)[0];
